@@ -27,7 +27,7 @@ export const ContractAddress = {
         backConfigContract: '0x9e404c388F4b6e8C2d5FC05BfFb166eB5bDBD66f',
         mdexStrategy: "0x787CFf538c904eCD19295c4700C3394f37C0FdEd",
         WETH: "0xA4E1fc7B9f69fc8337C3072D8dD6D456cD3d356C",
-        backQueryContract: "0x0921D2BFB4F394a03498cC1e95C78Dc29360B939",
+        backQueryContract: "0x426058F5790E89DD3b0207b980E75D568CbEe04c",
         usdtmdex: '0x30686895109247C0376bcaE60Fcb6Cbc03165f33',
     },
     128: {
@@ -68,7 +68,7 @@ export const pairAddress = {
 
 export const tokensPrice = {
     BTC: 221.5,
-    USDT: 1.0003,
+    USDT: 1,
     ETH: 1665.53,
     BACK: 0.4,
     LP: 540,

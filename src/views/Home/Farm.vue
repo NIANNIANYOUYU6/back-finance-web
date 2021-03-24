@@ -155,6 +155,12 @@
           <div> 借贷 : </div>
           <div>{{ $tranNumber(form.debtAmount, 4) }} {{ pairsItem[form.debtToken].symbol }}</div>
         </div>
+        <div
+          v-if="form.debtAmount > pairsItem[form.debtToken].remain"
+          class="error-text"
+          style="text-align: end"
+          >剩余可借不足(剩余{{ $tranNumber(pairsItem[form.debtToken].remain, 4) }})</div
+        >
         <div class="line-h-40 disp-f_jusc-sb">
           <div style="min-width: 125px">
             投资资产转化为
@@ -277,7 +283,9 @@
               !form.tokenA.allowance ||
               !form.tokenB.allowance ||
               !!form.tokenA.errorText ||
-              !!form.tokenB.errorText
+              !!form.tokenB.errorText ||
+              (!form.tokenA.amount && !form.tokenB.amount) ||
+              form.debtAmount > pairsItem[form.debtToken].remain
             "
             type="primary"
             @click="handleOk"

@@ -170,7 +170,7 @@ export async function getPairInfo(pair_address) {//获取借款信息
     let tokenAPledge = convertBigNumberToNormal(res._tokenAPledge);                                            //pair的tokenAPledge 
     let tokenBPledge = convertBigNumberToNormal(res._tokenBPledge);                                            //pair的tokenBPledge  
     let totalPledge = convertBigNumberToNormal(res._totalPledge);
-                                                //pair的amountPledge  
+    //pair的amountPledge  
 
     let reserves = res.reserve;
     console.log(reserves)
@@ -182,11 +182,13 @@ export async function getPairInfo(pair_address) {//获取借款信息
     let totalSupplyA = tokenAPoolInfo.data.totalSupply;
     let interestAPerBlock = tokenAPoolInfo.data.interestPerBorrow;
     let debtAAPY = tokenAPoolInfo.data.debtAPY;
+    let remainA = tokenAPoolInfo.data.remain;
 
     let tokenBPoolInfo = await getAssetInfo(res._tokenB);
     let totalSupplyB = tokenBPoolInfo.data.totalSupply;
     let interestBPerBlock = tokenBPoolInfo.data.interestPerBorrow;
-    let debtBAPY = tokenAPoolInfo.data.debtAPY;
+    let debtBAPY = tokenBPoolInfo.data.debtAPY;
+    let remainB = tokenBPoolInfo.data.remain;
 
     let _liquidityAMiningAPY = 0;
     let _liquidityBMiningAPY = 0;
@@ -250,6 +252,7 @@ export async function getPairInfo(pair_address) {//获取借款信息
                 liquidityMiningAPY: _liquidityAMiningAPY,
                 platformMiningAPY: platformDebtAAPY,
                 debtAPY: debtAAPY,
+                remain: remainA,
                 clearLine: convertBigNumberToNormal(clearLine),
             },
             tokenB: {
@@ -265,6 +268,7 @@ export async function getPairInfo(pair_address) {//获取借款信息
                 liquidityMiningAPY: _liquidityBMiningAPY,
                 platformMiningAPY: platformDebtBAPY,
                 debtAPY: debtBAPY,
+                remain: remainB,
                 clearLine: convertBigNumberToNormal(clearLine),
             },
         }
@@ -342,7 +346,7 @@ export async function getAssetInfo(token_address) {//获取存款信息 及 全�
     let useRatio = 0;
     if (totalSupply > 0) {
         _amountSupply = balanceOf * totalShare / totalSupply;  //个人资产  币的个数
-        useRatio = totalBorrow / totalSupply;
+        useRatio = totalBorrow / totalShare;
     }
     let debtAPY = interestRate * 10512000;
     let depositAPY = (1 - await _getKeepInsterestRatio(token_address)) * useRatio * debtAPY;
@@ -366,7 +370,7 @@ export async function getAssetInfo(token_address) {//获取存款信息 及 全�
             totalBorrow: totalBorrow,
             totalSupply: totalSupply,
             useRatio: useRatio,
-            remain: totalSupply - totalBorrow,
+            remain: totalShare - totalBorrow,
             symbol: getTokenSymbol(token_address),
             address: token_address,
         }

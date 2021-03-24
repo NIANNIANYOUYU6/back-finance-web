@@ -5158,6 +5158,41 @@ export const BACK_ABI = {
                             "internalType": "uint256",
                             "name": "pid",
                             "type": "uint256"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "strategy",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "mdxLP",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "totalPledge",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "reserve0",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "reserve1",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "borrow0",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "borrow1",
+                            "type": "uint256"
                         }
                     ],
                     "internalType": "struct BackQuery.PairInfo[]",
@@ -5176,6 +5211,66 @@ export const BACK_ABI = {
                     "internalType": "address",
                     "name": "",
                     "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "poolList",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "pool",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "supplyToken",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "totalShare",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "totalBorrow",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "totalSupply",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "backPerDeposit",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "backPerBorrow",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "interestPerBorrow",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "interestRate",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct BackQuery.PoolInfo[]",
+                    "name": "pools",
+                    "type": "tuple[]"
                 }
             ],
             "stateMutability": "view",

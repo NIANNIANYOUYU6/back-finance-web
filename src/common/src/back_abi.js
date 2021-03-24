@@ -886,6 +886,56 @@ export const BACK_ABI = {
             "type": "event"
         },
         {
+            "inputs": [],
+            "name": "PAIR_LIQUIDATION_DISCOUNT",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "PAIR_LIQUIDATION_RATE",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "user",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "borrowToken",
+                    "type": "address"
+                }
+            ],
+            "name": "canLiquidation",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -993,6 +1043,30 @@ export const BACK_ABI = {
             "inputs": [
                 {
                     "internalType": "address",
+                    "name": "user",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "borrowToken",
+                    "type": "address"
+                }
+            ],
+            "name": "getTotalAssets",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
                     "name": "_token0",
                     "type": "address"
                 },
@@ -1032,6 +1106,40 @@ export const BACK_ABI = {
             ],
             "name": "invest",
             "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "user",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "liquidator",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "borrowToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "percent",
+                    "type": "uint256"
+                }
+            ],
+            "name": "liquidation",
+            "outputs": [
+                {
+                    "internalType": "uint256[3]",
+                    "name": "amounts",
+                    "type": "uint256[3]"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -1367,6 +1475,19 @@ export const BACK_ABI = {
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "getPairs",
+            "outputs": [
+                {
+                    "internalType": "address[]",
+                    "name": "",
+                    "type": "address[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -1572,6 +1693,34 @@ export const BACK_ABI = {
                 }
             ],
             "name": "invest",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "pair",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "user",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "borrowToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "percent",
+                    "type": "uint256"
+                }
+            ],
+            "name": "liquidation",
             "outputs": [],
             "stateMutability": "payable",
             "type": "function"
@@ -3029,6 +3178,40 @@ export const BACK_ABI = {
                     "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
+                },
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "user",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "borrowToken",
+                    "type": "address"
+                }
+            ],
+            "name": "getRewardAmount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -3366,6 +3549,64 @@ export const BACK_ABI = {
                     "internalType": "contract IConfig",
                     "name": "",
                     "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "token0",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "token1",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amountOut",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getAmountIn",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amountIn",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "token0",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "token1",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amountIn",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getAmountOut",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amountOut",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",

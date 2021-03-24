@@ -5193,6 +5193,11 @@ export const BACK_ABI = {
                             "internalType": "uint256",
                             "name": "borrow1",
                             "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "lpSupply",
+                            "type": "uint256"
                         }
                     ],
                     "internalType": "struct BackQuery.PairInfo[]",
@@ -5265,6 +5270,11 @@ export const BACK_ABI = {
                         {
                             "internalType": "uint256",
                             "name": "interestRate",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "price",
                             "type": "uint256"
                         }
                     ],

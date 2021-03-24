@@ -1,0 +1,147 @@
+html,
+body {
+  // font-family: "pmzd" !important;
+  height: 100%;
+  width: 100%;
+  min-width: 1026px;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.6;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial,
+    sans-serif;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+div:focus {
+  outline: none;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+.breadcrumb a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: ' ';
+    clear: both;
+    height: 0;
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-error {
+  color: #f56c6c;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #444;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-button,
+::-webkit-resizer {
+  display: none;
+}
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blue-font {
+  color: #1890ff;
+  font-size: 14px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.red-font {
+  color: red;
+  font-size: 14px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #ddd;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-button,
+::-webkit-resizer {
+  display: none;
+}
+.error-text {
+  color: #ee5b56;
+}
+.prompt-text{
+  color: #eb8834;
+}
+ .line-h-40 {
+  line-height: 40px;
+}
+.disp-f{
+  display: flex;
+}
+.disp-f_jusc-sb{
+  display: flex;
+  justify-content: space-between
+}
+.gradient-bg{
+  border: 0;
+  background-image: linear-gradient(to right, #B15FF1 , #556CF5);
+}

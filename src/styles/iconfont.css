@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'iconfont';
+  src: url('./iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+  font-family: 'iconfont' !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-Dollar-circle-fill:before {
+  content: '\ec00';
+}
+
+.icon-iconset0219:before {
+  content: '\e676';
+}
+
+.icon-qian:before {
+  content: '\e604';
+}
+
+.icon--wakuangjiankong:before {
+  content: '\e60f';
+}
+
+.icon-xiaofangzhanzongliangbeijing:before {
+  content: '\e631';
+}
+
+.icon-qianbao:before {
+  content: '\e829';
+}
+
+.icon-ganggan:before {
+  content: '\e658';
+}

@@ -62,7 +62,7 @@
           </a-button>
         </div>
         <div class="content-num"
-          >我的存款 : {{ $tranNumber(form.amountSupply, 8) }} {{ form.symbol }}</div
+          >我的存款 : {{ $tranNumber(form.amountDeposit, 8) }} {{ form.symbol }}</div
         >
       </div>
       <div class="deposit-card-footer">

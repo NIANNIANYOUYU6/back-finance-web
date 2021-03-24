@@ -35,7 +35,7 @@
       </div>
       <a-table
         rowKey="symbol"
-        :dataSource="assetList.filter((item) => +item.amountSupply)"
+        :dataSource="assetList.filter((item) => item.amountDeposit)"
         :columns="depositColumns"
         :pagination="false"
         :loading="loading"
@@ -102,7 +102,7 @@ import DepositCard from './DepositCard';
 import { ExclamationCircleFilled, QuestionCircleOutlined } from '@ant-design/icons-vue';
 
 // 引入方法
-import { queryAssetList } from '../../common/src/back_main';
+import { getAssetsList } from '../../common/src/back_main';
 
 export default {
   components: { Withdrawal, DepositCard, ExclamationCircleFilled, QuestionCircleOutlined },
@@ -136,10 +136,10 @@ export default {
             return {
               children: (
                 <div>
-                  <div>{this.$tranNumber(text * 100, 2)}%</div>
+                 <div> {this.$tranNumber((record.depositAPY+record.platformAPY) * 100, 2)}%</div>
                   <div>
                     = {this.$tranNumber(record.depositAPY * 100, 2)}% +
-                    {this.$tranNumber(record.platformRewardAPY * 100, 2)}%
+                    {this.$tranNumber(record.platformAPY * 100, 2)}%
                   </div>
                 </div>
               ),
@@ -148,13 +148,13 @@ export default {
         },
         {
           title: this.$t('Deposit.account.amountSupply'),
-          dataIndex: 'amountSupply',
+          dataIndex: 'amountDeposit',
           align: 'center',
           customRender: ({ text, record }) => {
             return {
               children: (
                 <div>
-                  <div> $ {this.$tranNumber(text * record.prices, 2)}</div>
+                  <div> $ {this.$tranNumber(text * record.price, 2)}</div>
                   <div class="font-small">
                     {this.$tranNumber(text, 4)} {record.symbol}
                   </div>
@@ -196,10 +196,10 @@ export default {
             return {
               children: (
                 <div>
-                  <div> {this.$tranNumber(text * 100, 2)}%</div>
+                  <div> {this.$tranNumber((record.depositAPY+record.platformAPY) * 100, 2)}%</div>
                   <div>
                     = {this.$tranNumber(record.depositAPY * 100, 2)}% +
-                    {this.$tranNumber(record.platformRewardAPY * 100, 2)}%
+                    {this.$tranNumber(record.platformAPY * 100, 2)}%
                   </div>
                 </div>
               ),
@@ -208,13 +208,13 @@ export default {
         },
         {
           title: this.$t('Deposit.all.totalShare'),
-          dataIndex: 'totalShare',
+          dataIndex: 'totalDeposit',
           align: 'center',
           customRender: ({ text, record }) => {
             return {
               children: (
                 <div>
-                  <div> $ {this.$tranNumber(text * record.prices, 2)} </div>
+                  <div> $ {this.$tranNumber(text * record.price, 2)} </div>
                   <div>
                     {this.$tranNumber(text, 4)} {record.symbol}
                   </div>
@@ -225,13 +225,13 @@ export default {
         },
         {
           title: this.$t('Deposit.all.remain'),
-          dataIndex: 'remain',
+          dataIndex: 'remainBorrow',
           align: 'center',
           customRender: ({ text, record }) => {
             return {
               children: (
                 <div>
-                  <div> $ {this.$tranNumber(text * record.prices, 2)} </div>
+                  <div> $ {this.$tranNumber(text * record.price, 2)} </div>
                   <div>
                     {this.$tranNumber(text, 4)} {record.symbol}
                   </div>
@@ -271,9 +271,9 @@ export default {
     async getAssetList() {
       this.loading = true;
       try {
-        const res = await queryAssetList();
-        this.assetList = res.data;
-        console.log('存款列表获取---》', res.data);
+        const res = await getAssetsList();
+        this.assetList = res;
+        console.log('存款列表获取---》', res);
       } finally {
         this.loading = false;
       }

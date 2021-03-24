@@ -14,7 +14,26 @@ var BACK_MAIN = {
     account: "",
     chainId: "",
     web3: null,
-    tokenDic: {}
+    tokenDic: {},
+    pairList: [], 
+    poolList: [],
+    backInfo: {}
+}
+
+export function _getTokenPrice(token) {
+    let pool = BACK_MAIN.poolList.find(i => i.supplyToken === token);
+    return pool ? pool.price: 0;
+}
+
+export function getLPPrice(pair) {
+    let reserve0 = pair.reserve0;
+    let reserve1 = pair.reserve1;
+    let totalSupply = pair.lpSupply;
+
+    let price0 = _getTokenPrice(pair.token0);
+    let price1 = _getTokenPrice(pair.token1);
+
+    return (reserve0 * price0 + reserve1 * price1) / totalSupply;
 }
 
 async function _getBackPrice() {//bk价格   $0.4
@@ -38,6 +57,58 @@ export function setupTokenList(list) { //存储到数据中心
     }
 }
 
+export async function fetchData() {
+    let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);
+    let pairList = await backQueryContract.methods.pairList().call({from:BACK_MAIN.account});
+    let poolList = await backQueryContract.methods.poolList().call({from:BACK_MAIN.account});
+    console.log("---------poolList--------",poolList)
+    let info = await backQueryContract.methods.getBackInfo().call();
+    BACK_MAIN.pairList = [];
+    BACK_MAIN.poolList = [];
+
+    BACK_MAIN.backInfo = {
+        amountPerBlock: convertBigNumberToNormal(info.amountPerBlock),
+        price: convertBigNumberToNormal(info.price),
+        totalWeight: convertBigNumberToNormal(info.totalWeight),
+    };
+    for(let item of pairList) {
+        let pair = {};
+        pair.borrow0 = parseFloat(convertBigNumberToNormal(item["borrow0"]));
+        pair.borrow1 = parseFloat(convertBigNumberToNormal(item["borrow1"]));
+        pair.lpSupply = parseFloat(convertBigNumberToNormal(item["lpSupply"]));
+        pair.mdxLP = item["mdxLP"];
+        pair.address = item["pair"];
+        pair.pid = item["pid"];
+        pair.reserve0 = parseFloat(convertBigNumberToNormal(item["reserve0"]));
+        pair.reserve1 = parseFloat(convertBigNumberToNormal(item["reserve1"]));
+        pair.strategy = item["strategy"];
+        pair.token0 = item["token0"];
+        pair.token1 = item["token1"];
+        pair.totalPledge = parseFloat(convertBigNumberToNormal(item["totalPledge"]));
+        BACK_MAIN.pairList.push(pair);
+    }
+
+    for(let item of poolList) {
+        let pool = {};
+        pool.backPerBorrow = parseFloat(convertBigNumberToNormal(item["backPerBorrow"]));
+        pool.backPerDeposit = parseFloat(convertBigNumberToNormal(item["backPerDeposit"]))
+        pool.interestPerBorrow = parseFloat(convertBigNumberToNormal(item["interestPerBorrow"]));
+        pool.interestRate = parseFloat(convertBigNumberToNormal(item["interestRate"]));
+        pool.address = item["pool"];
+        pool.price = parseFloat(convertBigNumberToNormal(item["price"]));
+        pool.supplyToken = item["supplyToken"];
+        pool.balance = parseFloat(convertBigNumberToNormal(item["balance"]));
+        pool.totalBorrow = parseFloat(convertBigNumberToNormal(item["totalBorrow"]));
+        pool.totalShare = parseFloat(convertBigNumberToNormal(item["totalShare"]));
+        pool.totalSupply = parseFloat(convertBigNumberToNormal(item["totalSupply"]));
+        pool.backWeight = 3333;
+        pool.depositPercent = parseInt(item["depositPercent"]);
+        BACK_MAIN.poolList.push(pool);
+    }
+
+    console.log(BACK_MAIN.pairList, BACK_MAIN.poolList, BACK_MAIN.backInfo);
+}
+
 export async function queryAssetList() {
     let data = [];
     for (let key in tokenAddres[BACK_MAIN.chainId]) {
@@ -56,19 +127,25 @@ export async function queryPairsList() {
     return { data: data };
 }
 
-export async function getTitles() {
-    let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);
-    let res = await backQueryContract.methods.getTotal().call();
 
-    let totalDeposit = convertBigNumberToNormal(res._totalDeposit);
-    let totalBorrow = convertBigNumberToNormal(res._totalBorrow);
-    let totalPledge = convertBigNumberToNormal(res._totalPledge);
+export async function  getTitles() {
+    let totalDeposit = 0;
+    let totalBorrow = 0;
+    for(let pool of BACK_MAIN.poolList) {
+        totalDeposit += pool.totalShare * pool["price"];
+        totalBorrow += pool.totalBorrow * pool["price"];
+    }
+
+    let totalPledge = 0;
+    for(let pair of BACK_MAIN.pairList) {
+        totalPledge += convertBigNumberToNormal(pair.totalPledge) * getLPPrice(pair);
+    }
 
     let _backInfo = await getBackInfo();
 
     let backTokenContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_TOKEN, ContractAddress[BACK_MAIN.chainId].backToken);
-    let _backSupply = await backTokenContract.methods.mintInfo().call();
-    let backSupply = convertBigNumberToNormal(_backSupply.amountPerBlock);
+    let _backSupply = await backTokenContract.methods.totalSupply().call();
+    let backSupply = convertBigNumberToNormal(_backSupply);
 
     return {
         data: {
@@ -144,7 +221,7 @@ export async function getLiquidityAmount(tokenA_address, tokenB_address, amount0
     return { data: { amountIn0, amountIn1, liquidity } };
 }
 
-export async function getTokenPrices(token_symbol) { //拿价格 用symbol
+export function getTokenPrices(token_symbol) { //拿价格 用symbol
     return tokensPrice[token_symbol];
 }
 
@@ -327,6 +404,29 @@ export async function getTokensFromPair(pair_address) {//由piar获取tokens
     return { data: { tokenA_address: tokenA_address, tokenB_address: tokenB_address } }
 }
 
+export async function getAssetsList() {
+    let amountPerBlock = BACK_MAIN.backInfo.amountPerBlock;
+    let list = [];
+    for(let pool of BACK_MAIN.poolList) {
+        let totalAmount = pool.price * pool.totalShare;
+        let poolPerBack = amountPerBlock * pool.backWeight / 10000 * pool.depositPercent / 10000 * 10512000;
+        let item = {
+            platformAPY: totalAmount === 0 ? 0: poolPerBack * BACK_MAIN.backInfo.price / totalAmount,
+            depositAPY:  pool.totalShare === 0 ? 0: pool.interestRate * 0.9 * pool.totalBorrow / pool.totalShare * 10512000,
+            totalDeposit: pool.totalShare,
+            remainBorrow: pool.totalShare - pool.totalBorrow,
+            price: pool.price,
+            useRatio: pool.totalShare === 0 ? 0: pool.totalBorrow / pool.totalShare,
+            address: pool.address,
+            token: pool.supplyToken,
+            symbol: getTokenSymbol(pool.supplyToken),
+            amountDeposit: pool.totalShare === 0 ? 0: pool.balance / pool.totalSupply * pool.totalShare
+        }
+        list.push(item);
+    }
+    return list;
+}
+
 export async function getAssetInfo(token_address) {//获取存款信息 及 全部资产
     let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);
     let res = await backQueryContract.methods.getAssetInfo(token_address).call({ from: BACK_MAIN.account });
@@ -495,7 +595,7 @@ export async function connect(callback) {//链接metamask
                 currentChain: chainIdDict[BACK_MAIN.chainId] || "not know",
             });
         });
-        fetchMdexApr()
+        // fetchMdexApr()
     } catch (e) {
         console.log(e);
         resMsg.code = -200;
@@ -503,11 +603,6 @@ export async function connect(callback) {//链接metamask
     }
     return resMsg;
 }
-
-
-
-
-
 
 let mdexAprData = {
     price: 0,

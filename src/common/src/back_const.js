@@ -14,20 +14,21 @@ export const bourse = {
 export const MAXNUM = 9999 * 99999 * 100000;
 export const ContractAddress = {
     97: {
-        mdexRouterContract: "0x2f11337dd6535226eb98E644617EAfAdDF2ecCB2",
-        mdexFactoryContract: "0x0EEB702a39BaAaD5A8Dd69E60bc739a30B225dC3",
-        mdexPoolContract: "0x5093da953416EAa03DCf22Dc5D06B25f8A82dF06",
-        mdexToken: '0x2F93d6Fc9251c014ACA2Ce8d0Eb6af8CF606c8dc',
-        backPlatformContract: "0xFaA23F44f8c1dCf2E2d45664dCA74a2FA151A8Be",
-        backToken: "0x3CDaDD223cdd66bDe9914E4DD0CC777E31184d37",
-        mdexSwapperContract: '0x0CeDCA3b4A8fBEbEC25F53219b2F15a95b8611E5',
+        mdexRouterContract: "0x5FC1fEcC629De8a10cB87e01E923b3723B5B5b1D",
+        mdexFactoryContract: "0x74656d54626D1Db0d2aec727e917a808AAA500Fd",
+        mdexPoolContract: "0xC300f9e7DE4b43EaD6d9a6214d361332134f3fAC",
+        mdexToken: '0xfC2DE13ed34bBd7Da05729e0FeacCE3C52dD442B',
+        WETH: "0x1FcF91bb4a1f0AFfB53E329fc979055CC1208e76",
+
+        backPlatformContract: "0x1051e4C307553Cc07B9D536E6A0E74d7799E6aaD",
+        backToken: "0x5ceACd1555E67c67242A69235460E1510BEb0850",
+        mdexSwapperContract: '0x4282d6C8bAf64aAAcd5dDb8501Fa238FC1521f26',
         backFactoryContract: '0x834edB598bDac7F1a65Cf6DC0c759Ef2ad81EEB3',
-        backPoolFactoryContract: "0x740bF39977FE44b3C6398A6EB5268AB2B67c149c",
-        backPairFactoryContract: "0x5501f3f0E4f44F1449632F6656508Df0b4E45df7",
-        backConfigContract: '0x9e404c388F4b6e8C2d5FC05BfFb166eB5bDBD66f',
+        backPoolFactoryContract: "0x55Ed6ED325f6D29f638ebA550c6AE5Ff2c061ff4",
+        backPairFactoryContract: "0xac18814aF01E3dbE72C957CcdFFFD50f9191fEde",
+        backConfigContract: '0x0dE294D0bC05a70699C9e934dA8d8d2B9F271150',
         mdexStrategy: "0x787CFf538c904eCD19295c4700C3394f37C0FdEd",
-        WETH: "0xA4E1fc7B9f69fc8337C3072D8dD6D456cD3d356C",
-        backQueryContract: "0x426058F5790E89DD3b0207b980E75D568CbEe04c",
+        backQueryContract: "0x1299bfA795Ee609283DE7738DfC63F0D322b25D4",
         usdtmdex: '0x30686895109247C0376bcaE60Fcb6Cbc03165f33',
     },
     128: {
@@ -35,19 +36,19 @@ export const ContractAddress = {
         mdexStrategy: "0x1EA91DfF6dE961AA529f4B0643b245ccdf03Feb9",
         backPoolContract: '0x861C705de36080bfF4Aec6ad46450Ab098801e1A',
 
-        backConfigContract: '0xFE971708e1943c25213686E736d97e87bE9b31a1',
-        backPairFactoryContract: "0x595D5768c65959ad780BCB6E31835Bf47Ddc979d",
-        backPlatformContract: "0x3941a49c95794cd2fECfeafA16CDE681F09ec533",
-        mdexFactoryContract: "0xEEB9df4d8BD11a3c82Ed1aA297a2CE9F57eC5817",
-        backPoolFactoryContract: "0x1cab3E51800B1039f97515F1246A92ba68a5284c",
+        backConfigContract: '0x0dE294D0bC05a70699C9e934dA8d8d2B9F271150',
+        backPairFactoryContract: "0xac18814aF01E3dbE72C957CcdFFFD50f9191fEde",
+        backPlatformContract: "0x1051e4C307553Cc07B9D536E6A0E74d7799E6aaD",
+        mdexFactoryContract: "0x74656d54626D1Db0d2aec727e917a808AAA500Fd",
+        backPoolFactoryContract: "0x55Ed6ED325f6D29f638ebA550c6AE5Ff2c061ff4",
     }
 }
 
 export const tokenAddres = {
     97: {
-        USDT: '0x373fb25192AC301900dD86a8b14f3aE8ed8F19F3',
-        BTC: '0x1FF665E24C152a185E64e1c073a2024cD5D65781',
-        ETH: '0xE3689ea827084458b7a561477EE8baA77f1461E2',
+        USDT: '0xB150C21e861b240edA37eFf1Ab34992622d4329D',
+        BTC: '0xBff5437f3B9d4C8B3588f64eB31A40548D18A273',
+        ETH: '0xD946bc18804262f1c0E186A68D79C05437f82A15',
     },
     128: {
         USDT: '0xC5ad4240799B859c7a8e93eE74d69ac0eC3Fbffa',
@@ -57,8 +58,8 @@ export const tokenAddres = {
 }
 export const pairAddress = {
     97: {
-        BTCUSDT: '0x0ca9e07ffdd2047007c9df03c204C73917eD6542',
-        USDTETH: '0xe4EF7BC463E5673c8f9043f648ea6aeA71123470',
+        BTCUSDT: '0x464Ad1ae0381E98b6e43508F61Aed1c6d7088B4b',
+        USDTETH: '0x1F6E1b2864E430A09ad88e3C9E2cf40463897AD1',
     },
     128: {
         BTCUSDT: '0x5dbCA58c7A11A0870e19eEB64bc72b478728d8B7',
@@ -68,11 +69,11 @@ export const pairAddress = {
 
 export const tokensPrice = {
     BTC: 221.5,
-    USDT: 1,
+    USDT: 1.0003,
     ETH: 1665.53,
     BACK: 0.4,
     LP: 540,
 }
 
-//"0x9e404c388F4b6e8C2d5FC05BfFb166eB5bDBD66f","0x5501f3f0E4f44F1449632F6656508Df0b4E45df7","0xFaA23F44f8c1dCf2E2d45664dCA74a2FA151A8Be","0x0EEB702a39BaAaD5A8Dd69E60bc739a30B225dC3","0x740bF39977FE44b3C6398A6EB5268AB2B67c149c"
+
 

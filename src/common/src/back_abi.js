@@ -4980,6 +4980,19 @@ export const BACK_ABI = {
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "backToken",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -5060,6 +5073,36 @@ export const BACK_ABI = {
                     "internalType": "uint256",
                     "name": "_interestRate",
                     "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getBackInfo",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "amountPerBlock",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "price",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "totalWeight",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct BackQuery.BackInfo",
+                    "name": "info",
+                    "type": "tuple"
                 }
             ],
             "stateMutability": "view",
@@ -5401,16 +5444,6 @@ export const BACK_ABI = {
                             "type": "uint256"
                         },
                         {
-                            "internalType": "address",
-                            "name": "strategy",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "mdxLP",
-                            "type": "address"
-                        },
-                        {
                             "internalType": "uint256",
                             "name": "totalPledge",
                             "type": "uint256"
@@ -5438,6 +5471,11 @@ export const BACK_ABI = {
                         {
                             "internalType": "uint256",
                             "name": "lpSupply",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "leverageRate",
                             "type": "uint256"
                         }
                     ],
@@ -5516,6 +5554,21 @@ export const BACK_ABI = {
                         {
                             "internalType": "uint256",
                             "name": "price",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "backWeight",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "depositPercent",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "balance",
                             "type": "uint256"
                         }
                     ],

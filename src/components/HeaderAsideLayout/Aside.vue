@@ -106,7 +106,7 @@
 </template>
 <script>
 import { message } from 'ant-design-vue';
-import { connect, getAllReward } from '../../common/src/back_main';
+import { connect, getAllReward,fetchData } from '../../common/src/back_main';
 
 export default {
   props: {
@@ -144,6 +144,7 @@ export default {
       // 开始连接
       connect((action, data) => {
         // 监听链的变化
+       
         this.$store.commit('setState', data);
         this.$emit('handleLoad');
       })
@@ -154,7 +155,8 @@ export default {
             message.error(res.msg);
           }
         })
-        .then(() => {
+        .then(fetchData)
+        .then(()=>{
           // 触发重新获取数据
           this.$emit('handleLoad');
         });

@@ -1,7 +1,7 @@
 import { BACK_ABI } from './back_abi.js'
 import { chainIdDict, ContractAddress, tokenAddres, pairAddress, tokensPrice } from './back_const.js';
 import { convertBigNumberToNormal, convertNormalToBigNumber, findToken } from './back_utils.js'
-
+let YEAR = 10512000;
 var BACK_MAIN = {
     resMsg: {
         code: -300,
@@ -17,6 +17,7 @@ var BACK_MAIN = {
     tokenDic: {},
     pairList: [], 
     poolList: [],
+    infoList: [],
     backInfo: {}
 }
 
@@ -44,6 +45,25 @@ async function _getLPPrice() {//lp价格
     return 540;
 }
 
+export function _getAmountSwap(amount0, amount1, reserve0, reserve1) {
+    let a = 997;
+    let b = reserve0 * 1997;
+    let _c = amount0 * reserve1 - (amount1 * reserve0);
+    let c = (_c * 1000 / (amount1 + reserve1)) * reserve0;
+    let d = a * c * 4;
+    let e = Math.sqrt(b * b + d);
+    return (e - b) / (a * 2);
+}
+
+export function _getAmountOut(amountIn, reserveIn, reserveOut) {
+    let amountInWithFee = amountIn * 0.997;
+    return amountInWithFee * reserveOut / (reserveIn + amountInWithFee);
+}
+
+export function _getAmountIn(amountOut, reserveIn, reserveOut) {
+    return  reserveIn * amountOut / ((reserveOut - amountOut) * 0.997);
+}
+
 export async function _getKeepInsterestRatio(_address) {//利息保留比例
     let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);
     let keepInstestRatio = await backQueryContract.methods.batchGetConfigValues(_address, [BACK_MAIN.web3.utils.utf8ToHex("BACK_TEAM_REWARD")]).call();
@@ -59,33 +79,35 @@ export function setupTokenList(list) { //存储到数据中心
 
 export async function fetchData() {
     let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);
-    let pairList = await backQueryContract.methods.pairList().call({from:BACK_MAIN.account});
-    let poolList = await backQueryContract.methods.poolList().call({from:BACK_MAIN.account});
-    console.log("---------poolList--------",poolList)
-    let info = await backQueryContract.methods.getBackInfo().call();
+    let pairList = await backQueryContract.methods.pairList().call({from: BACK_MAIN.account});
+    let poolList = await backQueryContract.methods.poolList().call({from: BACK_MAIN.account});
+    let info = await backQueryContract.methods.getBackInfo().call({from: BACK_MAIN.account});
+    let addressList = pairList.map(i => i["pair"]);
+    let infoList = await backQueryContract.methods.getUserInfo(addressList).call({from: BACK_MAIN.account});
     BACK_MAIN.pairList = [];
     BACK_MAIN.poolList = [];
+    BACK_MAIN.infoList = [];
 
     BACK_MAIN.backInfo = {
         amountPerBlock: convertBigNumberToNormal(info.amountPerBlock),
         price: convertBigNumberToNormal(info.price),
         totalWeight: convertBigNumberToNormal(info.totalWeight),
     };
-    for(let item of pairList) {
-        let pair = {};
-        pair.borrow0 = parseFloat(convertBigNumberToNormal(item["borrow0"]));
-        pair.borrow1 = parseFloat(convertBigNumberToNormal(item["borrow1"]));
-        pair.lpSupply = parseFloat(convertBigNumberToNormal(item["lpSupply"]));
-        pair.mdxLP = item["mdxLP"];
-        pair.address = item["pair"];
-        pair.pid = item["pid"];
-        pair.reserve0 = parseFloat(convertBigNumberToNormal(item["reserve0"]));
-        pair.reserve1 = parseFloat(convertBigNumberToNormal(item["reserve1"]));
-        pair.strategy = item["strategy"];
-        pair.token0 = item["token0"];
-        pair.token1 = item["token1"];
-        pair.totalPledge = parseFloat(convertBigNumberToNormal(item["totalPledge"]));
-        BACK_MAIN.pairList.push(pair);
+
+    for(let item of infoList) {
+        let info = {};
+        info.amountPledge0 = parseFloat(convertBigNumberToNormal(item["amountPledge0"]));
+        info.amountPledge1 = parseFloat(convertBigNumberToNormal(item["amountPledge1"]));
+        info.amountReward0 = parseFloat(convertBigNumberToNormal(item["amountReward0"]));
+        info.amountReward1 = parseFloat(convertBigNumberToNormal(item["amountReward1"]));
+        info.amountBorrow0 = parseFloat(convertBigNumberToNormal(item["amountBorrow0"]));
+        info.amountBorrow1 = parseFloat(convertBigNumberToNormal(item["amountBorrow1"]));
+        info.amountInterest0 = parseFloat(convertBigNumberToNormal(item["amountInterest0"]));
+        info.amountInterest1 = parseFloat(convertBigNumberToNormal(item["amountInterest1"]));
+        info.rewardToken = item["rewardToken"];
+        info.rewardPrice = parseFloat(convertBigNumberToNormal(item["rewardPrice"]))
+        info.address = item["pair"];
+        BACK_MAIN.infoList.push(info);
     }
 
     for(let item of poolList) {
@@ -106,7 +128,33 @@ export async function fetchData() {
         BACK_MAIN.poolList.push(pool);
     }
 
-    console.log(BACK_MAIN.pairList, BACK_MAIN.poolList, BACK_MAIN.backInfo);
+    for(let item of pairList) {
+        let pair = {};
+        pair.borrow0 = parseFloat(convertBigNumberToNormal(item["borrow0"]));
+        pair.borrow1 = parseFloat(convertBigNumberToNormal(item["borrow1"]));
+        pair.lpSupply = parseFloat(convertBigNumberToNormal(item["lpSupply"]));
+        pair.pid = item["pid"];
+        pair.address = item["pair"];
+        pair.reserve0 = parseFloat(convertBigNumberToNormal(item["reserve0"]));
+        pair.reserve1 = parseFloat(convertBigNumberToNormal(item["reserve1"]));
+        pair.token0 = item["token0"];
+        pair.token1 = item["token1"];
+        pair.totalPledge = parseFloat(convertBigNumberToNormal(item["totalPledge"]));
+        pair.leverageRate = parseFloat(convertBigNumberToNormal(item["leverageRate"]));
+        pair.liquidationRate = parseFloat(convertBigNumberToNormal(item["liquidationRate"]));
+
+        let token0Pool = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token0);
+        let token1Pool = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token1);
+        let token0PerBack = BACK_MAIN.backInfo.amountPerBlock * token0Pool.backWeight / 10000 * (10000 - token0Pool.depositPercent) / 10000 * YEAR;
+        let token1PerBack = BACK_MAIN.backInfo.amountPerBlock * token1Pool.backWeight / 10000 * (10000 - token1Pool.depositPercent) / 10000 * YEAR;
+        let borrowAmount0 = pair.borrow0 * token0Pool.price;
+        let borrowAmount1 = pair.borrow1 * token1Pool.price;
+        pair.platformAPY0 = borrowAmount0 === 0 ? 0: token0PerBack * BACK_MAIN.backInfo.price / borrowAmount0,
+        pair.platformAPY1 = borrowAmount1 === 0 ? 0: token1PerBack * BACK_MAIN.backInfo.price / borrowAmount1,
+        BACK_MAIN.pairList.push(pair);
+    }
+
+    console.log(BACK_MAIN.pairList, BACK_MAIN.poolList, BACK_MAIN.backInfo, BACK_MAIN.infoList);
 }
 
 export async function queryAssetList() {
@@ -138,7 +186,7 @@ export async function  getTitles() {
 
     let totalPledge = 0;
     for(let pair of BACK_MAIN.pairList) {
-        totalPledge += convertBigNumberToNormal(pair.totalPledge) * getLPPrice(pair);
+        totalPledge += pair.totalPledge * getLPPrice(pair);
     }
 
     let _backInfo = await getBackInfo();
@@ -427,6 +475,207 @@ export async function getAssetsList() {
     return list;
 }
 
+export async function getPairList() {
+    let list = [];
+    for(let pair of BACK_MAIN.pairList) {
+        let item = {
+            address: pair.address,
+            token0 : pair.token0,
+            token1 : pair.token1,
+            symbol0: getTokenSymbol(pair.token0),
+            symbol1: getTokenSymbol(pair.token1),
+            platformAPY0: pair.platformAPY0,
+            platformAPY1: pair.platformAPY1,
+            amount0: pair.totalPledge / pair.lpSupply * pair.reserve0,
+            amount1: pair.totalPledge / pair.lpSupply * pair.reserve1,
+            leverageRate: pair.leverageRate + 1
+        };
+        list.push(item);
+    }
+    return list;
+}
+
+export async function getUserInfoList() {
+    let list = [];
+    for(let info of BACK_MAIN.infoList) {
+        let pair = BACK_MAIN.pairList.find(i => i.address === info.address);
+        let price0 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token0).price;
+        let price1 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token1).price;
+        if(info.amountPledge0 > 0) {
+            let item = {
+                address: pair.address,
+                token0 : pair.token0,
+                token1 : pair.token1,
+                borrowToken: pair.token0,
+                borrowSymbol: getTokenSymbol(pair.token0),
+                symbol0: getTokenSymbol(pair.token0),
+                symbol1: getTokenSymbol(pair.token1),
+                rewardToken: info.rewardToken,
+                rewardSymbol: getTokenSymbol(info.rewardToken),
+                totalAssets: getLPPrice(pair) * info.amountPledge0,
+                amount0: info.amountPledge0 / pair.lpSupply * pair.reserve0,
+                amount1: info.amountPledge0 / pair.lpSupply * pair.reserve1,
+                totalDebt: (info.amountBorrow0 + info.amountInterest0) * price0,
+                pendingReward: info.amountReward0
+            };
+            item.healthy = item.totalDebt / item.totalAssets / pair.liquidationRate;
+            list.push(item);
+        }
+
+        if(info.amountPledge1 > 0) {
+            let item = {
+                address: pair.address,
+                token0 : pair.token0,
+                token1 : pair.token1,
+                borrowToken: pair.token1,
+                borrowSymbol: getTokenSymbol(pair.token1),
+                symbol0: getTokenSymbol(pair.token0),
+                symbol1: getTokenSymbol(pair.token1),
+                rewardToken: info.rewardToken,
+                rewardSymbol: getTokenSymbol(info.rewardToken),
+                totalAssets: getLPPrice(pair) * info.amountPledge1,
+                amount0: info.amountPledge1 / pair.lpSupply * pair.reserve0,
+                amount1: info.amountPledge1 / pair.lpSupply * pair.reserve1,
+                totalDebt: (info.amountBorrow1 + info.amountInterest1) * price1,
+                pendingReward: info.amountReward1
+            };
+            item.healthy = item.totalDebt / item.totalAssets / pair.liquidationRate;
+            list.push(item);
+        }
+
+    }
+    return list;
+}
+
+export async function getAddInfo(pairAddress, amount0, amount1, borrowToken) {
+    let pair = BACK_MAIN.pairList.find(i => i.address === pairAddress);
+    let pool0 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token0);
+    let pool1 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token1);
+    let list = await getUserInfoList();
+    // console.log(list);
+    let info = list.find(i => i.address === pair.address && borrowToken === i.borrowToken);
+    let amountIn0 = amount0;
+    let amountIn1 = amount1;
+
+    if(amountIn0 * pair.reserve1 >= amountIn1 * pair.reserve0) {
+        let swapAmount = _getAmountSwap(amountIn0, amountIn1, pair.reserve0, pair.reserve1);
+        amountIn0 -= swapAmount;
+        amountIn1 += _getAmountOut(swapAmount, pair.reserve0, pair.reserve1);
+    } else {
+        let swapAmount = _getAmountSwap(amountIn1, amountIn0, pair.reserve1, pair.reserve0);
+        amountIn1 -= swapAmount;
+        amountIn0 += _getAmountOut(swapAmount, pair.reserve1, pair.reserve0);
+    }
+    let addAssets = amountIn0 * pool0.price + amountIn1 * pool1.price;
+
+    return {
+        amountIn0: amountIn0,
+        amountIn1: amountIn1,
+        amountAfter0: amountIn0 + info.amount0,
+        amountAfter1: amountIn1 + info.amount1,
+        healthy: info.totalDebt / (info.totalAssets + addAssets) / pair.liquidationRate
+    }
+}
+
+export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, leverage) {
+    let pair = BACK_MAIN.pairList.find(i => i.address === pairAddress);
+    let pool0 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token0);
+    let pool1 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token1);
+    let price0 = pool0.price;
+    let price1 = pool1.price;
+    let assetIn = amount0 * price0 + amount1 * price1;
+    let assetBorrow = assetIn * (leverage - 1);
+    let amountBorrow;
+    let amountIn0;
+    let amountIn1;
+    let interestRate;
+
+    if(borrowToken === pair.token0) {
+        interestRate = pool0.interestRate * YEAR;
+        amountBorrow = assetBorrow / price0;
+        amountIn0 = amount0 + amountBorrow;
+        amountIn1 = amount1;
+    } else {
+        interestRate = pool1.interestRate * YEAR;
+        amountBorrow = assetBorrow / price1;
+        amountIn0 = amount0;
+        amountIn1 = amount1 + amountBorrow;
+    }
+
+    if(amountIn0 * pair.reserve1 >= amountIn1 * pair.reserve0) {
+        let swapAmount = _getAmountSwap(amountIn0, amountIn1, pair.reserve0, pair.reserve1);
+        amountIn0 -= swapAmount;
+        amountIn1 += _getAmountOut(swapAmount, pair.reserve0, pair.reserve1);
+    } else {
+        let swapAmount = _getAmountSwap(amountIn1, amountIn0, pair.reserve1, pair.reserve0);
+        amountIn1 -= swapAmount;
+        amountIn0 += _getAmountOut(swapAmount, pair.reserve1, pair.reserve0);
+    }
+
+    return {
+        amountBorrow: amountBorrow,
+        amountIn0: amountIn0,
+        amountIn1: amountIn1,
+        platformAPY0: pair.platformAPY0,
+        platformAPY1: pair.platformAPY1,
+        healthy: assetBorrow / (assetBorrow + assetIn) / pair.liquidationRate,
+        interestAPY: interestRate
+    }
+}
+
+export async function getDivestInfo(pairAddress, percent, borrowToken, expectToken) {
+    let pair = BACK_MAIN.pairList.find(i => i.address === pairAddress);
+    let info = BACK_MAIN.infoList.find(i => i.address === pair.address);
+    let amountPledge = borrowToken === info.token0 ? info.amountPledge0: info.amountPledge1;
+    let amount0 = amountPledge / pair.lpSupply * pair.reserve0 * percent;
+    let amount1 = amountPledge / pair.lpSupply * pair.reserve1 * percent;
+    let amountBorrowAfter;
+    let interestAfter;
+    let amountOut0 = amount0;
+    let amountOut1 = amount1;
+    let amountToPay;
+    let interestToPay;
+    if(borrowToken === pair.token0) {
+        amountToPay = info.amountBorrow0 * percent;
+        interestToPay = info.amountInterest0 * percent;
+        amountBorrowAfter = info.amountBorrow0 - amountToPay;
+        interestAfter = info.amountInterest0 - interestToPay;
+        if(amountOut0 < amountToPay + interestToPay) {
+            amountOut1 -= _getAmountIn((amountToPay + interestToPay) - amountOut0, pair.reserve1, pair.reserve0);
+        }
+        amountOut0 -= (amountToPay + interestToPay);
+    } else {
+        amountToPay = info.amountBorrow1 * percent;
+        interestToPay = info.amountInterest1 * percent;
+        amountBorrowAfter = info.amountBorrow1 - amountToPay;
+        interestAfter = info.amountInterest1 - interestToPay;
+        if(amountOut1 < amountToPay + interestToPay) {
+            amountOut0 -= _getAmountIn((amountToPay + interestToPay) - amountOut1, pair.reserve0, pair.reserve1);
+        }
+        amountOut1 -= (amountToPay + interestToPay);
+    }
+
+    if(expectToken === pair.token0) {
+        amountOut0 += _getAmountOut(amountOut1, pair.reserve1, pair.reserve0);
+        amountOut1 = 0
+    } else if(expectToken === pair.token1) {
+        amountOut1 += _getAmountOut(amountOut0, pair.reserve0, pair.reserve1);
+        amountOut0 = 0
+    }
+
+    return {
+        amount0: amount0,
+        amount1: amount1,
+        amountToPay: amountToPay,
+        interestToPay: interestToPay,
+        amountOut0: amountOut0,
+        amountOut1: amountOut1,
+        amountBorrowAfter: amountBorrowAfter,
+        interestAfter: interestAfter
+    };
+}
+
+
 export async function getAssetInfo(token_address) {//获取存款信息 及 全部资产
     let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);
     let res = await backQueryContract.methods.getAssetInfo(token_address).call({ from: BACK_MAIN.account });
@@ -608,21 +857,21 @@ let mdexAprData = {
     price: 0,
     data: []
 }
-// let USDT2MDEXPairContract
+let USDT2MDEXPairContract
 
-// async function fetchMdexApr() {
-//     fetch("https://gateway.mdex.cc/v2/mingpool/lps?mdex_chainid=128")
-//         .then((res) => res.json())
-//         .then((data) => {
-//             mdexAprData.data = Object.values(data.result);
-//         });
-//     if (!USDT2MDEXPairContract) {
-//         USDT2MDEXPairContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.MDEX_PAIR, ContractAddress[BACK_MAIN.chainId].usdtmdex);
-//     }
-//     let { _reserve0, _reserve1 } = await USDT2MDEXPairContract.methods.getReserves().call({ from: BACK_MAIN.account });
-//     mdexAprData.price = _reserve0 / _reserve1
-//     setTimeout(fetchMdexApr, 10 * 1000);
-// }
+async function fetchMdexApr() {
+    fetch("https://gateway.mdex.cc/v2/mingpool/lps?mdex_chainid=128")
+        .then((res) => res.json())
+        .then((data) => {
+            mdexAprData.data = Object.values(data.result);
+        });
+    if (!USDT2MDEXPairContract) {
+        USDT2MDEXPairContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.MDEX_PAIR, ContractAddress[BACK_MAIN.chainId].usdtmdex);
+    }
+    let { _reserve0, _reserve1 } = await USDT2MDEXPairContract.methods.getReserves().call({ from: BACK_MAIN.account });
+    mdexAprData.price = _reserve0 / _reserve1
+    setTimeout(fetchMdexApr, 10 * 1000);
+}
 
 // console.log(getLPAPR(["USDT/WHT",'WHT/ETH']))
 export function getLPAPR(pariNameArr) {

@@ -5379,6 +5379,82 @@ export const BACK_ABI = {
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "address[]",
+                    "name": "pairs",
+                    "type": "address[]"
+                }
+            ],
+            "name": "getUserInfo",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "pair",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "rewardToken",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountPledge0",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountPledge1",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountReward0",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountReward1",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountBorrow0",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountBorrow1",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountInterest0",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amountInterest1",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "rewardPrice",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct BackQuery.UserInfo[]",
+                    "name": "infos",
+                    "type": "tuple[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "mdexFactory",
             "outputs": [
@@ -5476,6 +5552,11 @@ export const BACK_ABI = {
                         {
                             "internalType": "uint256",
                             "name": "leverageRate",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "liquidationRate",
                             "type": "uint256"
                         }
                     ],
@@ -5638,5 +5719,5 @@ export const BACK_ABI = {
             "stateMutability": "view",
             "type": "function"
         }
-    ],
+    ]
 }

@@ -28,7 +28,7 @@ export const ContractAddress = {
         backPairFactoryContract: "0xac18814aF01E3dbE72C957CcdFFFD50f9191fEde",
         backConfigContract: '0x0dE294D0bC05a70699C9e934dA8d8d2B9F271150',
         mdexStrategy: "0x787CFf538c904eCD19295c4700C3394f37C0FdEd",
-        backQueryContract: "0x1299bfA795Ee609283DE7738DfC63F0D322b25D4",
+        backQueryContract: "0x779f98a9f9E2041B4E99dF1268829d25d414e1cC",
         usdtmdex: '0x30686895109247C0376bcaE60Fcb6Cbc03165f33',
     },
     128: {

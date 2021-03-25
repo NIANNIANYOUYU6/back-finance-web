@@ -44,6 +44,9 @@ import { message } from 'ant-design-vue';
 import { getAllReward, getTitles } from '../../common/src/back_main';
 
 export default {
+  props: {
+    onClose: Function,
+  },
   data() {
     return {
       loading: false,

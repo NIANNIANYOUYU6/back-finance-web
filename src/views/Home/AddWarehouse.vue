@@ -24,9 +24,9 @@
     <template #title>
       <CardTitle
         :title="{
-          source: pairsItem.source,
-          tokenA: pairsItem.tokenA.symbol,
-          tokenB: pairsItem.tokenB.symbol,
+          swapperName: pairsItem.swapperName,
+          tokenA: pairsItem.symbol0,
+          tokenB: pairsItem.symbol1,
           name: '加仓',
         }"
       />
@@ -34,16 +34,15 @@
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          当前总资产 : {{ $tranNumber(pairsItem[pairsItem.debtToken].supplyNumberA, 4) }}
-          {{ pairsItem.tokenA.symbol }} +
-          {{ $tranNumber(pairsItem[pairsItem.debtToken].supplyNumberB, 4) }}
-          {{ pairsItem.tokenB.symbol }}
+          当前总资产 : {{ $tranNumber(pairsItem.amount0, 4) }} {{ pairsItem.symbol0 }} +
+          {{ $tranNumber(pairsItem.amount1, 4) }}
+          {{ pairsItem.symbol1 }}
         </div>
         <div style="display: flex">
-          <img class="icon" :src="'./img/icon/' + pairsItem.tokenA.symbol + '.png'" />
+          <img class="icon" :src="'./img/icon/' + pairsItem.symbol0 + '.png'" />
           <div style="flex: 1; margin-left: 10px">
             <a-input
-              :suffix="pairsItem.tokenA.symbol"
+              :suffix="pairsItem.symbol0"
               v-model:value="form.tokenA.amount"
               :placeholder="$tranNumber(form.tokenA.balance, 8)"
               @change="updateAmount('tokenA')"
@@ -82,10 +81,10 @@
           </div>
         </div>
         <div style="display: flex">
-          <img class="icon" :src="'./img/icon/' + pairsItem.tokenB.symbol + '.png'" />
+          <img class="icon" :src="'./img/icon/' + pairsItem.symbol1 + '.png'" />
           <div style="flex: 1; margin-left: 10px">
             <a-input
-              :suffix="pairsItem.tokenB.symbol"
+              :suffix="pairsItem.symbol1"
               v-model:value="form.tokenB.amount"
               :placeholder="$tranNumber(form.tokenB.balance, 8)"
               @change="updateAmount('tokenB')"
@@ -131,19 +130,17 @@
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
-          : {{ $tranNumber(form.amountIn0, 4) }} {{ pairsItem.tokenA.symbol }} +
-          {{ $tranNumber(form.amountIn1, 4) }}{{ pairsItem.tokenB.symbol }}
+          : {{ $tranNumber(form.addInfo.amountIn0, 4) }} {{ pairsItem.symbol0 }} +
+          {{ $tranNumber(form.addInfo.amountIn1, 4) }}{{ pairsItem.symbol1 }}
         </div>
         <div class="line-h-40">
           加仓后总资产 :
-          {{ $tranNumber(+form.amountIn0 + +pairsItem[pairsItem.debtToken].supplyNumberA, 4) }}
-          {{ pairsItem.tokenA.symbol }} +
-          {{ $tranNumber(+form.amountIn1 + +pairsItem[pairsItem.debtToken].supplyNumberB, 4)
-          }}{{ pairsItem.tokenB.symbol }}
+          {{ $tranNumber(form.addInfo.amountAfter0, 4) }}
+          {{ pairsItem.symbol0 }} + {{ $tranNumber(form.addInfo.amountAfter1, 4)
+          }}{{ pairsItem.symbol0 }}
         </div>
-        <!-- 当前负债/当前总资产*清仓线 -->
-        <div class="line-h-40" v-if="form.riskValue">
-          加仓后风险值 :{{ $tranNumber(form.riskValue, 2) }}
+        <div class="line-h-40">
+          加仓后风险值 :{{ $tranNumber(form.addInfo.healthy * 100, 2) }}
         </div>
       </div>
       <div class="deposit-card-footer">
@@ -161,9 +158,9 @@
             @click="
               approveTokenFunc(
                 !form.tokenA.allowance || form.tokenA.errorText === '授权额度不足'
-                  ? 'tokenA'
+                  ? '0'
                   : !form.tokenB.allowance || form.tokenB.errorText === '授权额度不足'
-                  ? 'tokenB'
+                  ? '1'
                   : ''
               )
             "
@@ -174,7 +171,8 @@
               !form.tokenA.allowance ||
               !form.tokenB.allowance ||
               !!form.tokenA.errorText ||
-              !!form.tokenB.errorText
+              !!form.tokenB.errorText ||
+              (!+form.tokenA.amount && !+form.tokenB.amount)
             "
             type="primary"
             @click="handleOk"
@@ -195,13 +193,14 @@ import {
   getAllowance,
   approveToken,
   getBalance,
-  getLiquidityAmount,
+  getAddInfo,
 } from '../../common/src/back_main';
 
 export default {
   components: { CardTitle, QuestionCircleOutlined },
   props: {
     pairsItem: Object,
+    onClose: Function,
   },
   data() {
     return {
@@ -213,6 +212,13 @@ export default {
         amountIn1: 0,
         liquidity: 0,
         riskValue: 0,
+        addInfo: {
+          amountAfter0: 0,
+          amountAfter1: 0,
+          amountIn0: 0,
+          amountIn1: 0,
+          healthy: 0,
+        },
         tokenA: {
           balance: '',
           scale: '',
@@ -238,8 +244,8 @@ export default {
     async dataInit() {
       this.loading = true;
       try {
-        const addressA = this.pairsItem.tokenA.address;
-        const addressB = this.pairsItem.tokenB.address;
+        const addressA = this.pairsItem.token0;
+        const addressB = this.pairsItem.token1;
         const p1 = await this.getBalanceNum('tokenA', addressA);
         const p2 = await this.getBalanceNum('tokenB', addressB);
         const p3 = await this.getAllowanceFunc('tokenA', addressA);
@@ -267,9 +273,7 @@ export default {
     updateAmount(type) {
       this.form[type].scale = this.form[type].amount / this.form[type].balance;
       let err = '';
-      if (this.form[type].amount === '') {
-        err = `不能为空`;
-      } else if (!+this.form[type].amount && +this.form[type].amount !== 0) {
+      if (!+this.form[type].amount && +this.form[type].amount !== 0) {
         err = `只能为数字`;
       } else if (this.form[type].amount > +this.form[type].balance) {
         err = `钱包余额不足`;
@@ -277,20 +281,47 @@ export default {
         err = `授权额度不足`;
       }
       this.form[type].errorText = err;
-      this.getLiquidityAmountFunc();
+      this.getAddInfo();
     },
+    async getAddInfo() {
+      console.log(
+        '----->参数',
+        this.pairsItem.address,
+        +this.form.tokenA.amount,
+        +this.form.tokenB.amount,
+        this.pairsItem.borrowToken
+      );
+      const res = await getAddInfo(
+        this.pairsItem.address,
+        +this.form.tokenA.amount,
+        +this.form.tokenB.amount,
+        this.pairsItem.borrowToken
+      );
+      this.form.addInfo = res;
+
+      console.log(res);
+    },
+
     async handleOk() {
       if (!this.form.tokenA.errorText && !this.form.tokenB.errorText) {
         // 没有错误提醒时提交,数字为钱包余额
-        const amountA = this.form.tokenA.amount || 0;
-        const amountB = this.form.tokenB.amount || 0;
+        const amountA = this.form.tokenA.amount;
+        const amountB = this.form.tokenB.amount;
         this.loading = true;
+        console.log(
+          this.pairsItem.address,
+          +amountA,
+          +amountB,
+          this.pairsItem.borrowToken,
+          0,
+          Math.floor(+new Date() / 1000) + ''
+        );
         invest(
-          this.pairsItem.pairAddress,
-          amountA,
-          amountB,
-          this.pairsItem.tokenA.address,
-          '0',
+          this.pairsItem.address,
+          +amountA,
+          +amountB,
+          this.pairsItem.borrowToken,
+          0,
           Math.floor(+new Date() / 1000) + '',
           (code, msg) => {
             //  0 小狐狸提交成功
@@ -308,33 +339,10 @@ export default {
         );
       }
     },
-    // 加仓拆分
-    async getLiquidityAmountFunc() {
-      if (!this.form.tokenA.errorText && !this.form.tokenB.errorText) {
-        if (this.form.tokenA.amount || this.form.tokenB.amount) {
-          const res = await getLiquidityAmount(
-            this.pairsItem.tokenA.address,
-            this.pairsItem.tokenB.address,
-            this.form.tokenA.amount || 0,
-            this.form.tokenB.amount || 0
-          );
-          this.form = { ...this.form, ...res.data };
-          // 加仓后风险值
-          // 当前总负债 / (当前总资产 * 爆仓线)
-          const token = this.pairsItem.debtToken;
-          // 总负债
-          const num1 = +this.pairsItem[token].currentTotalDebt * this.pairsItem[token].prices;
-          // 当前总资产
-          const num2 =
-            (+this.pairsItem[token].currentTotalAsset + +this.form.liquidity) * this.pairsItem.LP;
-          this.form.riskValue = (num1 / (num2 * +this.pairsItem.tokenA.clearLine)) * 100;
-        }
-      }
-    },
     // 授权
     approveTokenFunc(token) {
       this.loading = true;
-      approveToken(this.pairsItem[token].address, async (code, msg) => {
+      approveToken(this.pairsItem['token' + token], async (code, msg) => {
         console.log('approve result ', code, msg);
         if (code === 1) {
           await this.dataInit();

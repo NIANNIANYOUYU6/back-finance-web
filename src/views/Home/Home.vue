@@ -47,8 +47,8 @@
     <div class="deposit-account">
       <div class="deposit-account_title">账户持仓</div>
       <a-table
-        rowKey="pairAddress"
-        :dataSource="myList"
+        rowKey="address"
+        :dataSource="userInfoList"
         :columns="myColumns"
         :pagination="false"
         :loading="loading"
@@ -63,23 +63,39 @@
           </a-tooltip>
         </template>
 
-        <template #currentTotalAsset="{ record }">
-          ${{ $tranNumber(record[record.debtToken].currentTotalAsset * record.LP, 2) }}
+        <template #currentTotalAsset="{ text, record }">
+          ${{ $tranNumber(text, 2) }}
           <a-tooltip placement="right">
             <template #title>
               LP预估:
               <span>{{
-                $tranNumber(record[record.debtToken].supplyNumberA, 4) +
-                record.tokenA.symbol +
+                $tranNumber(record.amount0, 4) +
+                record.symbol0 +
                 '+' +
-                $tranNumber(record[record.debtToken].supplyNumberB, 4) +
-                record.tokenB.symbol
+                $tranNumber(record.amount1, 4) +
+                record.symbol1
               }}</span>
             </template>
             <InfoCircleOutlined />
           </a-tooltip>
         </template>
 
+        <template #totalDebt="{ text, record }">
+          ${{ $tranNumber(text, 2) }}
+          <a-tooltip placement="right">
+            <template #title>
+              负债:
+              <span>{{
+                $tranNumber(record.debtAmount, 4) +
+                record.borrowSymbol +
+                '+' +
+                $tranNumber(record.debtInterest, 4) +
+                record.borrowSymbol
+              }}</span>
+            </template>
+            <InfoCircleOutlined />
+          </a-tooltip>
+        </template>
         <template #action="{ record }">
           <a-button
             style="margin-right: 10px"
@@ -111,7 +127,7 @@
     <div class="deposit-account">
       <div class="deposit-account_title">全部</div>
       <a-table
-        rowKey="pairAddress"
+        rowKey="address"
         :dataSource="pairsList"
         :columns="pairsColumns"
         :pagination="false"
@@ -121,42 +137,48 @@
           <span>收益率APY</span>
           <a-tooltip placement="right">
             <template #title>
-              <span>流动性挖矿APY * 杠杆率+平台挖矿APY-借款AP</span>
+              <span>流动性挖矿APY * 杠杆率+平台挖矿APY-借款APY</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
         </template>
         <template #pairEarningsAPY="{ record }">
           <div>
-            <div
-              >{{
+            <div>
+              {{
                 $tranNumber(
-                  (record[record.debtToken].liquidityMiningAPY * record.debtRatio +
-                    (record.debtRatio - 1) * +record[record.debtToken].platformMiningAPY -
-                    (record.debtRatio - 1) * +record[record.debtToken].debtAPY) *
+                  (record.debtRatio * record.liquidityAPY +
+                    (record.debtRatio - 1) * record['platformAPY' + record.debtToken] -
+                    (record.debtRatio - 1) * record['interestAPY' + record.debtToken]) *
                     100,
                   2
                 )
               }}%
               <span style="text-decoration: line-through">
-                {{ $tranNumber(record[record.debtToken].liquidityMiningAPY * 100, 2) }}%
+                {{
+                  $tranNumber(
+                    (record.leverageRate * record.liquidityAPY +
+                      (record.leverageRate - 1) * record['platformAPY' + record.debtToken] -
+                      (record.leverageRate - 1) * record['interestAPY' + record.debtToken]) *
+                      100,
+                    2
+                  )
+                }}%
               </span>
             </div>
             <div>
+              {{ $tranNumber(record.debtRatio * record.liquidityAPY * 100, 2) }}% +
               {{
                 $tranNumber(
-                  record.debtRatio * record[record.debtToken].liquidityMiningAPY * 100,
-                  2
-                )
-              }}% +
-              {{
-                $tranNumber(
-                  (record.debtRatio - 1) * +record[record.debtToken].platformMiningAPY * 100,
+                  (record.debtRatio - 1) * record['platformAPY' + record.debtToken] * 100,
                   2
                 )
               }}% -
               {{
-                $tranNumber((record.debtRatio - 1) * +record[record.debtToken].debtAPY * 100, 2)
+                $tranNumber(
+                  (record.debtRatio - 1) * record['interestAPY' + record.debtToken] * 100,
+                  2
+                )
               }}%
             </div>
           </div>
@@ -176,18 +198,18 @@
         <template #debtToken="{ record }">
           <span
             class="debtToken"
-            :class="{ 'debtToken-active': record.debtToken === 'tokenA' }"
-            @click="record.debtToken = 'tokenA'"
+            :class="{ 'debtToken-active': record.debtToken === '0' }"
+            @click="record.debtToken = '0'"
           >
-            {{ record.tokenA.symbol }}
+            {{ record.symbol0 }}
           </span>
           /
           <span
             class="debtToken"
-            :class="{ 'debtToken-active': record.debtToken === 'tokenB' }"
-            @click="record.debtToken = 'tokenB'"
+            :class="{ 'debtToken-active': record.debtToken === '1' }"
+            @click="record.debtToken = '1'"
           >
-            {{ record.tokenB.symbol }}
+            {{ record.symbol1 }}
           </span>
         </template>
 
@@ -196,7 +218,7 @@
             class="lever-item"
             v-model:value="record.debtRatio"
             :min="1"
-            :max="+record.maxDebtRatio"
+            :max="+record.leverageRate"
             :marks="record.marks"
             :step="null"
           />
@@ -234,7 +256,7 @@ import { QuestionCircleOutlined, InfoCircleOutlined } from '@ant-design/icons-vu
 import { lever } from '../../common/const.js';
 
 // 引入方法
-import { queryPairsList } from '../../common/src/back_main';
+import { getPairList, getUserInfoList, fetchData } from '../../common/src/back_main';
 
 export default {
   components: {
@@ -248,28 +270,27 @@ export default {
   },
   data() {
     return {
-      aaaaa: 1,
       openCardMode: '',
       pairsList: [],
-      myList: [],
+      userInfoList: [],
       loading: false,
       myColumns: [
         {
           title: '矿池',
-          dataIndex: 'source',
+          dataIndex: 'swapperName',
           width: 160,
           customRender: ({ text, record }) => {
             return {
               children: (
                 <div style="display:flex ">
                   <div style="height: 20px;line-height: 44px;margin-right:10px">
-                    <img class="b-icon" src={'./img/icon/' + record.tokenA.symbol + '.png'} />
-                    <img class="b-icon" src={'./img/icon/' + record.tokenB.symbol + '.png'} />
+                    <img class="b-icon" src={'./img/icon/' + record.symbol0 + '.png'} />
+                    <img class="b-icon" src={'./img/icon/' + record.symbol1 + '.png'} />
                   </div>
                   <div>
                     <div>{text}</div>
                     <div>
-                      {record.tokenA.symbol}/{record.tokenB.symbol}
+                      {record.symbol0}/{record.symbol1}
                     </div>
                   </div>
                 </div>
@@ -279,18 +300,15 @@ export default {
         },
         {
           title: '借贷币种',
-          dataIndex: 'debtToken',
+          dataIndex: 'borrowSymbol',
           align: 'center',
-          customRender: ({ text, record }) => {
+          customRender: ({ text }) => {
             text;
             return {
               children: (
                 <div>
-                  <img
-                    class="b-icon"
-                    src={'./img/icon/' + record[record.debtToken].symbol + '.png'}
-                  />
-                  <span class="b-icon-name">{record[record.debtToken].symbol}</span>
+                  <img class="b-icon" src={'./img/icon/' + text + '.png'} />
+                  <span class="b-icon-name">{text}</span>
                 </div>
               ),
             };
@@ -298,51 +316,39 @@ export default {
         },
         {
           title: '当前总资产',
-          dataIndex: 'currentTotalAsset',
+          dataIndex: 'totalAssets',
           align: 'center',
           slots: { customRender: 'currentTotalAsset' },
         },
         {
           title: '当前总负债',
-          dataIndex: 'currentTotalDebt',
+          dataIndex: 'totalDebt',
           align: 'center',
-          customRender: ({ text, record }) => {
-            text;
-            const num =
-              (+record[record.debtToken].currentTotalDebt + +record[record.debtToken].interest) *
-              record[record.debtToken].prices;
-            return {
-              children: <div>${this.$tranNumber(num, 2)}</div>,
-            };
-          },
+          slots: { customRender: 'totalDebt' },
         },
         {
           title: '待领取挖矿收益',
-          dataIndex: 'Mdex',
+          dataIndex: 'pendingReward',
           align: 'center',
           customRender: ({ text, record }) => {
             text;
             return {
-              children: <div>{record[record.debtToken].Mdex}</div>,
+              children: (
+                <div>
+                  {this.$tranNumber(text, 2)} {record.rewardSymbol}
+                </div>
+              ),
             };
           },
         },
         {
           // 风险值
-          dataIndex: 'earningsAPY',
-          align: 'clearLine',
+          dataIndex: 'healthy',
+          align: 'center',
           slots: { title: 'debtTooltip' },
-          customRender: ({ text, record }) => {
-            text;
-            const num = +record[record.debtToken].currentTotalAsset
-              ? ((+record[record.debtToken].currentTotalDebt * +record[record.debtToken].prices) /
-                  (+record[record.debtToken].currentTotalAsset *
-                    +record.LP *
-                    +record[record.debtToken].clearLine)) *
-                100
-              : 0;
+          customRender: ({ text }) => {
             return {
-              children: <div>{this.$tranNumber(num, 2)}</div>,
+              children: <div>{this.$tranNumber(text * 100, 2)}</div>,
             };
           },
         },
@@ -356,20 +362,20 @@ export default {
       pairsColumns: [
         {
           title: '矿池',
-          dataIndex: 'source',
+          dataIndex: 'swapperName',
           width: 170,
           customRender: ({ text, record }) => {
             return {
               children: (
                 <div style="display:flex ">
                   <div style="height: 20px;line-height: 44px;margin-right:10px">
-                    <img class="b-icon" src={'./img/icon/' + record.tokenA.symbol + '.png'} />
-                    <img class="b-icon" src={'./img/icon/' + record.tokenB.symbol + '.png'} />
+                    <img class="b-icon" src={'./img/icon/' + record.symbol0 + '.png'} />
+                    <img class="b-icon" src={'./img/icon/' + record.symbol1 + '.png'} />
                   </div>
                   <div>
                     <div>{text}</div>
                     <div>
-                      {record.tokenA.symbol}/{record.tokenB.symbol}
+                      {record.symbol0}/{record.symbol1}
                     </div>
                   </div>
                 </div>
@@ -387,17 +393,17 @@ export default {
           title: '总锁仓Token',
           dataIndex: 'Token',
           customRender: ({ text, record }) => {
+            text;
             return {
               children: (
                 <div>
-                  {text}
                   <div>
-                    <img class="b-icon" src={'./img/icon/' + record.tokenA.symbol + '.png'} />
-                    {this.$tranNumber(record.tokenA.totalLockedPosition, 4)}
+                    <img class="b-icon" src={'./img/icon/' + record.symbol0 + '.png'} />
+                    <span style="margin-left:10px">{this.$tranNumber(record.amount0, 4)}</span>
                   </div>
                   <div>
-                    <img class="b-icon" src={'./img/icon/' + record.tokenB.symbol + '.png'} />
-                    {this.$tranNumber(record.tokenB.totalLockedPosition, 4)}
+                    <img class="b-icon" src={'./img/icon/' + record.symbol1 + '.png'} />
+                    <span style="margin-left:10px">{this.$tranNumber(record.amount1, 4)}</span>
                   </div>
                 </div>
               ),
@@ -427,39 +433,33 @@ export default {
   },
   created() {
     if (this.$store.state.updatePage) {
-      this.getPairsList();
+      this.getInfo();
     }
   },
   methods: {
-    async getPairsList() {
+    async getInfo() {
       this.loading = true;
       try {
-        const res = (await queryPairsList()).data;
-        console.log('home--->', res);
-        this.pairsList = res.map((item) => {
-          item.marks = lever[item.maxDebtRatio];
-          item.debtRatio = +item.maxDebtRatio;
-          item.debtToken = 'tokenA';
-          return item;
-        });
-        this.myList = [];
-        res.forEach((item) => {
-          if (+item.tokenA.currentTotalAsset || +item.tokenA.interest) {
-            this.myList.push({
-              ...item,
-              debtToken: 'tokenA',
-            });
-          }
-          if (+item.tokenB.currentTotalAsset || +item.tokenB.interest) {
-            this.myList.push({
-              ...item,
-              debtToken: 'tokenB',
-            });
-          }
-        });
+        await fetchData();
+        await Promise.all([this.getPairList(), this.getUserInfoList()]);
       } finally {
         this.loading = false;
       }
+    },
+    async getPairList() {
+      const res = await getPairList();
+      console.log('getPairList--->', res);
+      this.pairsList = res.map((item) => {
+        item.marks = lever[item.leverageRate];
+        item.debtRatio = +item.leverageRate;
+        item.debtToken = '0';
+        return item;
+      });
+    },
+    async getUserInfoList() {
+      const res = await getUserInfoList();
+      console.log('getUserInfoList--->', res);
+      this.userInfoList = res;
     },
     openCard(item, type) {
       this.pairsItem = item;
@@ -469,7 +469,7 @@ export default {
       this.openCardMode = '';
       this.pairsItem = {};
       if (type) {
-        this.getPairsList();
+        this.getInfo();
         // 更新totle
         this.$store.commit('setState', { updatePage: +new Date() });
       }

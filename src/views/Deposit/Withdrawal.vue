@@ -85,6 +85,7 @@ import { getTokenAddress, getBalance, withdraw } from '../../common/src/back_mai
 export default {
   props: {
     depositItem: Object,
+    onClose: Function,
   },
   data() {
     return {
@@ -135,9 +136,7 @@ export default {
     handleOk() {
       if (!this.errorText) {
         this.loading = true;
-        // 转账金额为字符串格式的
-        const num = this.amount + '';
-        withdraw(this._address, num, (code, msg) => {
+        withdraw(this._address, +this.amount, (code, msg) => {
           //  0 小狐狸提交成功
           //  1 区块链确认成功
           console.log('deposit ---->', code, msg);

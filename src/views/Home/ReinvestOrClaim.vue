@@ -24,9 +24,9 @@
     <template #title>
       <CardTitle
         :title="{
-          source: pairsItem.source,
-          tokenA: pairsItem.tokenA.symbol,
-          tokenB: pairsItem.tokenB.symbol,
+          swapperName: pairsItem.swapperName,
+          tokenA: pairsItem.symbol0,
+          tokenB: pairsItem.symbol1,
           name: '复投/收获',
         }"
       />
@@ -34,9 +34,9 @@
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          挖矿收益 : 0
-          <!-- {{ $tranNumber(pairsItem[pairsItem.debtToken].interest, 4) }} -->
-          {{ pairsItem.source }}
+          挖矿收益 :
+          {{ $tranNumber(pairsItem.pendingReward, 4) }}
+          {{ pairsItem.rewardSymbol }}
         </div>
         <div class="line-h-40">
           复投仓位拆分明细
@@ -47,7 +47,7 @@
             <QuestionCircleOutlined />
           </a-tooltip>
 
-          : {{ pairsItem.tokenA.symbol }} + {{ pairsItem.tokenB.symbol }}
+          : {{ pairsItem.symbol0 }} + {{ pairsItem.symbol1 }}
         </div>
         <div class="line-h-40"> 复投后风险值 : </div>
         <div class="line-h-40 prompt-text">
@@ -58,7 +58,9 @@
 
       <div class="deposit-card-footer">
         <div class="deposit-card-footer_button">
-          <a-button type="primary" @click="claimFunc()">收获</a-button>
+          <a-button type="primary" :disabled="pairsItem.pendingReward === 0" @click="claimFunc()"
+            >收获</a-button
+          >
           <a-button type="primary" @click="handleOk">复投</a-button>
         </div>
         <div class="deposit-card-footer_text"
@@ -66,7 +68,7 @@
           <a-button type="link">
             {{ $tranNumber(form.balance, 8) }}
           </a-button>
-          {{ pairsItem[pairsItem.debtToken].symbol }}</div
+          {{ pairsItem.borrowSymbol }}</div
         >
       </div>
     </a-spin>
@@ -77,12 +79,13 @@ import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
 import { QuestionCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons-vue';
 
-import { reinvest, getBalance, claim, getReinvestAmount } from '../../common/src/back_main';
+import { reinvest, getBalance, claim } from '../../common/src/back_main';
 
 export default {
   components: { CardTitle, QuestionCircleOutlined, ExclamationCircleFilled },
   props: {
     pairsItem: Object,
+    onClose: Function,
   },
   data() {
     return {
@@ -96,24 +99,12 @@ export default {
   },
   mounted() {
     this.dataInit();
-    this.getReinvestAmountFunc();
   },
   methods: {
-    async getReinvestAmountFunc() {
-      console.log(1, this.pairsItem.tokenA.address, this.pairsItem.tokenB.address);
-      const res = await getReinvestAmount(
-        1,
-        this.pairsItem.tokenA.address,
-        this.pairsItem.tokenB.address
-      );
-      console.log(res);
-    },
     async dataInit() {
       this.loading = true;
       try {
-        const debtToken = this.pairsItem.debtToken;
-        const address = this.pairsItem[debtToken].address;
-        await this.getBalanceNum(address);
+        await this.getBalanceNum();
       } catch (error) {
         console.log('getBalance  error');
       } finally {
@@ -121,16 +112,15 @@ export default {
       }
     },
     // 查询币的余额
-    async getBalanceNum(address) {
-      this.form.balance = await getBalance(address);
+    async getBalanceNum() {
+      this.form.balance = await getBalance(this.pairsItem.borrowToken);
     },
     // 复投
     async handleOk() {
-      const token_address = this.pairsItem[this.pairsItem.debtToken].address;
       this.loading = true;
       reinvest(
-        this.pairsItem.pairAddress,
-        token_address,
+        this.pairsItem.address,
+        this.pairsItem.borrowToken,
         Math.floor(+new Date() / 1000) + '',
         (code, msg) => {
           //  0 小狐狸提交成功
@@ -150,20 +140,16 @@ export default {
     // 收获
     claimFunc() {
       this.loading = true;
-      claim(
-        this.pairsItem.pairAddress,
-        this.pairsItem[this.pairsItem.debtToken].address,
-        async (code, msg) => {
-          console.log('approve result ', code, msg);
-          if (code === 1) {
-            this.$emit('close', 'update');
-          } else if (code !== 0) {
-            // 发生错误时
-            message.error(msg);
-            this.loading = false;
-          }
+      claim(this.pairsItem.address, this.pairsItem.borrowToken, async (code, msg) => {
+        console.log('approve result ', code, msg);
+        if (code === 1) {
+          this.$emit('close', 'update');
+        } else if (code !== 0) {
+          // 发生错误时
+          message.error(msg);
+          this.loading = false;
         }
-      );
+      });
     },
   },
 };

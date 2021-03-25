@@ -135,6 +135,7 @@ export default {
   components: { BorderCard },
   props: {
     title: Object,
+    onHandleLoad: Function,
   },
   computed: {
     account() {

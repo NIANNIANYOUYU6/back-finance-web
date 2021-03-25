@@ -102,7 +102,7 @@ import DepositCard from './DepositCard';
 import { ExclamationCircleFilled, QuestionCircleOutlined } from '@ant-design/icons-vue';
 
 // 引入方法
-import { getAssetsList } from '../../common/src/back_main';
+import { getAssetsList, fetchData } from '../../common/src/back_main';
 
 export default {
   components: { Withdrawal, DepositCard, ExclamationCircleFilled, QuestionCircleOutlined },
@@ -275,6 +275,7 @@ export default {
     async getAssetList() {
       this.loading = true;
       try {
+        await fetchData();
         const res = await getAssetsList();
         this.assetList = res;
         console.log('存款列表获取---》', res);

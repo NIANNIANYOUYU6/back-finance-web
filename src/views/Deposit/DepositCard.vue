@@ -82,6 +82,7 @@ import {
 export default {
   props: {
     depositItem: Object,
+    onClose: Function,
   },
   data() {
     return {
@@ -116,7 +117,6 @@ export default {
     // 获取授权额度
     async getAllowanceFunc() {
       this.allowance = await getAllowance(this._address);
-      console.log(' this.allowance', this.allowance);
     },
     switchScale(scale) {
       this.amount = this.balance * scale;
@@ -144,7 +144,7 @@ export default {
         deposit(this._address, num, (code, msg) => {
           //  0 小狐狸提交成功
           //  1 区块链确认成功
-          console.log('deposit err---->', code, msg);
+          console.log('deposit ---->', code, msg);
           if (code === 1) {
             this.loading = false;
             this.$emit('close', 'update');

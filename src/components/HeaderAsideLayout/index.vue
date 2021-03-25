@@ -29,7 +29,7 @@ export default {
         totalLock: 0,
         totalDeposit: 0,
         totalBorrow: 0,
-        backPrice: 0.4,
+        backPrice: 0,
         backSupply: 0,
       },
     };

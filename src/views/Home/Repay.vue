@@ -24,9 +24,9 @@
     <template #title>
       <CardTitle
         :title="{
-          source: pairsItem.source,
-          tokenA: pairsItem.tokenA.symbol,
-          tokenB: pairsItem.tokenB.symbol,
+          swapperName: pairsItem.swapperName,
+          tokenA: pairsItem.symbol0,
+          tokenB: pairsItem.symbol1,
           name: '还贷',
         }"
       />
@@ -34,14 +34,20 @@
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          当前总负债 : {{ currentTotalDebt }}
-          {{ pairsItem[pairsItem.debtToken].symbol }}
+          当前总负债 :
+          {{
+            $tranNumber(pairsItem.debtAmount, 4) +
+            pairsItem.borrowSymbol +
+            '+' +
+            $tranNumber(pairsItem.debtInterest, 4) +
+            pairsItem.borrowSymbol
+          }}
         </div>
         <div style="display: flex">
           <span>还贷</span>
           <div style="flex: 1; margin-left: 10px">
             <a-input
-              :suffix="pairsItem[pairsItem.debtToken].symbol"
+              :suffix="pairsItem.borrowSymbol"
               v-model:value="form.amount"
               :placeholder="currentTotalDebt"
               @change="updateAmount()"
@@ -64,10 +70,26 @@
           </div>
         </div>
         <div class="line-h-40">
-          还贷后负债 : {{ currentTotalDebt - form.amount }}
-          {{ pairsItem[pairsItem.debtToken].symbol }}
+          还贷数量 :
+          {{
+            $tranNumber(form.borrowRepay, 4) +
+            pairsItem.borrowSymbol +
+            '+' +
+            $tranNumber(form.interestRepay, 4) +
+            pairsItem.borrowSymbol
+          }}
         </div>
-        <div class="line-h-40" v-if="form.amount">
+        <div class="line-h-40">
+          还贷后负债 :
+          {{
+            $tranNumber(form.borrowRemain, 4) +
+            pairsItem.borrowSymbol +
+            '+' +
+            $tranNumber(form.interestRemain, 4) +
+            pairsItem.borrowSymbol
+          }}
+        </div>
+        <div class="line-h-40">
           还贷后风险值
           <a-tooltip placement="top">
             <template #title>
@@ -75,7 +97,7 @@
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
-          : {{ $tranNumber(form.riskValue, 2) }}
+          : {{ $tranNumber(form.health * 100, 2) }}
         </div>
       </div>
       <div class="deposit-card-footer">
@@ -83,7 +105,7 @@
           <a-button
             :disabled="form.allowance && form.errorText !== '授权额度不足'"
             type="primary"
-            @click="approveTokenFunc(pairsItem.debtToken)"
+            @click="approveTokenFunc()"
             >授权</a-button
           >
           <a-button :disabled="!!form.errorText" type="primary" @click="handleOk">确认</a-button>
@@ -93,7 +115,7 @@
           <a-button type="link">
             {{ $tranNumber(form.balance, 8) }}
           </a-button>
-          {{ pairsItem[pairsItem.debtToken].symbol }}</div
+          {{ pairsItem.borrowSymbol }}</div
         >
       </div>
     </a-spin>
@@ -109,26 +131,29 @@ import {
   getAllowance,
   approveToken,
   getBalance,
-  getLiquidityAmount,
-  getTokenPrices,
+  getRepayInfo,
 } from '../../common/src/back_main';
 
 export default {
   components: { CardTitle, QuestionCircleOutlined },
   props: {
     pairsItem: Object,
+    onClose: Function,
   },
   data() {
     return {
       balance: '',
       loading: false,
       scale: '',
+      currentTotalDebt: 0,
       form: {
-        amountIn0: 0,
-        amountIn1: 0,
-        liquidity: 0,
-        riskValue: 0,
-        pricesLP: 0,
+        borrowAmount: 0,
+        interestAmount: 0,
+        borrowRepay: 0,
+        interestRepay: 0,
+        borrowRemain: 0,
+        interestRemain: 0,
+        health: 0,
         balance: '',
         amount: '',
         allowance: '',
@@ -137,20 +162,19 @@ export default {
     };
   },
   mounted() {
-    this.currentTotalDebt = this.pairsItem[this.pairsItem.debtToken].currentTotalDebt;
     this.dataInit();
   },
   methods: {
     async dataInit() {
       this.loading = true;
       try {
-        const debtToken = this.pairsItem.debtToken;
-        const address = this.pairsItem[debtToken].address;
+        this.currentTotalDebt = this.pairsItem.debtAmount + this.pairsItem.debtInterest;
+        const address = this.pairsItem.borrowToken;
         const p1 = await this.getBalanceNum(address);
         const p2 = await this.getAllowanceFunc(address);
-        const p3 = await this.getPrices();
+
         // 同步加载数据
-        await Promise.all([p1, p2, p3]);
+        await Promise.all([p1, p2, this.getRepayInfo()]);
       } catch (error) {
         console.log('getBalance or getAllowance error');
       } finally {
@@ -164,10 +188,6 @@ export default {
     async getAllowanceFunc(address) {
       // 获取授权额度
       this.form.allowance = await getAllowance(address);
-    },
-    // 获取lp价格
-    async getPrices() {
-      this.form.pricesLP = await getTokenPrices('LP');
     },
     switchScale(scale) {
       this.form.amount = this.currentTotalDebt * scale;
@@ -188,14 +208,14 @@ export default {
         err = `授权额度不足`;
       }
       this.form.errorText = err;
-      this.getLiquidityAmountFunc();
+      this.getRepayInfo();
     },
     async handleOk() {
       if (!this.form.errorText) {
-        const token_address = this.pairsItem[this.pairsItem.debtToken].address;
+        const token_address = this.pairsItem.borrowToken;
         const amount = this.form.amount || this.currentTotalDebt;
         this.loading = true;
-        repay(this.pairsItem.pairAddress, token_address, amount, (code, msg) => {
+        repay(this.pairsItem.address, token_address, +amount, (code, msg) => {
           //  0 小狐狸提交成功
           //  1 区块链确认成功
           console.log('repay err---->', code, msg);
@@ -211,31 +231,23 @@ export default {
       }
     },
     // 还贷拆分
-    async getLiquidityAmountFunc() {
-      const amountA = this.pairsItem.debtToken === 'tokenA' ? this.form.amount : 0;
-      const amountB = this.pairsItem.debtToken === 'tokenB' ? this.form.amount : 0;
+    // getRepayInfo(pairAddress, borrowToken, amountRepay) {
+
+    async getRepayInfo() {
       if (!this.form.errorText) {
-        const res = await getLiquidityAmount(
-          this.pairsItem.tokenA.address,
-          this.pairsItem.tokenB.address,
-          amountA || 0,
-          amountB || 0
+        const res = await getRepayInfo(
+          this.pairsItem.address,
+          this.pairsItem.borrowToken,
+          this.form.amount
         );
-        this.form = { ...this.form, ...res.data };
-        // 还贷后风险值
-        // (当前负债-还的)/((当前总资产*清仓线)
-        // 当前负债-还的
-        const token = this.pairsItem.debtToken;
-        const num1 = (this.currentTotalDebt - this.form.amount) * this.pairsItem[token].prices;
-        // 当前总资产
-        const num2 = +this.pairsItem[token].currentTotalAsset * this.pairsItem.LP;
-        this.form.riskValue = (num1 / (num2 * +this.pairsItem.tokenA.clearLine)) * 100;
+        console.log(res);
+        this.form = { ...this.form, ...res };
       }
     },
     // 授权
-    approveTokenFunc(token) {
+    approveTokenFunc() {
       this.loading = true;
-      approveToken(this.pairsItem[token].address, async (code, msg) => {
+      approveToken(this.pairsItem.borrowToken, async (code, msg) => {
         console.log('approve result ', code, msg);
         if (code === 1) {
           await this.dataInit();

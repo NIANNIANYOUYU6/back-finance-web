@@ -24,9 +24,9 @@
     <template #title>
       <CardTitle
         :title="{
-          source: pairsItem.source,
-          tokenA: pairsItem.tokenA.symbol,
-          tokenB: pairsItem.tokenB.symbol,
+          swapperName: pairsItem.swapperName,
+          tokenA: pairsItem.symbol0,
+          tokenB: pairsItem.symbol1,
           name: '撤资',
         }"
       />
@@ -34,10 +34,9 @@
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          当前总资产 : {{ $tranNumber(pairsItem[pairsItem.debtToken].supplyNumberA, 4) }}
-          {{ pairsItem.tokenA.symbol }} +
-          {{ $tranNumber(pairsItem[pairsItem.debtToken].supplyNumberB, 4) }}
-          {{ pairsItem.tokenB.symbol }}
+          当前总资产 : {{ $tranNumber(pairsItem.amount0, 4) }} {{ pairsItem.symbol0 }} +
+          {{ $tranNumber(pairsItem.amount1, 4) }}
+          {{ pairsItem.symbol1 }}
         </div>
         <div style="display: flex">
           <div>撤资比例 : </div>
@@ -52,28 +51,28 @@
             <div class="select-percentage">
               <a-button
                 size="small"
-                @click="form.radio = 25"
+                @click="(form.radio = 25), getDivestInfo()"
                 :class="{ active: form.radio === 25 }"
               >
                 25%
               </a-button>
               <a-button
                 size="small"
-                @click="form.radio = 50"
+                @click="(form.radio = 50), getDivestInfo()"
                 :class="{ active: form.radio === 50 }"
               >
                 50%
               </a-button>
               <a-button
                 size="small"
-                @click="form.radio = 75"
+                @click="(form.radio = 75), getDivestInfo()"
                 :class="{ active: form.radio === 75 }"
               >
                 75%
               </a-button>
               <a-button
                 size="small"
-                @click="form.radio = 100"
+                @click="(form.radio = 100), getDivestInfo()"
                 :class="{ active: form.radio === 100 }"
               >
                 100%
@@ -83,15 +82,19 @@
         </div>
         <div class="line-h-40">
           撤资资产 :
-          {{ $tranNumber((pairsItem[pairsItem.debtToken].supplyNumberA * form.radio) / 100, 4) }}
-          {{ pairsItem.tokenA.symbol }} +
-          {{ $tranNumber((pairsItem[pairsItem.debtToken].supplyNumberB * form.radio) / 100, 4) }}
-          {{ pairsItem.tokenB.symbol }}
-        </div>
-        <div class="line-h-40">
-          撤资后负债 :
-          {{ (pairsItem[pairsItem.debtToken].currentTotalDebt * (100 - form.radio)) / 100 }}
-          {{ pairsItem[pairsItem.debtToken].symbol }}
+          {{ $tranNumber(form.amount0, 4) }}
+          {{ pairsItem.symbol0 }} +
+          {{ $tranNumber(form.amount1, 4) }}
+          {{ pairsItem.symbol1 }}
+          <a-tooltip placement="top">
+            <template #title>
+              <span
+                >负债 :{{ $tranNumber(form.amountToPay, 4) + pairsItem.borrowSymbol }}+
+                {{ $tranNumber(form.interestToPay, 4) + pairsItem.borrowSymbol }}</span
+              >
+            </template>
+            <QuestionCircleOutlined />
+          </a-tooltip>
         </div>
         <div class="line-h-40">
           撤资资产选择
@@ -105,24 +108,24 @@
           <div class="select-percentage" style="display: contents">
             <a-button
               size="small"
-              @click="(form.type = 'default'), getDivestAmountFunc()"
+              @click="(form.type = 'default'), getDivestInfo()"
               :class="{ active: form.type === 'default' }"
             >
               默认
             </a-button>
             <a-button
               size="small"
-              @click="(form.type = 'tokenA'), getDivestAmountFunc()"
-              :class="{ active: form.type === 'tokenA' }"
+              @click="(form.type = '0'), getDivestInfo()"
+              :class="{ active: form.type === '0' }"
             >
-              {{ pairsItem.tokenA.symbol }}
+              {{ pairsItem.symbol0 }}
             </a-button>
             <a-button
               size="small"
-              @click="(form.type = 'tokenB'), getDivestAmountFunc()"
-              :class="{ active: form.type === 'tokenB' }"
+              @click="(form.type = '1'), getDivestInfo()"
+              :class="{ active: form.type === '1' }"
             >
-              {{ pairsItem.tokenB.symbol }}
+              {{ pairsItem.symbol1 }}
             </a-button>
           </div>
         </div>
@@ -134,9 +137,9 @@
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
-          : {{ $tranNumber(form.amount0, 4) }}{{ pairsItem.tokenA.symbol }} +
-          {{ $tranNumber(form.amount1, 0) }}
-          {{ pairsItem.tokenB.symbol }}
+          : {{ $tranNumber(form.amountOut0, 4) }}{{ pairsItem.symbol0 }} +
+          {{ $tranNumber(form.amountOut1, 0) }}
+          {{ pairsItem.symbol1 }}
         </div>
       </div>
       <div class="deposit-card-footer">
@@ -150,12 +153,13 @@ import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
 import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
-import { divest, getLiquidityAmount, getDivestAmount } from '../../common/src/back_main';
+import { divest, getDivestInfo } from '../../common/src/back_main';
 
 export default {
   components: { CardTitle, QuestionCircleOutlined },
   props: {
     pairsItem: Object,
+    onClose: Function,
   },
   data() {
     return {
@@ -163,69 +167,64 @@ export default {
       form: {
         amount0: 0,
         amount1: 0,
-        liquidity: 0,
-        type: 'tokenA',
+        type: '0',
         radio: 100,
         errorText: '',
+        amountOut0: 0,
+        amountOut1: 0,
+        amountToPay: 0, //偿还负债本金,
+        interestToPay: 0, // 偿还负债利息,
+        amountBorrowAfter: 0,
+        interestAfter: 0,
       },
     };
   },
   async mounted() {
-    this.getDivestAmountFunc();
+    this.getDivestInfo();
   },
   methods: {
-    async getDivestAmountFunc() {
-      // token0,token1,deptToken,receiveToken,token0Amount,token1Amount,divestAmount
-      const debtToken = this.pairsItem.debtToken;
+    async getDivestInfo() {
       const address = '0x0000000000000000000000000000000000000000';
       const receiveToken =
-        this.form.type === 'default' ? address : this.pairsItem[this.form.type].address;
-      const currentTotalDebt =
-        +this.pairsItem[debtToken].currentTotalDebt + +this.pairsItem[debtToken].interest;
-
-      console.log(
-        this.pairsItem.tokenA.address,
-        this.pairsItem.tokenB.address,
-        this.pairsItem[debtToken].address,
-        receiveToken,
-        (this.pairsItem[debtToken].supplyNumberA * this.form.radio) / 100,
-        (this.pairsItem[debtToken].supplyNumberB * this.form.radio) / 100,
-        (currentTotalDebt * this.form.radio) / 100
+        this.form.type === 'default' ? address : this.pairsItem['token' + this.form.type];
+      const res = await getDivestInfo(
+        this.pairsItem.address,
+        this.form.radio / 100,
+        this.pairsItem.borrowToken,
+        receiveToken
       );
-      const res = await getDivestAmount(
-        this.pairsItem.tokenA.address,
-        this.pairsItem.tokenB.address,
-        this.pairsItem[debtToken].address,
-        receiveToken,
-        (this.pairsItem[debtToken].supplyNumberA * this.form.radio) / 100,
-        (this.pairsItem[debtToken].supplyNumberB * this.form.radio) / 100,
-        (currentTotalDebt * this.form.radio) / 100
-      );
-      Object.assign(this.form, res.data);
-      console.log(res);
+      Object.assign(this.form, res);
     },
     updateAmount() {
       let err = '';
       if (this.form.radio === '' || +this.form.radio === 0) {
         err = `不能为空或零`;
+      } else if (+this.form.radio > 100) {
+        err = `比例最多为100%`;
       } else if (!+this.form.radio) {
         err = `只能为数字`;
       }
       this.form.errorText = err;
-      this.getLiquidityAmountFunc();
-      this.getDivestAmountFunc();
+      this.getDivestInfo();
     },
     async handleOk() {
       if (!this.form.errorText) {
         // 选择默认时,给一个非tokenA和B的地址
         const address = '0x0000000000000000000000000000000000000000';
-        const token_address =
-          this.form.type === 'default' ? address : this.pairsItem[this.form.type].address;
+        const token_address = this.pairsItem['token' + this.form.type] || address;
         this.loading = true;
+        console.log(
+          '-->',
+          this.pairsItem.address,
+          +this.form.radio,
+          this.pairsItem.borrowToken,
+          token_address,
+          Math.floor(+new Date() / 1000) + ''
+        );
         divest(
-          this.pairsItem.pairAddress,
-          this.form.radio,
-          this.pairsItem[this.pairsItem.debtToken].address,
+          this.pairsItem.address,
+          +this.form.radio,
+          this.pairsItem.borrowToken,
           token_address,
           Math.floor(+new Date() / 1000) + '',
           (code, msg) => {
@@ -242,26 +241,6 @@ export default {
             }
           }
         );
-      }
-    },
-    // 撤资拆分
-    async getLiquidityAmountFunc() {
-      const amountA =
-        this.pairsItem.debtToken === 'tokenA'
-          ? (this.pairsItem.tokenA.currentTotalAsset * this.form.radio) / 100
-          : 0;
-      const amountB =
-        this.pairsItem.debtToken === 'tokenB'
-          ? (this.pairsItem.tokenB.currentTotalAsset * this.form.radio) / 100
-          : 0;
-      if (!this.form.errorText) {
-        const res = await getLiquidityAmount(
-          this.pairsItem.tokenA.address,
-          this.pairsItem.tokenB.address,
-          amountA || 0,
-          amountB || 0
-        );
-        this.form = { ...this.form, ...res.data };
       }
     },
   },

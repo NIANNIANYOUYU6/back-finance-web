@@ -69,18 +69,15 @@
       </a-menu-item>
     </a-menu>
     <div class="aside-footer">
-      <a-button class="gradient-bg" @click="getAllRewardFunc" type="primary">
+      <a-button class="gradient-bg" @click="reward = true" type="primary">
         <i class="icon iconfont icon-lingquguanggao pr-10" />
-        {{ $t('Sidebar.button') }}</a-button
-      >
+        {{ $t('Sidebar.button') }}
+      </a-button>
       <a-button class="lang-switch" type="link">
         <i class="icon iconfont icon-caiyouduo_renzhengshuoming-renzhengziliao pr-10" />
-        <a
-          style="color: #35e9ef"
-          href="https://back-finance.gitbook.io/back-finance/"
-          target="new"
-          >{{ $t('Sidebar.docs') }}</a
-        >
+        <a style="color: #35e9ef" href="https://back-finance.gitbook.io/back-finance/" target="new"
+          >{{ $t('Sidebar.docs') }}
+        </a>
       </a-button>
       <a-button class="lang-switch" @click="langSwitch" type="link">
         <i
@@ -91,17 +88,21 @@
         {{ $t('switchLang') }}
       </a-button>
     </div>
+    <Reward v-if="reward" @close="reward = false" />
   </div>
 </template>
 <script>
-import { message } from 'ant-design-vue';
-import { getAllReward } from '../../common/src/back_main';
-
+import Reward from './Reward';
 export default {
+  components: { Reward },
   props: {
     title: Object,
   },
-  data() {},
+  data() {
+    return {
+      reward: false,
+    };
+  },
   computed: {
     selectedKeys() {
       return [this.$route.path] || ['/home'];
@@ -116,16 +117,6 @@ export default {
       if (e.key != this.$route.path) {
         this.$router.push(e.key);
       }
-    },
-    getAllRewardFunc() {
-      getAllReward((code, msg) => {
-        //  0 小狐狸提交成功
-        //  1 区块链确认成功
-        if (code !== 0 && code !== 1) {
-          // 发生错误时
-          message.error(msg);
-        }
-      });
     },
   },
 };

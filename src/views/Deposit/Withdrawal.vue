@@ -117,17 +117,17 @@ export default {
       this.balance = await getBalance(this._address);
     },
     switchScale(scale) {
-      this.amount = this.form.amountSupply * scale;
+      this.amount = this.form.amountDeposit * scale;
       this.updateAmount();
     },
     updateAmount() {
-      this.scale = this.amount / this.form.amountSupply;
+      this.scale = this.amount / this.form.amountDeposit;
       let err = '';
       if (this.amount === '' || +this.amount === 0) {
         err = `不能为空或零`;
       } else if (!+this.amount) {
         err = `只能为数字`;
-      } else if (this.amount > +this.form.amountSupply) {
+      } else if (this.amount > +this.form.amountDeposit) {
         err = `存款余额不足`;
       }
       this.errorText = err;

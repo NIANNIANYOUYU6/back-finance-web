@@ -608,21 +608,21 @@ let mdexAprData = {
     price: 0,
     data: []
 }
-let USDT2MDEXPairContract
+// let USDT2MDEXPairContract
 
-async function fetchMdexApr() {
-    fetch("https://gateway.mdex.cc/v2/mingpool/lps?mdex_chainid=128")
-        .then((res) => res.json())
-        .then((data) => {
-            mdexAprData.data = Object.values(data.result);
-        });
-    if (!USDT2MDEXPairContract) {
-        USDT2MDEXPairContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.MDEX_PAIR, ContractAddress[BACK_MAIN.chainId].usdtmdex);
-    }
-    let { _reserve0, _reserve1 } = await USDT2MDEXPairContract.methods.getReserves().call({ from: BACK_MAIN.account });
-    mdexAprData.price = _reserve0 / _reserve1
-    setTimeout(fetchMdexApr, 10 * 1000);
-}
+// async function fetchMdexApr() {
+//     fetch("https://gateway.mdex.cc/v2/mingpool/lps?mdex_chainid=128")
+//         .then((res) => res.json())
+//         .then((data) => {
+//             mdexAprData.data = Object.values(data.result);
+//         });
+//     if (!USDT2MDEXPairContract) {
+//         USDT2MDEXPairContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.MDEX_PAIR, ContractAddress[BACK_MAIN.chainId].usdtmdex);
+//     }
+//     let { _reserve0, _reserve1 } = await USDT2MDEXPairContract.methods.getReserves().call({ from: BACK_MAIN.account });
+//     mdexAprData.price = _reserve0 / _reserve1
+//     setTimeout(fetchMdexApr, 10 * 1000);
+// }
 
 // console.log(getLPAPR(["USDT/WHT",'WHT/ETH']))
 export function getLPAPR(pariNameArr) {

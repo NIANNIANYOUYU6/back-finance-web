@@ -133,10 +133,11 @@ export default {
           align: 'center',
           slots: { title: 'rewardTooltip' },
           customRender: ({ text, record }) => {
+            text;
             return {
               children: (
                 <div>
-                 <div> {this.$tranNumber((record.depositAPY+record.platformAPY) * 100, 2)}%</div>
+                  <div> {this.$tranNumber((record.depositAPY + record.platformAPY) * 100, 2)}%</div>
                   <div>
                     = {this.$tranNumber(record.depositAPY * 100, 2)}% +
                     {this.$tranNumber(record.platformAPY * 100, 2)}%
@@ -193,10 +194,11 @@ export default {
           align: 'center',
           slots: { title: 'profitTooltip' },
           customRender: ({ text, record }) => {
+            text;
             return {
               children: (
                 <div>
-                  <div> {this.$tranNumber((record.depositAPY+record.platformAPY) * 100, 2)}%</div>
+                  <div> {this.$tranNumber((record.depositAPY + record.platformAPY) * 100, 2)}%</div>
                   <div>
                     = {this.$tranNumber(record.depositAPY * 100, 2)}% +
                     {this.$tranNumber(record.platformAPY * 100, 2)}%
@@ -265,7 +267,9 @@ export default {
     };
   },
   created() {
-    this.getAssetList();
+    if (this.$store.state.updatePage) {
+      this.getAssetList();
+    }
   },
   methods: {
     async getAssetList() {
@@ -287,6 +291,8 @@ export default {
       this.depositItem = {};
       if (type) {
         this.getAssetList();
+        // 更新totle
+        this.$store.commit('setState', { updatePage: +new Date() });
       }
     },
   },

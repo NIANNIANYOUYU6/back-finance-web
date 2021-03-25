@@ -318,12 +318,12 @@ export default {
         },
         {
           title: '待领取挖矿收益',
-          dataIndex: 'interest',
+          dataIndex: 'Mdex',
           align: 'center',
           customRender: ({ text, record }) => {
             text;
             return {
-              children: <div>{this.$tranNumber(record[record.debtToken].interest, 4)}</div>,
+              children: <div>{record[record.debtToken].Mdex}</div>,
             };
           },
         },
@@ -334,13 +334,13 @@ export default {
           slots: { title: 'debtTooltip' },
           customRender: ({ text, record }) => {
             text;
-            const num =
-              ((+record[record.debtToken].currentTotalDebt * +record[record.debtToken].prices) /
-                (+record[record.debtToken].currentTotalAsset *
-                  +record.LP *
-                  +record[record.debtToken].clearLine)) *
-                100 || 0;
-
+            const num = +record[record.debtToken].currentTotalAsset
+              ? ((+record[record.debtToken].currentTotalDebt * +record[record.debtToken].prices) /
+                  (+record[record.debtToken].currentTotalAsset *
+                    +record.LP *
+                    +record[record.debtToken].clearLine)) *
+                100
+              : 0;
             return {
               children: <div>{this.$tranNumber(num, 2)}</div>,
             };
@@ -426,7 +426,9 @@ export default {
     };
   },
   created() {
-    this.getPairsList();
+    if (this.$store.state.updatePage) {
+      this.getPairsList();
+    }
   },
   methods: {
     async getPairsList() {
@@ -468,6 +470,8 @@ export default {
       this.pairsItem = {};
       if (type) {
         this.getPairsList();
+        // 更新totle
+        this.$store.commit('setState', { updatePage: +new Date() });
       }
     },
   },

@@ -3,10 +3,10 @@
 <template>
   <a-layout class="frame">
     <a-layout-sider>
-      <Aside @handleLoad="handleLoad" :title="title" />
+      <Aside :title="title" />
     </a-layout-sider>
     <a-layout>
-      <a-layout-header> <Header :key="timer" :title="title" /></a-layout-header>
+      <a-layout-header> <Header @handleLoad="handleLoad" :title="title" /></a-layout-header>
       <a-layout-content>
         <router-view :key="timer" />
       </a-layout-content>
@@ -34,8 +34,10 @@ export default {
       },
     };
   },
-  created() {
-    this.getTitlesFunc();
+  watch: {
+    '$store.state.updatePage'() {
+      this.getTitlesFunc();
+    },
   },
   methods: {
     async getTitlesFunc() {

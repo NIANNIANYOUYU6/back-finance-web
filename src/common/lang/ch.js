@@ -6,6 +6,7 @@ module.exports = {
     balance: '钱包余额',
     profit: '待领收益',
     button: '领取收益',
+    docs: "产品说明",
     router: {
       title1: '杠杆挖矿',
       title2: '存款市场',

@@ -4,6 +4,7 @@ export default new Vuex.Store({
   state: {
     account: '',
     currentChain: '',
+    updatePage:0
   },
   mutations: {
     // 更新信息

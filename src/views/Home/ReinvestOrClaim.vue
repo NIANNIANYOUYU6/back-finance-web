@@ -34,8 +34,8 @@
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          挖矿收益 :
-          {{ $tranNumber(pairsItem[pairsItem.debtToken].interest, 4) }}
+          挖矿收益 : 0
+          <!-- {{ $tranNumber(pairsItem[pairsItem.debtToken].interest, 4) }} -->
           {{ pairsItem.source }}
         </div>
         <div class="line-h-40">

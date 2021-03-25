@@ -2,35 +2,24 @@
 .aside {
   height: 100%;
   padding: 16px 0;
-  background-color: #161b27;
-  .metaMask-status {
-    color: #fff;
-    line-height: 40px;
-    text-align: center;
-    border-bottom: 1px solid #999;
-  }
+  display: flex;
+  flex-flow: column;
+  background-color: #141031;
+  font-family: 'pmzd' !important;
+  border-right: 1px solid;
+  border-image: linear-gradient(#141031, #35e9ef, #141031) 1;
   .logo {
-    margin: 30px 20px;
+    margin: 10px 20px;
     height: 50px;
     background: rgba(255, 255, 255, 0.2);
     background: url(../../assets/logo.png) no-repeat;
     background-size: contain;
   }
-  .aside-info {
-    padding: 0px 0 40px;
-    color: #fff;
-    display: flex;
-    flex-flow: column;
-    border-bottom: 1px solid #999;
-    .aside-info_item {
-      line-height: 32px;
-      text-align: center;
-      margin-top: 10px;
-    }
-  }
   .aside-menu {
-    background-color: #161b27;
+    flex: 1;
+    background-color: #141031;
     .aside-menu_item {
+      font-size: 16px;
       .icon {
         font-size: 24px;
         line-height: 40px;
@@ -43,45 +32,27 @@
     }
     .ant-menu-item-selected,
     .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
-      background-color: #161b27;
+      background-color: #1f2b4d;
       color: #35e9ef;
     }
   }
-  .lang-switch {
+  .aside-footer {
+    text-align: center;
     padding: 20px;
-    button {
-      color: #fff;
-      background-color: #161b27;
+    .lang-switch {
+      color: #35e9ef;
+      margin-top: 10px;
+    }
+    .ant-btn-primary:hover,
+    .ant-btn-primary:focus {
+      background-image: linear-gradient(to right, #b15ff1, #556cf5);
     }
   }
 }
 </style>
 <template>
   <div class="aside">
-    <div class="metaMask-status">
-      <div v-if="$store.state.account && $store.state.currentChain">
-        <!-- <div> {{ $store.state.account }} </div> -->
-        <div v-if="$store.state.currentChain !== 'BSCTest'"> 请连接到 BSCTest</div>
-        <div v-else> 已连接 {{ $store.state.currentChain }} MetaMask </div>
-      </div>
-      <div v-else @click="connectMetaMask"> 未连接MetaMask,点击连接 </div>
-    </div>
     <div class="logo" />
-    <div class="aside-info">
-      <div class="aside-info_item">
-        <span>{{ $t('Sidebar.balance') }} : </span>
-        <span> {{ $tranNumber(title.backBalance, 2) }} BK</span>
-      </div>
-      <div class="aside-info_item">
-        <span>{{ $t('Sidebar.profit') }} : </span>
-        <span>{{ $tranNumber(title.queryBack, 2) }} BK</span>
-      </div>
-      <div class="aside-info_item" style="margin-top: 10px">
-        <a-button class="gradient-bg" @click="getAllRewardFunc" type="primary" size="small">{{
-          $t('Sidebar.button')
-        }}</a-button>
-      </div>
-    </div>
     <a-menu
       class="aside-menu"
       theme="dark"
@@ -97,8 +68,26 @@
         <span class="aside-menu_name">{{ $t('Sidebar.router.title2') }}</span>
       </a-menu-item>
     </a-menu>
-    <div class="lang-switch">
-      <a-button size="small" @click="langSwitch">
+    <div class="aside-footer">
+      <a-button class="gradient-bg" @click="getAllRewardFunc" type="primary">
+        <i class="icon iconfont icon-lingquguanggao pr-10" />
+        {{ $t('Sidebar.button') }}</a-button
+      >
+      <a-button class="lang-switch" type="link">
+        <i class="icon iconfont icon-caiyouduo_renzhengshuoming-renzhengziliao pr-10" />
+        <a
+          style="color: #35e9ef"
+          href="https://back-finance.gitbook.io/back-finance/"
+          target="new"
+          >{{ $t('Sidebar.docs') }}</a
+        >
+      </a-button>
+      <a-button class="lang-switch" @click="langSwitch" type="link">
+        <i
+          v-if="$t('switchLang') === 'English'"
+          class="icon iconfont icon-zhongyingwenyingwen02-01 pr-10"
+        />
+        <i v-else class="iconfont icon-zhongyingwen2zhongwen" />
         {{ $t('switchLang') }}
       </a-button>
     </div>
@@ -106,11 +95,11 @@
 </template>
 <script>
 import { message } from 'ant-design-vue';
-import { connect, getAllReward,fetchData } from '../../common/src/back_main';
+import { getAllReward } from '../../common/src/back_main';
 
 export default {
   props: {
-    title: String,
+    title: Object,
   },
   data() {},
   computed: {
@@ -118,9 +107,7 @@ export default {
       return [this.$route.path] || ['/home'];
     },
   },
-  created() {
-    this.connectMetaMask();
-  },
+
   methods: {
     langSwitch() {
       this.$i18n.locale = this.$i18n.locale === 'ch' ? 'en' : 'ch';
@@ -139,27 +126,6 @@ export default {
           message.error(msg);
         }
       });
-    },
-    connectMetaMask() {
-      // 开始连接
-      connect((action, data) => {
-        // 监听链的变化
-       
-        this.$store.commit('setState', data);
-        this.$emit('handleLoad');
-      })
-        .then((res) => {
-          if (res.code === 200) {
-            this.$store.commit('setState', res.data);
-          } else if (res.code === -200) {
-            message.error(res.msg);
-          }
-        })
-        .then(fetchData)
-        .then(()=>{
-          // 触发重新获取数据
-          this.$emit('handleLoad');
-        });
     },
   },
 };

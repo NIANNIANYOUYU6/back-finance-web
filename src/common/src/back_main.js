@@ -563,7 +563,7 @@ export async function getPairList() {
             interestAPY0: pair.interestAPY0,
             interestAPY1: pair.interestAPY1,
             swapperName: swapper[pair.pid],
-            liquidityAPY: getLPAPR([getTokenSymbol(pair.token0) + "/" + etTokenSymbol(pair.token1)]),
+            liquidityAPY: getLPAPR([getTokenSymbol(pair.token0) + "/" + getTokenSymbol(pair.token1)]),
         };
         list.push(item);
     }

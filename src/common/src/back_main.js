@@ -91,7 +91,7 @@ export async function fetchData() {
     BACK_MAIN.backInfo = {
         amountPerBlock: convertBigNumberToNormal(info.amountPerBlock),
         price: convertBigNumberToNormal(info.price),
-        totalWeight: convertBigNumberToNormal(info.totalWeight),
+        totalWeight: parseInt(info.totalWeight),
     };
 
     for(let item of infoList) {
@@ -123,7 +123,7 @@ export async function fetchData() {
         pool.totalBorrow = parseFloat(convertBigNumberToNormal(item["totalBorrow"]));
         pool.totalShare = parseFloat(convertBigNumberToNormal(item["totalShare"]));
         pool.totalSupply = parseFloat(convertBigNumberToNormal(item["totalSupply"]));
-        pool.backWeight = 3333;
+        pool.backWeight = parseInt(item["backWeight"]);
         pool.depositPercent = parseInt(item["depositPercent"]);
         BACK_MAIN.poolList.push(pool);
     }
@@ -468,6 +468,7 @@ export async function getAssetsList() {
             address: pool.address,
             token: pool.supplyToken,
             symbol: getTokenSymbol(pool.supplyToken),
+            balance: pool.balance,
             amountDeposit: pool.totalShare === 0 ? 0: pool.balance / pool.totalSupply * pool.totalShare
         }
         list.push(item);
@@ -844,7 +845,7 @@ export async function connect(callback) {//链接metamask
                 currentChain: chainIdDict[BACK_MAIN.chainId] || "not know",
             });
         });
-        // fetchMdexApr()
+        fetchMdexApr()
     } catch (e) {
         console.log(e);
         resMsg.code = -200;
@@ -857,21 +858,21 @@ let mdexAprData = {
     price: 0,
     data: []
 }
-// let USDT2MDEXPairContract
+let USDT2MDEXPairContract
 
-// async function fetchMdexApr() {
-//     fetch("https://gateway.mdex.cc/v2/mingpool/lps?mdex_chainid=128")
-//         .then((res) => res.json())
-//         .then((data) => {
-//             mdexAprData.data = Object.values(data.result);
-//         });
-//     if (!USDT2MDEXPairContract) {
-//         USDT2MDEXPairContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.MDEX_PAIR, ContractAddress[BACK_MAIN.chainId].usdtmdex);
-//     }
-//     let { _reserve0, _reserve1 } = await USDT2MDEXPairContract.methods.getReserves().call({ from: BACK_MAIN.account });
-//     mdexAprData.price = _reserve0 / _reserve1
-//     setTimeout(fetchMdexApr, 10 * 1000);
-// }
+async function fetchMdexApr() {
+    fetch("https://gateway.mdex.cc/v2/mingpool/lps?mdex_chainid=128")
+        .then((res) => res.json())
+        .then((data) => {
+            mdexAprData.data = Object.values(data.result);
+        });
+    if (!USDT2MDEXPairContract) {
+        USDT2MDEXPairContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.MDEX_PAIR, ContractAddress[BACK_MAIN.chainId].usdtmdex);
+    }
+    let { _reserve0, _reserve1 } = await USDT2MDEXPairContract.methods.getReserves().call({ from: BACK_MAIN.account });
+    mdexAprData.price = _reserve0 / _reserve1
+    setTimeout(fetchMdexApr, 10 * 1000);
+}
 
 // console.log(getLPAPR(["USDT/WHT",'WHT/ETH']))
 export function getLPAPR(pariNameArr) {

@@ -241,7 +241,7 @@ export default {
           this.form.amount
         );
         console.log(res);
-        this.form = { ...this.form, ...res };
+        Object.assign(this.form, res);
       }
     },
     // 授权

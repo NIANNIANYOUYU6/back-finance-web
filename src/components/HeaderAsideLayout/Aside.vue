@@ -79,14 +79,14 @@
           >{{ $t('Sidebar.docs') }}
         </a>
       </a-button>
-      <a-button class="lang-switch" @click="langSwitch" type="link">
+      <!-- <a-button class="lang-switch" @click="langSwitch" type="link">
         <i
           v-if="$t('switchLang') === 'English'"
           class="icon iconfont icon-zhongyingwenyingwen02-01 pr-10"
         />
         <i v-else class="iconfont icon-zhongyingwen2zhongwen" />
         {{ $t('switchLang') }}
-      </a-button>
+      </a-button> -->
     </div>
     <Reward v-if="reward" @close="reward = false" />
   </div>

@@ -46,14 +46,14 @@
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
-
-          : {{ pairsItem.symbol0 }} + {{ pairsItem.symbol1 }}
+          :{{ $tranNumber(form.amount0, 4) }} {{ pairsItem.symbol0 }} +
+          {{ $tranNumber(form.amount1, 4) }} {{ pairsItem.symbol1 }}
         </div>
-        <div class="line-h-40"> 复投后风险值 : </div>
+        <!-- <div class="line-h-40"> 复投后风险值 : </div>
         <div class="line-h-40 prompt-text">
           <ExclamationCircleFilled />
           请注意:当风险值超过100时,资产将会被清算
-        </div>
+        </div> -->
       </div>
 
       <div class="deposit-card-footer">
@@ -77,12 +77,12 @@
 <script>
 import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
-import { QuestionCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
-import { reinvest, getBalance, claim } from '../../common/src/back_main';
+import { reinvest, getBalance, claim, getReinvestAmount } from '../../common/src/back_main';
 
 export default {
-  components: { CardTitle, QuestionCircleOutlined, ExclamationCircleFilled },
+  components: { CardTitle, QuestionCircleOutlined },
   props: {
     pairsItem: Object,
     onClose: Function,
@@ -94,6 +94,8 @@ export default {
       scale: '',
       form: {
         balance: '',
+        amount0: 0,
+        amount1: 0,
       },
     };
   },
@@ -104,12 +106,23 @@ export default {
     async dataInit() {
       this.loading = true;
       try {
-        await this.getBalanceNum();
+        await Promise.all([this.getBalanceNum(), this.getReinvestAmountFunc()]);
       } catch (error) {
         console.log('getBalance  error');
       } finally {
         this.loading = false;
       }
+    },
+    async getReinvestAmountFunc() {
+      // 3秒更新一次
+      console.log(this.pairsItem.pendingReward, this.pairsItem.token0, this.pairsItem.token1);
+      const res = await getReinvestAmount(
+        this.pairsItem.pendingReward,
+        this.pairsItem.token0,
+        this.pairsItem.token1
+      );
+      Object.assign(this.form, res.data);
+      console.log(res);
     },
     // 查询币的余额
     async getBalanceNum() {

@@ -62,22 +62,14 @@
 <template>
   <div class="header">
     <div class="header-title">
-      <div
-        class="header-title_link"
-        v-if="$store.state.currentChain === 'BSCTest'"
-        @click="connectMetaMask"
-      >
+      <div class="header-title_link" v-if="$store.state.currentChain === 'BSCTest'">
         <span class="header-title_link-num">{{ $tranNumber(title.backBalance, 2) }} BK</span>
         <a-divider style="background: #333" type="vertical" />
         <span> {{ account }} </span>
         <a-divider style="background: #333" type="vertical" />
         <span> {{ $store.state.currentChain }} </span>
       </div>
-      <div
-        class="header-title_link header-title_link-err"
-        v-else-if="$store.state.account"
-        @click="connectMetaMask"
-      >
+      <div class="header-title_link header-title_link-err" v-else-if="$store.state.account">
         <span>0 BK</span>
         <a-divider style="background: #333" type="vertical" />
         <span> Wrong Network </span>

@@ -128,7 +128,9 @@
       <div class="deposit-account_title">全部</div>
       <a-table
         rowKey="address"
-        :dataSource="pairsList"
+        :dataSource="
+          pairsList.filter((item) => item.address !== '0x1F6E1b2864E430A09ad88e3C9E2cf40463897AD1')
+        "
         :columns="pairsColumns"
         :pagination="false"
         :loading="loading"

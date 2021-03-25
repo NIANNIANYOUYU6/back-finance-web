@@ -138,7 +138,7 @@
             <QuestionCircleOutlined />
           </a-tooltip>
           : {{ $tranNumber(form.amountOut0, 4) }}{{ pairsItem.symbol0 }} +
-          {{ $tranNumber(form.amountOut1, 0) }}
+          {{ $tranNumber(form.amountOut1, 4) }}
           {{ pairsItem.symbol1 }}
         </div>
       </div>
@@ -167,7 +167,7 @@ export default {
       form: {
         amount0: 0,
         amount1: 0,
-        type: '0',
+        type: 'default',
         radio: 100,
         errorText: '',
         amountOut0: 0,

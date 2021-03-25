@@ -9,7 +9,7 @@ export const chainIdDict = {
     128: "HECO",
 }
 export const bourse = {
-    0: "Medex",
+    0: "mdex",
 }
 export const MAXNUM = 9999 * 99999 * 100000;
 export const ContractAddress = {

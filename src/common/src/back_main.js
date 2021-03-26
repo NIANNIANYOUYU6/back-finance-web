@@ -124,7 +124,7 @@ export async function fetchData() {
         pair.borrow0 = parseFloat(convertBigNumberToNormal(item["borrow0"]));
         pair.borrow1 = parseFloat(convertBigNumberToNormal(item["borrow1"]));
         pair.lpSupply = parseFloat(convertBigNumberToNormal(item["lpSupply"]));
-        pair.pid = parseInt(item["pid"]);
+        pair.pid = parseInt(item["pid"]) - 1;
         pair.address = item["pair"];
         pair.reserve0 = parseFloat(convertBigNumberToNormal(item["reserve0"]));
         pair.reserve1 = parseFloat(convertBigNumberToNormal(item["reserve1"]));
@@ -604,6 +604,10 @@ export async function getAddInfo(pairAddress, amount0, amount1, borrowToken) {
     }
 }
 
+export async function getReinvestInfo() {
+    
+}
+
 export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, leverage) {
     let pair = BACK_MAIN.pairList.find(i => i.address === pairAddress);
     let pool0 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token0);
@@ -729,7 +733,6 @@ export async function getDivestInfo(pairAddress, percent, borrowToken, expectTok
         interestAfter: interestAfter
     };
 }
-
 
 export async function getAssetInfo(token_address) {//获取存款信息 及 全部资产
     let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);

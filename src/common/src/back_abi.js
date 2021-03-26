@@ -1950,6 +1950,19 @@ export const BACK_ABI = {
         },
         {
             "inputs": [],
+            "name": "POOL_RESERVE_PERCENT",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "TeamShare",
             "outputs": [
                 {
@@ -2187,6 +2200,19 @@ export const BACK_ABI = {
                 {
                     "internalType": "uint256",
                     "name": "backMinted",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getInterestPerBorrow",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
                     "type": "uint256"
                 }
             ],
@@ -2476,13 +2502,7 @@ export const BACK_ABI = {
                 }
             ],
             "name": "withdraw",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "withdrawAmount",
-                    "type": "uint256"
-                }
-            ],
+            "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
         }
@@ -2503,6 +2523,11 @@ export const BACK_ABI = {
                 {
                     "internalType": "address",
                     "name": "invest",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "airdrop",
                     "type": "address"
                 }
             ],
@@ -2641,6 +2666,32 @@ export const BACK_ABI = {
         },
         {
             "inputs": [],
+            "name": "boardRoom",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "boardRoomMinted",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "decimals",
             "outputs": [
                 {
@@ -2653,10 +2704,52 @@ export const BACK_ABI = {
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "deposits",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "weight",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amountDebt",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amountEarn",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "enableMint",
             "outputs": [],
             "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "maxBoardRoomMint",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -2683,6 +2776,25 @@ export const BACK_ABI = {
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "mintBoardRoom",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "mintAmount",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -2791,6 +2903,19 @@ export const BACK_ABI = {
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_newBoardRoom",
+                    "type": "address"
+                }
+            ],
+            "name": "setBoardRoom",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -5349,6 +5474,35 @@ export const BACK_ABI = {
                 {
                     "internalType": "uint256",
                     "name": "amount1",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_token0",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_token1",
+                    "type": "address"
+                }
+            ],
+            "name": "getReserve",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
                     "type": "uint256"
                 }
             ],

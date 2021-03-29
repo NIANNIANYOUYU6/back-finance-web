@@ -27,14 +27,14 @@
           swapperName: pairsItem.swapperName,
           tokenA: pairsItem.symbol0,
           tokenB: pairsItem.symbol1,
-          name: '还贷',
+          name: $t('Operation.repay'),
         }"
       />
     </template>
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          当前总负债 :
+          {{ $t('Farm.totalAssets') }} :
           {{
             $tranNumber(pairsItem.debtAmount, 4) +
             pairsItem.borrowSymbol +
@@ -44,7 +44,7 @@
           }}
         </div>
         <div style="display: flex">
-          <span>还贷</span>
+          <span>{{ $t('Operation.repay') }}</span>
           <div style="flex: 1; margin-left: 10px">
             <a-input
               :suffix="pairsItem.borrowSymbol"
@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="line-h-40">
-          还贷数量 :
+          {{ $t('Farm.display.repay1') }} :
           {{
             $tranNumber(form.borrowRepay, 4) +
             pairsItem.borrowSymbol +
@@ -80,7 +80,7 @@
           }}
         </div>
         <div class="line-h-40">
-          还贷后负债 :
+          {{ $t('Farm.display.repay2') }} :
           {{
             $tranNumber(form.borrowRemain, 4) +
             pairsItem.borrowSymbol +
@@ -90,28 +90,27 @@
           }}
         </div>
         <div class="line-h-40">
-          还贷后风险值
-          <a-tooltip placement="top">
-            <template #title>
-              <span> 请注意：当风险值超过100时，资产将会被清算。</span>
-            </template>
-            <QuestionCircleOutlined />
-          </a-tooltip>
-          : {{ $tranNumber(form.health * 100, 2) }}
+          {{ $t('Farm.display.repay3') }} : {{ $tranNumber(form.health * 100, 2) }}
+          <div class="prompt-text" style="line-height: 16px">
+            <ExclamationCircleFilled />
+            {{ $t('Farm.healthyRemind') }}
+          </div>
         </div>
       </div>
       <div class="deposit-card-footer">
         <div class="deposit-card-footer_button">
           <a-button
-            :disabled="form.allowance && form.errorText !== '授权额度不足'"
+            :disabled="form.allowance && form.errorText !== $t('Prompt.error1')"
             type="primary"
             @click="approveTokenFunc()"
-            >授权</a-button
+            >{{ $t('Operation.warrant') }}</a-button
           >
-          <a-button :disabled="!!form.errorText" type="primary" @click="handleOk">确认</a-button>
+          <a-button :disabled="!!form.errorText" type="primary" @click="handleOk">{{
+            $t('Operation.ok')
+          }}</a-button>
         </div>
-        <div class="deposit-card-footer_text"
-          >钱包余额 :
+        <div class="deposit-card-footer_text">
+          {{ $t('Sidebar.balance') }} :
           <a-button type="link">
             {{ $tranNumber(form.balance, 8) }}
           </a-button>
@@ -124,7 +123,7 @@
 <script>
 import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
-import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+import { ExclamationCircleFilled } from '@ant-design/icons-vue';
 
 import {
   repay,
@@ -135,7 +134,7 @@ import {
 } from '../../common/src/back_main';
 
 export default {
-  components: { CardTitle, QuestionCircleOutlined },
+  components: { CardTitle, ExclamationCircleFilled },
   props: {
     pairsItem: Object,
     onClose: Function,
@@ -197,15 +196,15 @@ export default {
       this.scale = this.form.amount / this.currentTotalDebt;
       let err = '';
       if (this.form.amount === '' || +this.form.amount === 0) {
-        err = `不能为空或零`;
+        err = this.$t('Prompt.error4');
       } else if (!+this.form.amount) {
-        err = `只能为数字`;
+        err = this.$t('Prompt.error3');
       } else if (this.form.amount > +this.currentTotalDebt) {
-        err = `不能大于当前总负债`;
+        err = this.$t('Prompt.error6');
       } else if (this.form.amount > +this.form.balance) {
-        err = `钱包余额不足`;
+        err = this.$t('Prompt.error2');
       } else if (this.form.amount > +this.form.allowance) {
-        err = `授权额度不足`;
+        err = this.$t('Prompt.error1');
       }
       this.form.errorText = err;
       this.getRepayInfo();

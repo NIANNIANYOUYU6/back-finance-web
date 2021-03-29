@@ -27,14 +27,15 @@
           swapperName: pairsItem.swapperName,
           tokenA: pairsItem.symbol0,
           tokenB: pairsItem.symbol1,
-          name: '加仓',
+          name: $t('Operation.add'),
         }"
       />
     </template>
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          当前总资产 : {{ $tranNumber(pairsItem.amount0, 4) }} {{ pairsItem.symbol0 }} +
+          {{ $t('Farm.totalAssets') }} : {{ $tranNumber(pairsItem.amount0, 4) }}
+          {{ pairsItem.symbol0 }} +
           {{ $tranNumber(pairsItem.amount1, 4) }}
           {{ pairsItem.symbol1 }}
         </div>
@@ -123,10 +124,10 @@
           </div>
         </div>
         <div class="line-h-40">
-          加仓资产转化为
+          {{ $t('Farm.display.add1') }}
           <a-tooltip placement="top">
             <template #title>
-              <span>根据当前交易所价格预计投入的矿池交易对数量</span>
+              <span> {{ $t('Farm.display.transform') }}</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
@@ -134,13 +135,17 @@
           {{ $tranNumber(form.addInfo.amountIn1, 4) }}{{ pairsItem.symbol1 }}
         </div>
         <div class="line-h-40">
-          加仓后总资产 :
+          {{ $t('Farm.display.add2') }} :
           {{ $tranNumber(form.addInfo.amountAfter0, 4) }}
           {{ pairsItem.symbol0 }} + {{ $tranNumber(form.addInfo.amountAfter1, 4)
           }}{{ pairsItem.symbol0 }}
         </div>
         <div class="line-h-40">
-          加仓后风险值 :{{ $tranNumber(form.addInfo.healthy * 100, 2) }}
+          {{ $t('Farm.display.add3') }} :{{ $tranNumber(form.addInfo.healthy * 100, 2) }}
+          <div class="prompt-text" style="line-height: 16px">
+            <ExclamationCircleFilled />
+            {{ $t('Farm.healthyRemind') }}
+          </div>
         </div>
       </div>
       <div class="deposit-card-footer">
@@ -151,20 +156,20 @@
             :disabled="
               form.tokenA.allowance &&
               form.tokenB.allowance &&
-              form.tokenA.errorText !== '授权额度不足' &&
-              form.tokenB.errorText !== '授权额度不足'
+              form.tokenA.errorText !== $t('Prompt.error1') &&
+              form.tokenB.errorText !== $t('Prompt.error1')
             "
             type="primary"
             @click="
               approveTokenFunc(
-                !form.tokenA.allowance || form.tokenA.errorText === '授权额度不足'
+                !form.tokenA.allowance || form.tokenA.errorText === $t('Prompt.error1')
                   ? '0'
-                  : !form.tokenB.allowance || form.tokenB.errorText === '授权额度不足'
+                  : !form.tokenB.allowance || form.tokenB.errorText === $t('Prompt.error1')
                   ? '1'
                   : ''
               )
             "
-            >授权</a-button
+            >{{ $t('Operation.warrant') }}</a-button
           >
           <a-button
             :disabled="
@@ -176,7 +181,7 @@
             "
             type="primary"
             @click="handleOk"
-            >确认</a-button
+            >{{ $t('Operation.ok') }}</a-button
           >
         </div>
       </div>
@@ -186,7 +191,7 @@
 <script>
 import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
-import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons-vue';
 
 import {
   invest,
@@ -197,7 +202,7 @@ import {
 } from '../../common/src/back_main';
 
 export default {
-  components: { CardTitle, QuestionCircleOutlined },
+  components: { CardTitle, QuestionCircleOutlined, ExclamationCircleFilled },
   props: {
     pairsItem: Object,
     onClose: Function,
@@ -274,11 +279,11 @@ export default {
       this.form[type].scale = this.form[type].amount / this.form[type].balance;
       let err = '';
       if (!+this.form[type].amount && +this.form[type].amount !== 0) {
-        err = `只能为数字`;
+        err = this.$t('Prompt.error3');
       } else if (this.form[type].amount > +this.form[type].balance) {
-        err = `钱包余额不足`;
+        err = this.$t('Prompt.error2');
       } else if (this.form[type].amount > +this.form[type].allowance) {
-        err = `授权额度不足`;
+        err = this.$t('Prompt.error1');
       }
       this.form[type].errorText = err;
       this.getAddInfo();

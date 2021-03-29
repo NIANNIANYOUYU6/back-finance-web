@@ -27,19 +27,20 @@
           swapperName: pairsItem.swapperName,
           tokenA: pairsItem.symbol0,
           tokenB: pairsItem.symbol1,
-          name: '撤资',
+          name: $t('Operation.divest'),
         }"
       />
     </template>
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          当前总资产 : {{ $tranNumber(pairsItem.amount0, 4) }} {{ pairsItem.symbol0 }} +
+          {{ $t('Farm.totalAssets') }} : {{ $tranNumber(pairsItem.amount0, 4) }}
+          {{ pairsItem.symbol0 }} +
           {{ $tranNumber(pairsItem.amount1, 4) }}
           {{ pairsItem.symbol1 }}
         </div>
         <div style="display: flex">
-          <div>撤资比例 : </div>
+          <div> {{ $t('Farm.display.divest1') }} : </div>
           <div style="flex: 1; margin-left: 10px">
             <a-input
               suffix="%"
@@ -81,26 +82,27 @@
           </div>
         </div>
         <div class="line-h-40">
-          撤资资产 :
+          {{ $t('Farm.display.divest2') }} :
           {{ $tranNumber(form.amount0, 4) }}
           {{ pairsItem.symbol0 }} +
           {{ $tranNumber(form.amount1, 4) }}
           {{ pairsItem.symbol1 }}
           <a-tooltip placement="top">
             <template #title>
-              <span
-                >负债 :{{ $tranNumber(form.amountToPay, 4) + pairsItem.borrowSymbol }}+
-                {{ $tranNumber(form.interestToPay, 4) + pairsItem.borrowSymbol }}</span
+              <span>
+                {{ $t('Farm.debt') }} :{{
+                  $tranNumber(form.amountToPay, 4) + pairsItem.borrowSymbol
+                }}+ {{ $tranNumber(form.interestToPay, 4) + pairsItem.borrowSymbol }}</span
               >
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
         </div>
         <div class="line-h-40">
-          撤资资产选择
+          {{ $t('Farm.display.divest3') }}
           <a-tooltip placement="top">
             <template #title>
-              <span>默认按照交易滑点最小的规则返还剩余资产</span>
+              <span> {{ $t('Farm.display.divest3Remind') }}</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
@@ -110,8 +112,7 @@
               size="small"
               @click="(form.type = 'default'), getDivestInfo()"
               :class="{ active: form.type === 'default' }"
-            >
-              默认
+              >{{ $t('Farm.display.default') }}
             </a-button>
             <a-button
               size="small"
@@ -130,10 +131,10 @@
           </div>
         </div>
         <div class="line-h-40">
-          预计撤资收回资产
+          {{ $t('Farm.display.divest4') }}
           <a-tooltip placement="top">
             <template #title>
-              <span>完成相应比例的借款+利息还款后剩余资产。</span>
+              <span> {{ $t('Farm.display.divest4Remind') }}。</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
@@ -143,7 +144,9 @@
         </div>
       </div>
       <div class="deposit-card-footer">
-        <a-button :disabled="!!form.errorText" type="primary" @click="handleOk">确认</a-button>
+        <a-button :disabled="!!form.errorText" type="primary" @click="handleOk">{{
+          $t('Operation.ok')
+        }}</a-button>
       </div>
     </a-spin>
   </a-modal>
@@ -198,11 +201,11 @@ export default {
     updateAmount() {
       let err = '';
       if (this.form.radio === '' || +this.form.radio === 0) {
-        err = `不能为空或零`;
+        err = this.$t('Prompt.error4');
       } else if (+this.form.radio > 100) {
-        err = `比例最多为100%`;
+        err = this.$t('Prompt.error7');
       } else if (!+this.form.radio) {
-        err = `只能为数字`;
+        err = this.$t('Prompt.error3');
       }
       this.form.errorText = err;
       this.getDivestInfo();

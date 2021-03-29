@@ -27,44 +27,44 @@
           swapperName: pairsItem.swapperName,
           tokenA: pairsItem.symbol0,
           tokenB: pairsItem.symbol1,
-          name: '复投/收获',
+          name: $t('Operation.reinvest') + '/' + $t('Operation.claim'),
         }"
       />
     </template>
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          挖矿收益 :
+          {{ $t('Farm.display.claim1') }} :
           {{ $tranNumber(pairsItem.pendingReward, 4) }}
           {{ pairsItem.rewardSymbol }}
         </div>
         <div class="line-h-40">
-          复投仓位拆分明细
+          {{ $t('Farm.display.reinvest1') }} :
           <a-tooltip placement="top">
             <template #title>
-              <span>根据当前交易所价格预计投入的矿池交易对数量</span>
+              <span> {{ $t('Farm.display.transform') }} </span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
           :{{ $tranNumber(form.amount0, 4) }} {{ pairsItem.symbol0 }} +
           {{ $tranNumber(form.amount1, 4) }} {{ pairsItem.symbol1 }}
         </div>
-        <!-- <div class="line-h-40"> 复投后风险值 : </div>
+        <!-- <div class="line-h-40">  {{ $t('Farm.display.reinvest2') }} : </div>
         <div class="line-h-40 prompt-text">
           <ExclamationCircleFilled />
-          请注意:当风险值超过100时,资产将会被清算
+          {{ $t('Farm.healthyRemind') }}
         </div> -->
       </div>
 
       <div class="deposit-card-footer">
         <div class="deposit-card-footer_button">
-          <a-button type="primary" :disabled="pairsItem.pendingReward === 0" @click="claimFunc()"
-            >收获</a-button
-          >
-          <a-button type="primary" @click="handleOk">复投</a-button>
+          <a-button type="primary" :disabled="pairsItem.pendingReward === 0" @click="claimFunc()">{{
+            $t('Operation.claim')
+          }}</a-button>
+          <a-button type="primary" @click="handleOk">{{ $t('Operation.reinvest') }}</a-button>
         </div>
         <div class="deposit-card-footer_text"
-          >钱包余额 :
+          >{{ $t('Sidebar.balance') }} :
           <a-button type="link">
             {{ $tranNumber(form.balance, 8) }}
           </a-button>

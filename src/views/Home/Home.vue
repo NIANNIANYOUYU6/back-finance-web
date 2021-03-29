@@ -45,7 +45,7 @@
 <template>
   <div class="deposit home">
     <div class="deposit-account">
-      <div class="deposit-account_title">账户持仓</div>
+      <div class="deposit-account_title">{{ $t('Farm.user.title') }}</div>
       <a-table
         rowKey="address"
         :dataSource="userInfoList"
@@ -54,10 +54,10 @@
         :loading="loading"
       >
         <template #debtTooltip>
-          <span>风险值</span>
+          <span>{{ $t('Farm.healthy') }}</span>
           <a-tooltip placement="right">
             <template #title>
-              <span>风险值超过100会被执行清算，请尽量控制风险值在80以内。</span>
+              <span>{{ $t('Farm.healthyRemind') }}</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
@@ -67,7 +67,7 @@
           ${{ $tranNumber(text, 2) }}
           <a-tooltip placement="right">
             <template #title>
-              LP预估:
+              {{ $t('Farm.lp') }}:
               <span>{{
                 $tranNumber(record.amount0, 4) +
                 record.symbol0 +
@@ -84,7 +84,7 @@
           ${{ $tranNumber(text, 2) }}
           <a-tooltip placement="right">
             <template #title>
-              负债:
+              {{ $t('Farm.debt') }}:
               <span>{{
                 $tranNumber(record.debtAmount, 4) +
                 record.borrowSymbol +
@@ -102,44 +102,43 @@
             type="primary"
             size="small"
             @click="openCard(record, 'add')"
-            >加仓</a-button
+          >
+            {{ $t('Operation.add') }}</a-button
           >
           <a-button
             style="margin-right: 10px"
             type="primary"
             size="small"
             @click="openCard(record, 'repay')"
-            >还贷</a-button
+            >{{ $t('Operation.repay') }}</a-button
           >
           <a-button
             style="margin-right: 10px"
             type="primary"
             size="small"
             @click="openCard(record, 'divest')"
-            >撤资</a-button
+            >{{ $t('Operation.divest') }}</a-button
           >
           <a-button type="primary" size="small" @click="openCard(record, 'reinvestOrClaim')"
-            >复投/收获</a-button
+            >{{ $t('Operation.reinvest') }}/{{ $t('Operation.claim') }}</a-button
           >
         </template>
       </a-table>
     </div>
     <div class="deposit-account">
-      <div class="deposit-account_title">全部</div>
+      <div class="deposit-account_title"> {{ $t('Farm.all.title') }}</div>
       <a-table
         rowKey="address"
-        :dataSource="
-          pairsList.filter((item) => item.address !== '0x1F6E1b2864E430A09ad88e3C9E2cf40463897AD1')
-        "
+        :dataSource="pairsList"
         :columns="pairsColumns"
         :pagination="false"
         :loading="loading"
       >
         <template #rewardTooltip>
-          <span>收益率APY</span>
+          <span>{{ $t('Farm.all.income') }}</span>
           <a-tooltip placement="right">
             <template #title>
-              <span>流动性挖矿APY * 杠杆率+平台挖矿APY-借款APY</span>
+              <span>{{ $t('Farm.all.incomeRemind') }}</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
@@ -156,16 +155,8 @@
                   2
                 )
               }}%
-              <span style="text-decoration: line-through">
-                {{
-                  $tranNumber(
-                    (record.leverageRate * record.liquidityAPY +
-                      (record.leverageRate - 1) * record['platformAPY' + record.debtToken] -
-                      (record.leverageRate - 1) * record['interestAPY' + record.debtToken]) *
-                      100,
-                    2
-                  )
-                }}%
+              <span v-if="record.debtRatio !== 1" style="text-decoration: line-through">
+                {{ $tranNumber(record.liquidityAPY * 100, 2) }}%
               </span>
             </div>
             <div>
@@ -186,12 +177,10 @@
           </div>
         </template>
         <template #leverTooltip>
-          <span>杠杆</span>
+          <span>{{ $t('Farm.all.lever') }}</span>
           <a-tooltip placement="right">
             <template #title>
-              <span
-                >杠杆值为1x时默认没有借贷，当杠杆值＞1x时，BACK会根据投资的本金金额借贷相应金额一起投入到选中的矿池中，因此你可以获得更高的流动性挖矿收益</span
-              >
+              <span>{{ $t('Farm.all.leverRemind') }}</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
@@ -231,7 +220,7 @@
             type="primary"
             size="small"
             @click="openCard(record, 'farm')"
-            >挖矿 {{ record.debtRatio }}X</a-button
+            >{{ $t('Operation.farm') }} {{ record.debtRatio }}X</a-button
           >
         </template>
       </a-table>
@@ -278,7 +267,7 @@ export default {
       loading: false,
       myColumns: [
         {
-          title: '矿池',
+          title: this.$t('Farm.pair'),
           dataIndex: 'swapperName',
           width: 160,
           customRender: ({ text, record }) => {
@@ -301,7 +290,7 @@ export default {
           },
         },
         {
-          title: '借贷币种',
+          title: this.$t('Farm.borrowSymbol'),
           dataIndex: 'borrowSymbol',
           align: 'center',
           customRender: ({ text }) => {
@@ -317,19 +306,19 @@ export default {
           },
         },
         {
-          title: '当前总资产',
+          title: this.$t('Farm.totalAssets'),
           dataIndex: 'totalAssets',
           align: 'center',
           slots: { customRender: 'currentTotalAsset' },
         },
         {
-          title: '当前总负债',
+          title: this.$t('Farm.user.totalDebt'),
           dataIndex: 'totalDebt',
           align: 'center',
           slots: { customRender: 'totalDebt' },
         },
         {
-          title: '待领取挖矿收益',
+          title: this.$t('Farm.user.pendingReward'),
           dataIndex: 'pendingReward',
           align: 'center',
           customRender: ({ text, record }) => {
@@ -355,7 +344,7 @@ export default {
           },
         },
         {
-          title: '操作',
+          title: this.$t('Operation.operating'),
           align: 'center',
           width: 300,
           slots: { customRender: 'action' },
@@ -363,7 +352,7 @@ export default {
       ],
       pairsColumns: [
         {
-          title: '矿池',
+          title: this.$t('Farm.pair'),
           dataIndex: 'swapperName',
           width: 170,
           customRender: ({ text, record }) => {
@@ -392,7 +381,7 @@ export default {
           slots: { title: 'rewardTooltip', customRender: 'pairEarningsAPY' },
         },
         {
-          title: '总锁仓Token',
+          title: this.$t('Farm.all.totalLock'),
           dataIndex: 'Token',
           customRender: ({ text, record }) => {
             text;
@@ -413,7 +402,7 @@ export default {
           },
         },
         {
-          title: '借贷币种',
+          title: this.$t('Farm.borrowSymbol'),
           dataIndex: 'debtToken',
           align: 'center',
           slots: { customRender: 'debtToken' },
@@ -424,7 +413,7 @@ export default {
           slots: { customRender: 'lever', title: 'leverTooltip' },
         },
         {
-          title: '操作',
+          title: this.$t('Operation.operating'),
           align: 'center',
           width: 150,
           slots: { customRender: 'action' },

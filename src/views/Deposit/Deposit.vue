@@ -41,10 +41,10 @@
         :loading="loading"
       >
         <template #rewardTooltip>
-          <span>{{ $t('Deposit.all.income') }} </span>
+          <span>{{ $t('Deposit.income') }} </span>
           <a-tooltip placement="right">
             <template #title>
-              <span>{{ $t('Deposit.all.incomeRemind') }}</span>
+              <span>{{ $t('Deposit.incomeRemind') }}</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
@@ -55,10 +55,10 @@
             type="primary"
             size="small"
             @click="openCard(record, 'withdrawal')"
-            >{{ $t('Deposit.account.takeBtn') }}</a-button
+            >{{ $t('Operation.takeBtn') }}</a-button
           >
           <a-button type="primary" size="small" @click="openCard(record, 'deposit')">{{
-            $t('Deposit.account.depositBtn')
+            $t('Operation.depositBtn')
           }}</a-button>
         </template>
       </a-table>
@@ -73,17 +73,17 @@
         :loading="loading"
       >
         <template #profitTooltip>
-          <span>{{ $t('Deposit.all.income') }} </span>
+          <span>{{ $t('Deposit.income') }} </span>
           <a-tooltip placement="right">
             <template #title>
-              <span>{{ $t('Deposit.all.incomeRemind') }}</span>
+              <span>{{ $t('Deposit.incomeRemind') }}</span>
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
         </template>
         <template #action="{ record }">
           <a-button type="primary" size="small" @click="openCard(record, 'deposit')">{{
-            $t('Deposit.all.button')
+            $t('Operation.depositBtn')
           }}</a-button>
         </template>
       </a-table>
@@ -113,7 +113,7 @@ export default {
       loading: false,
       depositColumns: [
         {
-          title: this.$t('Deposit.account.symbol'),
+          title: this.$t('Deposit.symbol'),
           dataIndex: 'symbol',
           align: 'center',
           customRender: ({ text }) => {
@@ -165,7 +165,7 @@ export default {
           },
         },
         {
-          title: this.$t('Deposit.account.operating'),
+          title: this.$t('Operation.operating'),
           align: 'center',
           width: 150,
           slots: { customRender: 'action' },
@@ -174,7 +174,7 @@ export default {
       depositItem: {},
       poolColumns: [
         {
-          title: this.$t('Deposit.all.symbol'),
+          title: this.$t('Deposit.symbol'),
           dataIndex: 'symbol',
           align: 'center',
           customRender: ({ text }) => {
@@ -257,7 +257,7 @@ export default {
           },
         },
         {
-          title: this.$t('Deposit.all.operating'),
+          title: this.$t('Operation.operating'),
           dataIndex: 'operating',
           align: 'center',
           width: 100,

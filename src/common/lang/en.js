@@ -3,8 +3,8 @@ module.exports = {
   locale: 'English',
   switchLang: '中文',
   Sidebar: {
-    balance: '钱包余额',
-    profit: '待领收益',
+    balance: 'Balance ',
+    profit: 'Earning',
     button: 'Claim BK',
     docs: "Docs",
     router: {

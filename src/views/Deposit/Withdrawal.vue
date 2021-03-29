@@ -40,7 +40,7 @@
           <img class="icon" :src="'./img/icon/' + form.symbol + '.png'" />
           <span class="name"> {{ form.symbol }}</span>
         </div>
-        <div class="title_name">提现</div>
+        <div class="title_name">{{ $t('Operation.takeBtn') }}</div>
       </div>
     </template>
     <a-spin :spinning="loading">
@@ -62,13 +62,16 @@
           </a-button>
         </div>
         <div class="content-num"
-          >我的存款 : {{ $tranNumber(form.amountDeposit, 8) }} {{ form.symbol }}</div
+          >{{ $t('Deposit.myDeposit') }} : {{ $tranNumber(form.amountDeposit, 8) }}
+          {{ form.symbol }}</div
         >
       </div>
       <div class="deposit-card-footer">
-        <a-button style="padding: 0 30px" type="primary" @click="handleOk">确认</a-button>
+        <a-button style="padding: 0 30px" type="primary" @click="handleOk">{{
+          $t('Operation.ok')
+        }}</a-button>
         <div class="deposit-card-footer_text"
-          >钱包余额 :
+          >{{ $t('Sidebar.balance') }} :
           <a-button type="link">
             {{ $tranNumber(balance, 8) }}
           </a-button>
@@ -125,11 +128,11 @@ export default {
       this.scale = this.amount / this.form.amountDeposit;
       let err = '';
       if (this.amount === '' || +this.amount === 0) {
-        err = `不能为空或零`;
+        err = this.$t('Prompt.error4');
       } else if (!+this.amount) {
-        err = `只能为数字`;
+        err = this.$t('Prompt.error3');
       } else if (this.amount > +this.form.amountDeposit) {
-        err = `存款余额不足`;
+        err = this.$t('Prompt.error5');
       }
       this.errorText = err;
     },

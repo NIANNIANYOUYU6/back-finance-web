@@ -28,13 +28,17 @@
     </template>
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
-        <div style="line-height: 40px">待领取 : {{ $tranNumber(title.backBalance, 2) }} BK</div>
-        <div style="line-height: 40px">钱包余额 : {{ $tranNumber(title.queryBack, 2) }} BK</div>
+        <div style="line-height: 40px"
+          >{{ $t('Sidebar.profit') }} : {{ $tranNumber(title.queryBack, 2) }} BK</div
+        >
+        <div style="line-height: 40px"
+          >{{ $t('Sidebar.balance') }} : {{ $tranNumber(title.backBalance, 2) }} BK</div
+        >
       </div>
       <div class="deposit-card-footer">
-        <a-button :disabled="+title.queryBack === 0" type="primary" @click="handleOk"
-          >领取</a-button
-        >
+        <a-button :disabled="+title.queryBack === 0" type="primary" @click="handleOk">{{
+          $t('Operation.receive')
+        }}</a-button>
       </div>
     </a-spin>
   </a-modal>

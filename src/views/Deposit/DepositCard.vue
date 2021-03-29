@@ -24,7 +24,7 @@
           <img class="icon" :src="'./img/icon/' + form.symbol + '.png'" />
           <span class="name"> {{ form.symbol }}</span>
         </div>
-        <div class="title_name">存款</div>
+        <div class="title_name">{{ $t('Operation.depositBtn') }}</div>
       </div>
     </template>
     <a-spin :spinning="loading">
@@ -49,17 +49,17 @@
       <div class="deposit-card-footer">
         <div class="deposit-card-footer_button">
           <a-button
-            :disabled="allowance > 0 && errorText !== '授权额度不足'"
+            :disabled="allowance > 0 && errorText !== $t('Prompt.error1')"
             type="primary"
             @click="approveTokenFunc"
-            >授权</a-button
+            >{{ $t('Operation.warrant') }}</a-button
           >
-          <a-button :disabled="!allowance || !!errorText" type="primary" @click="handleOk"
-            >确认</a-button
-          >
+          <a-button :disabled="!allowance || !!errorText" type="primary" @click="handleOk">{{
+            $t('Operation.ok')
+          }}</a-button>
         </div>
         <div class="deposit-card-footer_text"
-          >钱包余额 :
+          >{{ $t('Sidebar.balance') }} :
           <a-button type="link">
             {{ $tranNumber(balance, 8) }}
           </a-button>
@@ -126,13 +126,13 @@ export default {
       this.scale = this.amount / this.balance;
       let err = '';
       if (this.amount === '' || +this.amount === 0) {
-        err = `不能为空或零`;
+        err = this.$t('Prompt.error4');
       } else if (!+this.amount) {
-        err = `只能为数字`;
+        err = this.$t('Prompt.error3');
       } else if (this.amount > +this.balance) {
-        err = `钱包余额不足`;
+        err = this.$t('Prompt.error2');
       } else if (this.amount > +this.allowance) {
-        err = `授权额度不足`;
+        err = this.$t('Prompt.error1');
       }
       this.errorText = err;
     },

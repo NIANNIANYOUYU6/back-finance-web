@@ -27,13 +27,13 @@
           swapperName: pairsItem.swapperName,
           tokenA: pairsItem.symbol0,
           tokenB: pairsItem.symbol1,
-          name: '挖矿',
+          name: $t('Operation.farm'),
         }"
       />
     </template>
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
-        <div class="line-h-40"> 投资资产: </div>
+        <div class="line-h-40"> {{ $t('Farm.farm.farm1') }}: </div>
         <div style="display: flex">
           <img class="icon" :src="'./img/icon/' + pairsItem.symbol0 + '.png'" />
           <div style="flex: 1; margin-left: 10px">
@@ -120,12 +120,10 @@
         </div>
         <div class="line-h-40 disp-f">
           <div>
-            杠杆
+            {{ $t('Farm.all.lever') }}
             <a-tooltip placement="top">
               <template #title>
-                <span
-                  >杠杆值为1x时默认没有借贷，当杠杆值＞1x时，BACK会根据投资的本金金额借贷相应金额一起投入到选中的矿池中，因此你可以获得更高的流动性挖矿收益。</span
-                >
+                <span> {{ $t('Farm.all.leverRemind') }}</span>
               </template>
               <QuestionCircleOutlined />
             </a-tooltip>
@@ -143,7 +141,7 @@
           </div>
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
-          <div> 借贷币种 : </div>
+          <div> {{ $t('Farm.borrowSymbol') }} </div>
           <div>
             <a-radio-group v-model:value="form.debtToken" @change="getInvestInfo()">
               <a-radio value="0">{{ pairsItem.symbol0 }}</a-radio>
@@ -152,7 +150,7 @@
           </div>
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
-          <div> 借贷 : </div>
+          <div> {{ $t('Farm.farm.farm2') }} : </div>
           <div
             >{{ $tranNumber(form.investInfo.amountBorrow, 4) }}
             {{ pairsItem['symbol' + form.debtToken] }}</div
@@ -162,16 +160,15 @@
           v-if="form.investInfo.amountBorrow > form.investInfo['remainAmount' + form.debtToken]"
           class="error-text"
           style="text-align: end"
-          >剩余可借不足(剩余{{
-            $tranNumber(form.investInfo['remainAmount' + form.debtToken], 4)
-          }})</div
+          >{{ $t('Farm.farm.farm3') }} ({{ $t('Farm.farm.farm4') }}
+          {{ $tranNumber(form.investInfo['remainAmount' + form.debtToken], 4) }})</div
         >
         <div class="line-h-40 disp-f_jusc-sb">
           <div style="min-width: 125px">
-            投资资产转化为
+            {{ $t('Farm.farm.farm5') }}
             <a-tooltip placement="top">
               <template #title>
-                <span>根据当前交易所价格预计投入的矿池交易对数量</span>
+                <span>{{ $t('Farm.display.transform') }}</span>
               </template>
               <QuestionCircleOutlined />
             </a-tooltip>
@@ -184,22 +181,19 @@
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
           <div>
-            风险值
+            {{ $t('Farm.healthy') }}
             <a-tooltip placement="top">
               <template #title>
-                <span>当前负债/当前总资产*清仓线</span>
+                <span> {{ $t('Farm.healthyRemind') }}</span>
               </template>
               <QuestionCircleOutlined />
             </a-tooltip>
             :
           </div>
-          <div>
-            <!-- 当前负债/当前总资产*清仓线 -->
-            {{ $tranNumber(form.investInfo.healthy * 100, 2) }}%
-          </div>
+          <div> {{ $tranNumber(form.investInfo.healthy * 100, 2) }}% </div>
         </div>
         <div class="line-h-40 disp-f_jusc-sb" style="border-top: 1px solid #ccc">
-          <div> 收益率APY : </div>
+          <div> {{ $t('Farm.all.income') }} : </div>
           <div>
             <!-- 流动性挖矿APY * 杠杆率+平台挖矿APY-借款APY -->
             {{
@@ -215,10 +209,10 @@
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
           <div>
-            流动性挖矿APY
+            {{ $t('Farm.farm.liquidityAPY') }}
             <a-tooltip placement="top">
               <template #title>
-                <span> 交易所流动性挖矿收益，可以随时在账户持仓列表中提取和复投。</span>
+                <span> {{ $t('Farm.farm.liquidityAPYRemind') }}</span>
               </template>
               <QuestionCircleOutlined />
             </a-tooltip>
@@ -228,19 +222,20 @@
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
           <div>
-            平台奖励APY
+            {{ $t('Farm.farm.platformAPY') }}
             <a-tooltip placement="top">
               <template #title>
-                <span></span>
+                <span> {{ $t('Farm.farm.platformAPYRemind') }}</span>
               </template>
               <QuestionCircleOutlined />
             </a-tooltip>
+            <span></span>
             :
           </div>
           <div> {{ $tranNumber(form.investInfo['platformAPY' + form.debtToken] * 100, 2) }}% </div>
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
-          <div> 借贷APY : </div>
+          <div> {{ $t('Farm.farm.remainAmount') }} : </div>
           <div> {{ $tranNumber(form.investInfo.interestAPY * 100, 2) }} % </div>
         </div>
       </div>
@@ -252,20 +247,20 @@
             :disabled="
               form.tokenA.allowance &&
               form.tokenB.allowance &&
-              form.tokenA.errorText !== '授权额度不足' &&
-              form.tokenB.errorText !== '授权额度不足'
+              form.tokenA.errorText !== $t('Prompt.error1') &&
+              form.tokenB.errorText !== $t('Prompt.error1')
             "
             type="primary"
             @click="
               approveTokenFunc(
-                !form.tokenA.allowance || form.tokenA.errorText === '授权额度不足'
+                !form.tokenA.allowance || form.tokenA.errorText === $t('Prompt.error1')
                   ? '0'
-                  : !form.tokenB.allowance || form.tokenB.errorText === '授权额度不足'
+                  : !form.tokenB.allowance || form.tokenB.errorText === $t('Prompt.error1')
                   ? '1'
                   : ''
               )
             "
-            >授权</a-button
+            >{{ $t('Operation.warrant') }}</a-button
           >
           <a-button
             :disabled="
@@ -278,7 +273,7 @@
             "
             type="primary"
             @click="handleOk"
-            >开始挖矿{{ form.debtRatio }}x</a-button
+            >{{ $t('Farm.farm.farm6') }} {{ form.debtRatio }}x</a-button
           >
         </div>
       </div>
@@ -392,11 +387,11 @@ export default {
       this.form[type].scale = this.form[type].amount / this.form[type].balance;
       let err = '';
       if (!+this.form[type].amount && this.form[type].amount != 0) {
-        err = `只能为数字`;
+        err = this.$t('Prompt.error3');
       } else if (this.form[type].amount > +this.form[type].balance) {
-        err = `钱包余额不足`;
+        err = this.$t('Prompt.error2');
       } else if (this.form[type].amount > +this.form[type].allowance) {
-        err = `授权额度不足`;
+        err = this.$t('Prompt.error1');
       }
       this.form[type].errorText = err;
       this.getInvestInfo();

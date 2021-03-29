@@ -16,19 +16,18 @@ export const bourse = {
 export const MAXNUM = 9999 * 99999 * 100000;
 export const ContractAddress = {
     97: {
-        mdexToken: '0xe2A7078a54D5a6FfDFE246bD2408762972C67B06',
-        backToken: '0x67811a8425c4Ef8b396ce0D21cBa09b3a574da3B',
-        mdexSwapperContract: '0x9B7c27c2Bcb9D9feA6B660620bEB90ed80F16581',
-        backFactoryContract: '0xD414F5986f9dD1e98c558ecDCF37a27a02c451a0',
+        mdexToken: '0x323Fda0921BDe2089f24301689eAC852c938b7d2',
+        backToken: '0x114026Aee0a7D42A0e4BFf01150fc1BBe35d85C8',
+        mdexSwapperContract: '0x8BCa2CefBf3996d87210BF85D002e64a88AdD446',
 
         usdtmdex: '0x30686895109247C0376bcaE60Fcb6Cbc03165f33',
-        backQueryContract: "0x9bEC2BBC89f14C6d6fc42f92383dCB68d5632646",
+        backQueryContract: "0xb099f126DB80FA6792834065D2ae5E1D614c4471",
 
-        backConfigContract: '0x03c75F32c28E6a75b9f1266DD98b6715b7804532',
-        backPairFactoryContract: "0xED31cCDEB57F48dAb7343152D0F3CeAEF5A1674E",
-        backPlatformContract: "0x8D98FDDc7b93c7DB9010ECC669dcE6706751f4F9",
-        mdexFactoryContract: "0x0fE3Cb4AD64a7e6EF9F73bC78A6dDC1EF9243C32",
-        backPoolFactoryContract: "0xD414F5986f9dD1e98c558ecDCF37a27a02c451a0",
+        backConfigContract: '0x8101823aBa07fA4fE7B919e72fB6849d388e380f',
+        backPairFactoryContract: "0xc38be6d82031B85755951F8FCEcb2ca7d6930c18",
+        backPlatformContract: "0xe5943Ca793E436b94665BF5181fae61de4448eAa",
+        mdexFactoryContract: "0xD560a21E58912bF4eb8A0c4030C4914B1edF0C89",
+        backPoolFactoryContract: "0xF118706c9811c48e756B8FE35BBC8e94bb737045",
     },
     128: {
         mdexToken: '0x012b9af79C4DdD265D581108A5642FC46F32076f',

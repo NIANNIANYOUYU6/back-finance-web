@@ -180,17 +180,20 @@
           </div>
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
-          <div>
-            {{ $t('Farm.healthy') }}
-            <a-tooltip placement="top">
-              <template #title>
-                <span> {{ $t('Farm.healthyRemind') }}</span>
-              </template>
-              <QuestionCircleOutlined />
-            </a-tooltip>
-            :
-          </div>
+          <div> {{ $t('Farm.healthy') }}: </div>
           <div> {{ $tranNumber(form.investInfo.healthy * 100, 2) }}% </div>
+        </div>
+        <div
+          v-if="pairsItem.swapperName.toLowerCase() === 'Mdex'.toLowerCase()"
+          class="prompt-text"
+          style="line-height: 16px; margin-bottom: 10px"
+        >
+          <ExclamationCircleFilled />
+          {{ $t('Farm.healthyRemind1') }}
+        </div>
+        <div v-else class="prompt-text" style="line-height: 16px; margin-bottom: 10px">
+          <ExclamationCircleFilled />
+          {{ $t('Farm.healthyRemind2') }}
         </div>
         <div class="line-h-40 disp-f_jusc-sb" style="border-top: 1px solid #ccc">
           <div> {{ $t('Farm.all.income') }} : </div>
@@ -283,7 +286,7 @@
 <script>
 import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
-import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons-vue';
 import { lever } from '../../common/const.js';
 import {
   invest,
@@ -295,7 +298,7 @@ import {
 } from '../../common/src/back_main';
 
 export default {
-  components: { CardTitle, QuestionCircleOutlined },
+  components: { CardTitle, QuestionCircleOutlined, ExclamationCircleFilled },
   props: {
     pairsItem: Object,
     onClose: Function,

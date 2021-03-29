@@ -40,6 +40,9 @@
         :pagination="false"
         :loading="loading"
       >
+        <template #symbol>
+          <span>{{ $t('Deposit.symbol') }} </span>
+        </template>
         <template #rewardTooltip>
           <span>{{ $t('Deposit.income') }} </span>
           <a-tooltip placement="right">
@@ -48,6 +51,12 @@
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
+        </template>
+        <template #amountSupply>
+          <span>{{ $t('Deposit.account.amountSupply') }} </span>
+        </template>
+        <template #operating>
+          <span>{{ $t('Operation.operating') }} </span>
         </template>
         <template #action="{ record }">
           <a-button
@@ -72,6 +81,9 @@
         :pagination="false"
         :loading="loading"
       >
+        <template #symbol>
+          <span>{{ $t('Deposit.symbol') }} </span>
+        </template>
         <template #profitTooltip>
           <span>{{ $t('Deposit.income') }} </span>
           <a-tooltip placement="right">
@@ -80,6 +92,18 @@
             </template>
             <QuestionCircleOutlined />
           </a-tooltip>
+        </template>
+        <template #totalShare>
+          <span>{{ $t('Deposit.all.totalShare') }} </span>
+        </template>
+        <template #remain>
+          <span>{{ $t('Deposit.all.remain') }} </span>
+        </template>
+        <template #useRatio>
+          <span>{{ $t('Deposit.all.useRatio') }} </span>
+        </template>
+        <template #operating>
+          <span>{{ $t('Operation.operating') }} </span>
         </template>
         <template #action="{ record }">
           <a-button type="primary" size="small" @click="openCard(record, 'deposit')">{{
@@ -113,9 +137,9 @@ export default {
       loading: false,
       depositColumns: [
         {
-          title: this.$t('Deposit.symbol'),
           dataIndex: 'symbol',
           align: 'center',
+          slots: { title: 'symbol' },
           customRender: ({ text }) => {
             return {
               children: (
@@ -148,9 +172,9 @@ export default {
           },
         },
         {
-          title: this.$t('Deposit.account.amountSupply'),
           dataIndex: 'amountDeposit',
           align: 'center',
+          slots: { title: 'amountSupply' },
           customRender: ({ text, record }) => {
             return {
               children: (
@@ -165,18 +189,17 @@ export default {
           },
         },
         {
-          title: this.$t('Operation.operating'),
           align: 'center',
-          width: 150,
-          slots: { customRender: 'action' },
+          width: 200,
+          slots: { customRender: 'action', title: 'operating' },
         },
       ],
       depositItem: {},
       poolColumns: [
         {
-          title: this.$t('Deposit.symbol'),
           dataIndex: 'symbol',
           align: 'center',
+          slots: { title: 'symbol' },
           customRender: ({ text }) => {
             return {
               children: (
@@ -209,9 +232,9 @@ export default {
           },
         },
         {
-          title: this.$t('Deposit.all.totalShare'),
           dataIndex: 'totalDeposit',
           align: 'center',
+          slots: { title: 'totalShare' },
           customRender: ({ text, record }) => {
             return {
               children: (
@@ -226,9 +249,9 @@ export default {
           },
         },
         {
-          title: this.$t('Deposit.all.remain'),
           dataIndex: 'remainBorrow',
           align: 'center',
+          slots: { title: 'remain' },
           customRender: ({ text, record }) => {
             return {
               children: (
@@ -243,9 +266,9 @@ export default {
           },
         },
         {
-          title: this.$t('Deposit.all.useRatio'),
           dataIndex: 'useRatio',
           align: 'center',
+          slots: { title: 'useRatio' },
           customRender: ({ text }) => {
             return {
               children: (
@@ -257,11 +280,10 @@ export default {
           },
         },
         {
-          title: this.$t('Operation.operating'),
           dataIndex: 'operating',
           align: 'center',
           width: 100,
-          slots: { customRender: 'action' },
+          slots: { customRender: 'action', title: 'operating' },
         },
       ],
     };

@@ -53,6 +53,22 @@
         :pagination="false"
         :loading="loading"
       >
+        <template #pair>
+          <span>{{ $t('Farm.pair') }} </span>
+        </template>
+        <template #borrowSymbol>
+          <span>{{ $t('Farm.borrowSymbol') }} </span>
+        </template>
+        <template #totalAssets>
+          <span>{{ $t('Farm.totalAssets') }} </span>
+        </template>
+        <template #totalDebt>
+          <span>{{ $t('Farm.user.totalDebt') }} </span>
+        </template>
+        <template #pendingReward>
+          <span>{{ $t('Farm.user.pendingReward') }} </span>
+        </template>
+
         <template #debtTooltip>
           <span>{{ $t('Farm.healthy') }}</span>
           <a-tooltip placement="right">
@@ -80,7 +96,7 @@
           </a-tooltip>
         </template>
 
-        <template #totalDebt="{ text, record }">
+        <template #totalDebtValue="{ text, record }">
           ${{ $tranNumber(text, 2) }}
           <a-tooltip placement="right">
             <template #title>
@@ -95,6 +111,9 @@
             </template>
             <InfoCircleOutlined />
           </a-tooltip>
+        </template>
+        <template #operating>
+          <span>{{ $t('Operation.operating') }} </span>
         </template>
         <template #action="{ record }">
           <a-button
@@ -134,6 +153,15 @@
         :pagination="false"
         :loading="loading"
       >
+        <template #pair>
+          <span>{{ $t('Farm.pair') }} </span>
+        </template>
+        <template #totalLock>
+          <span>{{ $t('Farm.all.totalLock') }} </span>
+        </template>
+        <template #borrowSymbol>
+          <span>{{ $t('Farm.borrowSymbol') }} </span>
+        </template>
         <template #rewardTooltip>
           <span>{{ $t('Farm.all.income') }}</span>
           <a-tooltip placement="right">
@@ -214,6 +242,9 @@
             :step="null"
           />
         </template>
+        <template #operating>
+          <span>{{ $t('Operation.operating') }} </span>
+        </template>
         <template #action="{ record }">
           <a-button
             style="margin-right: 10px"
@@ -267,9 +298,9 @@ export default {
       loading: false,
       myColumns: [
         {
-          title: this.$t('Farm.pair'),
           dataIndex: 'swapperName',
           width: 160,
+          slots: { title: 'pair' },
           customRender: ({ text, record }) => {
             return {
               children: (
@@ -290,9 +321,9 @@ export default {
           },
         },
         {
-          title: this.$t('Farm.borrowSymbol'),
           dataIndex: 'borrowSymbol',
           align: 'center',
+          slots: { title: 'borrowSymbol' },
           customRender: ({ text }) => {
             text;
             return {
@@ -306,21 +337,19 @@ export default {
           },
         },
         {
-          title: this.$t('Farm.totalAssets'),
           dataIndex: 'totalAssets',
           align: 'center',
-          slots: { customRender: 'currentTotalAsset' },
+          slots: { customRender: 'currentTotalAsset', title: 'borrowSymbol' },
         },
         {
-          title: this.$t('Farm.user.totalDebt'),
           dataIndex: 'totalDebt',
           align: 'center',
-          slots: { customRender: 'totalDebt' },
+          slots: { customRender: 'totalDebtValue', title: 'totalDebt' },
         },
         {
-          title: this.$t('Farm.user.pendingReward'),
           dataIndex: 'pendingReward',
           align: 'center',
+          slots: { title: 'pendingReward' },
           customRender: ({ text, record }) => {
             text;
             return {
@@ -344,17 +373,16 @@ export default {
           },
         },
         {
-          title: this.$t('Operation.operating'),
           align: 'center',
           width: 300,
-          slots: { customRender: 'action' },
+          slots: { customRender: 'action', title: 'operating' },
         },
       ],
       pairsColumns: [
         {
-          title: this.$t('Farm.pair'),
           dataIndex: 'swapperName',
           width: 170,
+          slots: { title: 'pair' },
           customRender: ({ text, record }) => {
             return {
               children: (
@@ -381,8 +409,8 @@ export default {
           slots: { title: 'rewardTooltip', customRender: 'pairEarningsAPY' },
         },
         {
-          title: this.$t('Farm.all.totalLock'),
           dataIndex: 'Token',
+          slots: { title: 'totalLock' },
           customRender: ({ text, record }) => {
             text;
             return {
@@ -402,10 +430,9 @@ export default {
           },
         },
         {
-          title: this.$t('Farm.borrowSymbol'),
           dataIndex: 'debtToken',
           align: 'center',
-          slots: { customRender: 'debtToken' },
+          slots: { customRender: 'debtToken', title: 'borrowSymbol' },
         },
         {
           align: 'center',
@@ -413,10 +440,9 @@ export default {
           slots: { customRender: 'lever', title: 'leverTooltip' },
         },
         {
-          title: this.$t('Operation.operating'),
           align: 'center',
           width: 150,
-          slots: { customRender: 'action' },
+          slots: { customRender: 'action', title: 'operating' },
         },
       ],
       pairsItem: {},

@@ -69,24 +69,33 @@
       </a-menu-item>
     </a-menu>
     <div class="aside-footer">
-      <a-button class="gradient-bg" @click="reward = true" type="primary">
-        <i class="icon iconfont icon-lingquguanggao pr-10" />
-        {{ $t('Sidebar.button') }}
-      </a-button>
-      <a-button class="lang-switch" type="link">
-        <i class="icon iconfont icon-caiyouduo_renzhengshuoming-renzhengziliao pr-10" />
-        <a style="color: #35e9ef" href="https://back-finance.gitbook.io/back-finance/" target="new"
-          >{{ $t('Sidebar.docs') }}
-        </a>
-      </a-button>
-      <a-button class="lang-switch" @click="langSwitch" type="link">
-        <i
-          v-if="$t('switchLang') === 'English'"
-          class="icon iconfont icon-zhongyingwenyingwen02-01 pr-10"
-        />
-        <i v-else class="iconfont icon-zhongyingwen2zhongwen" />
-        {{ $t('switchLang') }}
-      </a-button>
+      <div>
+        <a-button class="gradient-bg" @click="reward = true" type="primary">
+          <i class="icon iconfont icon-lingquguanggao pr-10" />
+          {{ $t('Sidebar.button') }}
+        </a-button>
+      </div>
+      <div>
+        <a-button class="lang-switch" type="link">
+          <i class="icon iconfont icon-caiyouduo_renzhengshuoming-renzhengziliao pr-10" />
+          <a
+            style="color: #35e9ef"
+            href="https://back-finance.gitbook.io/back-finance/"
+            target="new"
+            >{{ $t('Sidebar.docs') }}
+          </a>
+        </a-button>
+      </div>
+      <div>
+        <a-button class="lang-switch" @click="langSwitch" type="link">
+          <i
+            v-if="$t('switchLang') === 'English'"
+            class="icon iconfont icon-zhongyingwenyingwen02-01 pr-10"
+          />
+          <i v-else class="iconfont icon-zhongyingwen2zhongwen" />
+          {{ $t('switchLang') }}
+        </a-button>
+      </div>
     </div>
     <Reward v-if="reward" @close="reward = false" />
   </div>

@@ -33,7 +33,7 @@
 }
 </style>
 <template>
-  <a-modal class="deposit-card" visible @ok="handleOk" @cancel="$emit('close')" width="420px">
+  <a-modal class="deposit-card" visible @ok="handleOk" @cancel="$emit('close')" width="480px">
     <template #title>
       <div class="title">
         <div class="title_icon">

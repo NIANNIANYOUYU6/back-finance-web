@@ -1,9 +1,8 @@
 module.exports = {
   locale: '中文',
   switchLang: 'English',
-  // 操作
   Operation: {
-    operating: '操作', //Manage
+    operating: '操作',
     ok :'确定',
     receive: '领取',
     warrant: '授权',
@@ -40,7 +39,7 @@ module.exports = {
   Header: {
     lockUp: '总锁仓',
     deposit: '存款总量',
-    allocation: '配资总量',
+    allocation: '借贷总量',
     price: 'BK 价格',
     output: 'BK 挖矿产出',
   },
@@ -69,6 +68,8 @@ module.exports = {
     borrowSymbol: "借贷币种",
     healthy: "风险值",
     healthyRemind: "风险值超过100会被执行清算，请尽量控制风险值在80以内。",
+    healthyRemind1: "请注意：当风险值超过100时，资产将会被清算。借币可能会产生SWAP的0.3%成本，请谨慎选择借币币种。注：杠杆开仓的过程中BACK没有收取任何费用",
+    healthyRemind2: "请注意：当风险值超过100时，资产将会被清算。借币可能会产生SWAP的0.3%成本，请谨慎选择借币币种。",
     lp: "LP预估",
     debt: "负债",
     totalAssets: "当前总资产",
@@ -80,7 +81,7 @@ module.exports = {
     all: {
       title: "全部",
       income:"收益率APY",
-      incomeRemind: "流动性挖矿APY * 杠杆率+平台挖矿APY-借款APY",
+      incomeRemind: "流动性挖矿APY * 杠杆率+平台挖矿APY*(杠杆率-1)-借款APY*(杠杆率-1)",
       totalLock: "总锁仓 Token",
       lever: "杠杆" ,
       leverRemind: "杠杆值为1x时默认没有借贷，当杠杆值＞1x时，BACK会根据投资的本金金额借贷相应金额一起投入到选中的矿池中，因此你可以获得更高的流动性挖矿收益" ,
@@ -99,7 +100,7 @@ module.exports = {
       default: "默认",
       divest3Remind: "默认按照交易滑点最小的规则返还剩余资产",
       divest4: "预计撤资收回资产",
-      divest4Remind: "完成相应比例的借款+利息还款后剩余资产。",
+      divest4Remind: "完成相应比例借款+利息还款后剩余资产",
       claim1: "挖矿收益",
       reinvest1: "复投资产转化为",
       reinvest2: "复投后风险值",

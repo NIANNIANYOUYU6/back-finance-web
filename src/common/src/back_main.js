@@ -837,7 +837,7 @@ export async function claim(pair_address, token_address, callback) {//收取
 
 export async function approveToken(token_address, callback) { //approve Token
     let tokenContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.ERC20, token_address);
-    let bigAmount = convertNormalToBigNumber("50000000", getDecimal(token_address));
+    let bigAmount = convertNormalToBigNumber("500000000000", getDecimal(token_address));
     let platformaddres = getPlatformAddress();
     executeContract(tokenContract, "approve", 0, [platformaddres, bigAmount], callback);
 }

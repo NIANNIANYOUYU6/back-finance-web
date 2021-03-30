@@ -181,7 +181,7 @@
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
           <div> {{ $t('Farm.healthy') }}: </div>
-          <div> {{ $tranNumber(form.investInfo.healthy * 100, 2) }}% </div>
+          <div> {{ $tranNumber(form.investInfo.healthy * 100, 2) }} </div>
         </div>
         <div
           v-if="pairsItem.swapperName.toLowerCase() === 'Mdex'.toLowerCase()"

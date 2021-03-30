@@ -196,6 +196,7 @@ export default {
         this.pairsItem.borrowToken,
         receiveToken
       );
+      console.log(res);
       Object.assign(this.form, res);
     },
     updateAmount() {

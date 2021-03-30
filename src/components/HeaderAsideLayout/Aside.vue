@@ -67,6 +67,10 @@
         <i class="icon iconfont icon-iconset0219" style="font-size: 18px"></i>
         <span class="aside-menu_name">{{ $t('Sidebar.router.title2') }}</span>
       </a-menu-item>
+      <!-- <a-menu-item key="/liquidate" class="aside-menu_item">
+        <i class="icon iconfont icon-qingsuanxinxi" style="font-size: 18px"></i>
+        <span class="aside-menu_name">{{ $t('Sidebar.router.title3') }}</span>
+      </a-menu-item> -->
     </a-menu>
     <div class="aside-footer">
       <div>
@@ -79,6 +83,14 @@
         <a-button class="lang-switch" type="link">
           <i class="icon iconfont icon-caiyouduo_renzhengshuoming-renzhengziliao pr-10" />
           <a
+            v-if="$t('locale') === 'English'"
+            style="color: #35e9ef"
+            href="https://back-finance.gitbook.io/back-finance/v/en/"
+            target="new"
+            >{{ $t('Sidebar.docs') }}
+          </a>
+          <a
+            v-else
             style="color: #35e9ef"
             href="https://back-finance.gitbook.io/back-finance/"
             target="new"

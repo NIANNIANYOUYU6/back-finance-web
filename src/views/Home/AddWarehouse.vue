@@ -138,7 +138,7 @@
           {{ $t('Farm.display.add2') }} :
           {{ $tranNumber(form.addInfo.amountAfter0, 4) }}
           {{ pairsItem.symbol0 }} + {{ $tranNumber(form.addInfo.amountAfter1, 4)
-          }}{{ pairsItem.symbol0 }}
+          }}{{ pairsItem.symbol1 }}
         </div>
         <div class="line-h-40">
           {{ $t('Farm.display.add3') }} :{{ $tranNumber(form.addInfo.healthy * 100, 2) }}

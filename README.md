@@ -20,6 +20,4 @@ yarn build
 yarn lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 [git](https://github.com/back-finance/back-finance-web)

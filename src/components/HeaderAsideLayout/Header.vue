@@ -84,7 +84,7 @@
           <i class="icon iconfont icon-Dollar-circle-fill"></i>
           <div class="header-item_title">
             <div class="header-item_name">{{ $t('Header.lockUp') }}</div>
-            <div class="header-item_num"> ${{ $tranNumber(title.totalLock, 2) }} </div>
+            <div class="header-item_num"> $ {{ $tranNumber(title.totalLock, 2) }} </div>
           </div>
         </div>
         <div class="header-item">

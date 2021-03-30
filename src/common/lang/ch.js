@@ -14,6 +14,7 @@ module.exports = {
     reinvest : '复投',
     claim:'收获',
     farm:'挖矿',
+    liquidate:'清算',
   },
   Prompt: {
     error1:'授权额度不足',
@@ -33,6 +34,7 @@ module.exports = {
     router: {
       title1: '杠杆挖矿',
       title2: '存款市场',
+      title3: '清算池',
     },
   },
   // 顶部栏
@@ -118,5 +120,10 @@ module.exports = {
       platformAPYRemind: "平台针对流动性挖矿奖励，可以随时提取。",
       remainAmount: "借贷APY"
     }
+  },
+  Liquidate: {
+    title: "全部清算池",
+    mortgage :"抵押资产价值",
+    liabilities :"负债资产价值",
   }
 };

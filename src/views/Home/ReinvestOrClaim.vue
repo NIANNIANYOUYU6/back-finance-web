@@ -114,15 +114,19 @@ export default {
       }
     },
     async getReinvestAmountFunc() {
-      // 3秒更新一次
-      console.log(this.pairsItem.pendingReward, this.pairsItem.token0, this.pairsItem.token1);
-      const res = await getReinvestAmount(
-        this.pairsItem.pendingReward,
-        this.pairsItem.token0,
-        this.pairsItem.token1
-      );
-      Object.assign(this.form, res.data);
-      console.log(res);
+      // 以后需要3秒更新一次
+      try {
+        console.log(this.pairsItem.pendingReward, this.pairsItem.token0, this.pairsItem.token1);
+        const res = await getReinvestAmount(
+          this.pairsItem.pendingReward,
+          this.pairsItem.token0,
+          this.pairsItem.token1
+        );
+        Object.assign(this.form, res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.log('getReinvestAmount--->', error);
+      }
     },
     // 查询币的余额
     async getBalanceNum() {

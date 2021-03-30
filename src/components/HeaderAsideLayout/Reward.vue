@@ -87,6 +87,8 @@ export default {
         if (code === 1) {
           this.loading = false;
           this.$emit('close');
+          // 更新totle
+          this.$store.commit('setState', { updatePage: +new Date() });
         } else if (code !== 0) {
           // 发生错误时
           message.error(msg);

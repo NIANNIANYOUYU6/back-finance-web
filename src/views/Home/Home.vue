@@ -183,9 +183,6 @@
                   2
                 )
               }}%
-              <span v-if="record.debtRatio !== 1" style="text-decoration: line-through">
-                {{ $tranNumber(record.liquidityAPY * 100, 2) }}%
-              </span>
             </div>
             <div>
               {{ $tranNumber(record.debtRatio * record.liquidityAPY * 100, 2) }}% +
@@ -339,7 +336,7 @@ export default {
         {
           dataIndex: 'totalAssets',
           align: 'center',
-          slots: { customRender: 'currentTotalAsset', title: 'borrowSymbol' },
+          slots: { customRender: 'currentTotalAsset', title: 'totalAssets' },
         },
         {
           dataIndex: 'totalDebt',

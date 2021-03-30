@@ -16,7 +16,7 @@
 <script >
 import Aside from './Aside';
 import Header from './Header';
-import { getTitles } from '../../common/src/back_main';
+import { getTitles, fetchData } from '../../common/src/back_main';
 
 export default {
   components: { Aside, Header },
@@ -41,6 +41,7 @@ export default {
   },
   methods: {
     async getTitlesFunc() {
+      await fetchData();
       const res = await getTitles();
       Object.assign(this.title, res.data);
       console.log('这是获取到的total--->', res.data);

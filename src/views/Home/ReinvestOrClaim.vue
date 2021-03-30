@@ -79,7 +79,7 @@ import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
 import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
-import { reinvest, getBalance, claim, getReinvestAmount } from '../../common/src/back_main';
+import { reinvest, getBalance, claim, getReinvestInfo } from '../../common/src/back_main';
 
 export default {
   components: { CardTitle, QuestionCircleOutlined },
@@ -116,11 +116,11 @@ export default {
     async getReinvestAmountFunc() {
       // 以后需要3秒更新一次
       try {
-        console.log(this.pairsItem.pendingReward, this.pairsItem.token0, this.pairsItem.token1);
-        const res = await getReinvestAmount(
+        console.log(this.pairsItem.pendingReward, this.pairsItem.address);
+        const res = await getReinvestInfo(
           this.pairsItem.pendingReward,
-          this.pairsItem.token0,
-          this.pairsItem.token1
+          this.pairsItem.address,
+            this.pairsItem.borrowToken
         );
         Object.assign(this.form, res.data);
         console.log(res.data);

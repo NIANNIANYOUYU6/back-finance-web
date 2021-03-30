@@ -1659,6 +1659,12 @@ export const BACK_ABI = {
                 },
                 {
                     "indexed": false,
+                    "internalType": "address",
+                    "name": "borrowToken",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
                     "internalType": "uint256",
                     "name": "percent",
                     "type": "uint256"
@@ -1760,6 +1766,12 @@ export const BACK_ABI = {
                     "internalType": "address",
                     "name": "borrowToken",
                     "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "percent",
+                    "type": "uint256"
                 },
                 {
                     "indexed": false,
@@ -5676,6 +5688,35 @@ export const BACK_ABI = {
         {
             "inputs": [
                 {
+                    "internalType": "address",
+                    "name": "_pair",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_rewardToken",
+                    "type": "address"
+                }
+            ],
+            "name": "getReinvestReserve",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "reserve0",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "reserve1",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
                     "internalType": "address[]",
                     "name": "pairs",
                     "type": "address[]"
@@ -5946,37 +5987,49 @@ export const BACK_ABI = {
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "token",
-                    "type": "address"
+                    "internalType": "address[]",
+                    "name": "tokens",
+                    "type": "address[]"
                 }
             ],
             "name": "tokenBasicInfo",
             "outputs": [
                 {
-                    "internalType": "string",
-                    "name": "symbol",
-                    "type": "string"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "decimal",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "totalSupply",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "balance",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "allowance",
-                    "type": "uint256"
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "token",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "symbol",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "decimal",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "totalSupply",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "balance",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "allowance",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct BackQuery.TokenInfo[]",
+                    "name": "tokenInfos",
+                    "type": "tuple[]"
                 }
             ],
             "stateMutability": "view",

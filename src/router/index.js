@@ -3,6 +3,7 @@ import HeaderAsideLayout from '../components/HeaderAsideLayout/index.vue';
 
 import Home from '../views/Home/Home.vue';
 import Deposit from '../views/Deposit/Deposit.vue';
+import Liquidate from '../views/Liquidate/Liquidate.vue';
 
 const routes = [
   {
@@ -19,6 +20,11 @@ const routes = [
         path: '/deposit',
         name: 'Deposit',
         component: Deposit,
+      }, 
+       {
+        path: '/liquidate',
+        name: 'Liquidate',
+        component: Liquidate,
       },
     ],
   },

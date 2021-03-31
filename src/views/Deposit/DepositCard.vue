@@ -21,7 +21,7 @@
     <template #title>
       <div class="title">
         <div class="title_icon">
-          <img class="icon" :src="'./img/icon/' + form.symbol + '.png'" />
+          <img class="icon" :src="'./assets/' + form.symbol + '.png'" />
           <span class="name"> {{ form.symbol }}</span>
         </div>
         <div class="title_name">{{ $t('Operation.depositBtn') }}</div>

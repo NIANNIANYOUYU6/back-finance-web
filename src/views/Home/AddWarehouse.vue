@@ -40,7 +40,7 @@
           {{ pairsItem.symbol1 }}
         </div>
         <div style="display: flex">
-          <img class="icon" :src="'./img/icon/' + pairsItem.symbol0 + '.png'" />
+          <img class="icon" :src="'./assets/' + pairsItem.symbol0 + '.png'" />
           <div style="flex: 1; margin-left: 10px">
             <a-input
               :suffix="pairsItem.symbol0"
@@ -82,7 +82,7 @@
           </div>
         </div>
         <div style="display: flex">
-          <img class="icon" :src="'./img/icon/' + pairsItem.symbol1 + '.png'" />
+          <img class="icon" :src="'./assets/' + pairsItem.symbol1 + '.png'" />
           <div style="flex: 1; margin-left: 10px">
             <a-input
               :suffix="pairsItem.symbol1"
@@ -257,8 +257,9 @@ export default {
         const p2 = await this.getBalanceNum('tokenB', addressB);
         const p3 = await this.getAllowanceFunc('tokenA', addressA);
         const p4 = await this.getAllowanceFunc('tokenB', addressB);
+        const p5 = await this.getAddInfo();
         // 同步加载数据
-        await Promise.all([p1, p2, p3, p4]);
+        await Promise.all([p1, p2, p3, p4, p5]);
       } catch (error) {
         console.log('getBalance or getAllowance error');
       } finally {

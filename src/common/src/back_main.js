@@ -3,8 +3,8 @@ import { chainIdDict, ContractAddress, tokenAddres, pairAddress, tokensPrice } f
 import { convertBigNumberToNormal, convertNormalToBigNumber } from './back_utils.js'
 let YEAR = 10512000;
 const swapper = {
-    0: "mdex",
-    1: "bxh"
+    0: "MDEX",
+    1: "BXH"
 }
 var BACK_MAIN = {
     resMsg: {
@@ -238,6 +238,7 @@ export async function fetchData() {
                 pendingReward: info.amountReward1,
                 debtAmount: info.amountBorrow1,
                 debtInterest: info.amountInterest1,
+                swapperName: swapper[pair.pid]
             };
             item.healthy = item.totalDebt / item.totalAssets / pair.liquidationRate;
             BACK_MAIN.dataList.push(item);

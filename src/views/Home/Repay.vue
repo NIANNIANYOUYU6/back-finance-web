@@ -34,7 +34,7 @@
     <a-spin :spinning="loading">
       <div class="deposit-card-content">
         <div class="line-h-40">
-          {{ $t('Farm.totalAssets') }} :
+          {{ $t('Farm.user.totalDebt') }} :
           {{
             $tranNumber(pairsItem.debtAmount, 4) +
             pairsItem.borrowSymbol +
@@ -233,8 +233,6 @@ export default {
       }
     },
     // 还贷拆分
-    // getRepayInfo(pairAddress, borrowToken, amountRepay) {
-
     async getRepayInfo() {
       if (!this.form.errorText) {
         const res = await getRepayInfo(

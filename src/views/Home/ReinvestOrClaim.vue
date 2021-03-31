@@ -39,7 +39,7 @@
           {{ pairsItem.rewardSymbol }}
         </div>
         <div class="line-h-40">
-          {{ $t('Farm.display.reinvest1') }} :
+          {{ $t('Farm.display.reinvest1') }}
           <a-tooltip placement="top">
             <template #title>
               <span> {{ $t('Farm.display.transform') }} </span>
@@ -49,11 +49,13 @@
           :{{ $tranNumber(form.amount0, 4) }} {{ pairsItem.symbol0 }} +
           {{ $tranNumber(form.amount1, 4) }} {{ pairsItem.symbol1 }}
         </div>
-        <!-- <div class="line-h-40">  {{ $t('Farm.display.reinvest2') }} : </div>
+        <div class="line-h-40">
+          {{ $t('Farm.display.reinvest2') }} : {{ $tranNumber(form.health * 100, 2) }}
+        </div>
         <div class="line-h-40 prompt-text">
           <ExclamationCircleFilled />
           {{ $t('Farm.healthyRemind') }}
-        </div> -->
+        </div>
       </div>
 
       <div class="deposit-card-footer">
@@ -77,12 +79,12 @@
 <script>
 import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
-import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons-vue';
 
 import { reinvest, getBalance, claim, getReinvestInfo } from '../../common/src/back_main';
 
 export default {
-  components: { CardTitle, QuestionCircleOutlined },
+  components: { CardTitle, QuestionCircleOutlined, ExclamationCircleFilled },
   props: {
     pairsItem: Object,
     onClose: Function,

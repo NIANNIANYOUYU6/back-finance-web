@@ -3,8 +3,8 @@ import { chainIdDict, ContractAddress, tokenAddres, pairAddress, tokensPrice } f
 import { convertBigNumberToNormal, convertNormalToBigNumber } from './back_utils.js'
 let YEAR = 10512000;
 const swapper = {
-    0: "mdex",
-    1: "bxh"
+    0: "MDEX",
+    1: "BXH"
 }
 var BACK_MAIN = {
     resMsg: {

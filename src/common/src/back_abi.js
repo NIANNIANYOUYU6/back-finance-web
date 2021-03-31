@@ -5688,6 +5688,35 @@ export const BACK_ABI = {
         {
             "inputs": [
                 {
+                    "internalType": "address",
+                    "name": "_pair",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_rewardToken",
+                    "type": "address"
+                }
+            ],
+            "name": "getReinvestReserve",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "reserve0",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "reserve1",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
                     "internalType": "address[]",
                     "name": "pairs",
                     "type": "address[]"

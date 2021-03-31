@@ -77,6 +77,7 @@ import {
   getAllowance,
   approveToken,
   getBalance,
+  fetchData,
 } from '../../common/src/back_main';
 
 export default {
@@ -162,6 +163,7 @@ export default {
       approveToken(this._address, async (code, msg) => {
         console.log('approve result ', code, msg);
         if (code === 1) {
+          await fetchData();
           await this.getAllowanceFunc();
           this.updateAmount();
           this.loading = false;

@@ -24,6 +24,7 @@ module.exports = {
     error5:'存款余额不足',
     error6: '不能大于当前总负债',
     error7: '比例最多为100',
+    error8: '存款池内余额不足',
   },
   // 侧边栏菜单
   Sidebar: {

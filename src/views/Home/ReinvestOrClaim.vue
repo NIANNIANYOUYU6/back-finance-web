@@ -68,7 +68,7 @@
           <a-button type="link">
             {{ $tranNumber(form.balance, 8) }}
           </a-button>
-          {{ pairsItem.borrowSymbol }}</div
+          {{ pairsItem.rewardSymbol }}</div
         >
       </div>
     </a-spin>
@@ -116,21 +116,26 @@ export default {
     async getReinvestAmountFunc() {
       // 以后需要3秒更新一次
       try {
-        console.log(this.pairsItem.pendingReward, this.pairsItem.address);
+        console.log(
+          this.pairsItem.pendingReward,
+          this.pairsItem.address,
+          this.pairsItem.borrowToken
+        );
         const res = await getReinvestInfo(
           this.pairsItem.pendingReward,
           this.pairsItem.address,
-            this.pairsItem.borrowToken
+          this.pairsItem.borrowToken
         );
         Object.assign(this.form, res.data);
-        console.log(res.data);
+        console.log('getReinvestInfo--->', res.data);
       } catch (error) {
         console.log('getReinvestAmount--->', error);
       }
     },
     // 查询币的余额
     async getBalanceNum() {
-      this.form.balance = await getBalance(this.pairsItem.borrowToken);
+      this.form.balance = await getBalance(this.pairsItem.rewardToken);
+      console.log('getBalance--->', this.pairsItem.rewardToken, '--->', this.form.balance);
     },
     // 复投
     async handleOk() {

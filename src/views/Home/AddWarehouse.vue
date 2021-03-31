@@ -199,6 +199,7 @@ import {
   approveToken,
   getBalance,
   getAddInfo,
+  fetchData,
 } from '../../common/src/back_main';
 
 export default {
@@ -249,6 +250,7 @@ export default {
     async dataInit() {
       this.loading = true;
       try {
+        await fetchData();
         const addressA = this.pairsItem.token0;
         const addressB = this.pairsItem.token1;
         const p1 = await this.getBalanceNum('tokenA', addressA);

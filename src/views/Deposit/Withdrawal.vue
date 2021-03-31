@@ -67,9 +67,13 @@
         >
       </div>
       <div class="deposit-card-footer">
-        <a-button style="padding: 0 30px" type="primary" @click="handleOk">{{
-          $t('Operation.ok')
-        }}</a-button>
+        <a-button
+          :disabled="!!errorText || !+amount"
+          style="padding: 0 30px"
+          type="primary"
+          @click="handleOk"
+          >{{ $t('Operation.ok') }}</a-button
+        >
         <div class="deposit-card-footer_text"
           >{{ $t('Sidebar.balance') }} :
           <a-button type="link">
@@ -125,12 +129,13 @@ export default {
       this.updateAmount();
     },
     updateAmount() {
+      console.log(this.amount, +this.form.remainBorrow);
       this.scale = this.amount / this.form.amountDeposit;
       let err = '';
-      if (this.amount === '' || +this.amount === 0) {
-        err = this.$t('Prompt.error4');
-      } else if (!+this.amount) {
+      if (!+this.amount) {
         err = this.$t('Prompt.error3');
+      } else if (this.amount > +this.form.remainBorrow) {
+        err = this.$t('Prompt.error8');
       } else if (this.amount > +this.form.amountDeposit) {
         err = this.$t('Prompt.error5');
       }

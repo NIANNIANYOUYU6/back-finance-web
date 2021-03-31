@@ -127,6 +127,7 @@ import { ExclamationCircleFilled } from '@ant-design/icons-vue';
 
 import {
   repay,
+  fetchData,
   getAllowance,
   approveToken,
   getBalance,
@@ -167,6 +168,8 @@ export default {
     async dataInit() {
       this.loading = true;
       try {
+        await fetchData();
+
         this.currentTotalDebt = this.pairsItem.debtAmount + this.pairsItem.debtInterest;
         const address = this.pairsItem.borrowToken;
         const p1 = await this.getBalanceNum(address);

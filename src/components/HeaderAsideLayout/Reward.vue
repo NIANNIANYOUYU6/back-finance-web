@@ -72,12 +72,11 @@ export default {
         Object.assign(this.title, res.data);
         console.log('这是获取到的total--->', res.data);
       } catch (error) {
-        console.log('getBalance or getTitles error');
+        console.log('getTitles error');
       } finally {
         this.loading = false;
       }
     },
-
     handleOk() {
       this.loading = true;
       getAllReward((code, msg) => {

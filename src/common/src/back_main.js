@@ -1,6 +1,8 @@
 import { BACK_ABI } from './back_abi.js'
-import { chainIdDict, ContractAddress, tokenAddres, pairAddress, tokensPrice } from './back_const.js';
+import { chainIdDict, ContractAddress, tokenAddres, pairAddress, tokensPrice, backNode } from './back_const.js';
 import { convertBigNumberToNormal, convertNormalToBigNumber } from './back_utils.js'
+import { request, gql } from 'graphql-request'
+
 let YEAR = 10512000;
 const swapper = {
     0: "MDEX",
@@ -18,13 +20,59 @@ var BACK_MAIN = {
     account: "",
     chainId: "",
     web3: null,
+    loading: false,
     tokenDic: {},
     pairList: [], 
     poolList: [],
     infoList: [],
     dataList: [],
     tokenList: [],
+    liquidationList: [],
     backInfo: {}
+}
+
+async function fetchLiquidityList() {
+    const query = gql`
+      {
+        records {
+          owner
+          pair
+          borrowToken
+          borrowAmount
+          pledgeAmount
+          interestAmount
+          interestSettle
+        }
+      }
+    `
+    request(backNode, query).then(data => {
+        BACK_MAIN.liquidationList = [];
+        for(let item of data.records) {
+            let liquidity = {}
+            liquidity.pair = BACK_MAIN.web3.utils.toChecksumAddress(item["pair"]);
+            let pair = BACK_MAIN.pairList.find(i => i.address === liquidity.pair);
+            liquidity.token0 = pair.token0;
+            liquidity.token1 = pair.token1;
+            liquidity.symbol0 = pair.symbol0;
+            liquidity.symbol1 = pair.symbol1;
+            liquidity.swapperName = swapper[pair.pid];
+            liquidity.lpAmount = parseFloat(convertBigNumberToNormal(item["pledgeAmount"]));
+            liquidity.owner = BACK_MAIN.web3.utils.toChecksumAddress(item["owner"]);
+            liquidity.lpPrice = getLPPrice(pair);
+            liquidity.borrowToken = BACK_MAIN.web3.utils.toChecksumAddress(item["borrowToken"]);
+            liquidity.borrowInterest = parseFloat(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
+            liquidity.borrowAmount = parseFloat(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
+            liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
+            let totalDebt = (liquidity.borrowInterest + liquidity.borrowAmount) * _getTokenPrice(liquidity.borrowToken);
+            let totalAsset = liquidity.lpAmount * liquidity.lpPrice;
+            liquidity.discount = 0.95;
+            liquidity.health = totalDebt / totalAsset / pair.liquidationRate;
+            BACK_MAIN.liquidationList.push(liquidity);
+        }
+
+        BACK_MAIN.liquidationList.sort((a, b) => b.health - a.health);
+        BACK_MAIN.loading = false;
+    });
 }
 
 export function _getTokenPrice(token) {
@@ -84,15 +132,17 @@ export function setupTokenList(list) { //存储到数据中心
 }
 
 export async function fetchData() {
-    console.log(BACK_MAIN.account);
+    if(BACK_MAIN.loading) {
+        return
+    }
+    BACK_MAIN.loading = true;
     let backQueryContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_QUERY, ContractAddress[BACK_MAIN.chainId].backQueryContract);
     let pairList = await backQueryContract.methods.pairList().call({from: BACK_MAIN.account});
     let poolList = await backQueryContract.methods.poolList().call({from: BACK_MAIN.account});
     let info = await backQueryContract.methods.getBackInfo().call({from: BACK_MAIN.account});
     let addressList = pairList.map(i => i["pair"]);
-    console.log(addressList);
-    // let infoList = await backQueryContract.methods.getUserInfo(addressList).call({from: BACK_MAIN.account});
-    let infoList = [];
+    let infoList = await backQueryContract.methods.getUserInfo(addressList).call({from: BACK_MAIN.account});
+    // let infoList = [];
     let tokens = [...poolList.map(i => i["supplyToken"]), ...infoList.map(i => i["rewardToken"]), ...[ContractAddress[BACK_MAIN.chainId].backToken]];
     tokens = Array.from(new Set(tokens));
     let tokenList = await backQueryContract.methods.tokenBasicInfo(tokens).call({from: BACK_MAIN.account});
@@ -246,6 +296,7 @@ export async function fetchData() {
 
     }
 
+    await fetchLiquidityList();
     console.log("fetch data", BACK_MAIN.tokenList, BACK_MAIN.pairList, BACK_MAIN.poolList, BACK_MAIN.backInfo, BACK_MAIN.dataList);
 }
 
@@ -589,6 +640,10 @@ export async function getUserInfoList() {
     return BACK_MAIN.dataList;
 }
 
+export async function getLiquidationList() {
+    return BACK_MAIN.liquidationList;
+}
+
 export async function getAddInfo(pairAddress, amount0, amount1, borrowToken) {
     let pair = BACK_MAIN.pairList.find(i => i.address === pairAddress);
     let pool0 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token0);
@@ -843,7 +898,6 @@ export async function getTokenPoolAddress(token_address) {//获取存款池地�
 export async function deposit(token_address, amount, callback) {//存款
     let backPlatformContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_PLATFORM, ContractAddress[BACK_MAIN.chainId].backPlatformContract);
     let bigAmount = convertNormalToBigNumber(amount, getDecimal(token_address));
-    console.log("sss", bigAmount);
     executeContract(backPlatformContract, "deposit", 0, [token_address, bigAmount], callback);
 }
 
@@ -879,6 +933,12 @@ export async function reinvest(pair_address, token_address, deadline, callback) 
     let backPlatformContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_PLATFORM, ContractAddress[BACK_MAIN.chainId].backPlatformContract);
     deadline = deadline + 15 * 60;
     executeContract(backPlatformContract, "reinvest", 0, [pair_address, token_address, deadline], callback);
+}
+
+export async function liquidate(pair_address, owner_address, token_address, radio, callback) {//复投
+    let backPlatformContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_PLATFORM, ContractAddress[BACK_MAIN.chainId].backPlatformContract);
+    radio = radio * 100;
+    executeContract(backPlatformContract, "liquidate", 0, [pair_address, owner_address, token_address, radio], callback);
 }
 
 export async function claim(pair_address, token_address, callback) {//收取

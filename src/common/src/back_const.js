@@ -13,20 +13,22 @@ export const bourse = {
     0: "mdex",
 }
 
+export const backNode = "http://18.181.217.60:8000/subgraphs/name/example";
+
 export const MAXNUM = 9999 * 99999 * 100000;
 export const ContractAddress = {
     97: {
         mdexToken: '0xd4D553CACdCBB5E2fe754462d931bB056FFf591E',
-        backToken: '0xdF1F58eeA4278fEE89609CE3Ac313bA0a2EB5A03',
+        backToken: '0x585f7aA571dC931fe76504659048176b5C1eEfed',
         mdexSwapperContract: '0x1E54Ed1416a8a7B46e8d762d46e201f229F4f305',
 
         usdtmdex: '0x30686895109247C0376bcaE60Fcb6Cbc03165f33',
-        backQueryContract: "0xFe49B74CE45b1A9E0c80dF69DDEf8Ee0dCfe7415",
+        backQueryContract: "0x4523CB007D34383a45Bd2f3f65D97778799003cA",
 
-        backConfigContract: '0xAEb11992C1C9eEbaa9Dd76A7b07bE1fb1d82ae6B',
-        backPairFactoryContract: "0x3200912aB5393512f26F160e96550082E653F3f7",
-        backPlatformContract: "0xdaAEbE15Af7c1E3E6b69Dc7ee94FC13Dc0744527",
-        backPoolFactoryContract: "0x0d325919467B158B77D402fEa0e6a7f07Af1642c",
+        backConfigContract: '0x2Ac1B765A80fd7b760D11720313e6F7f83056Cc5',
+        backPairFactoryContract: "0x3407C3142E4ad44d73785D03913c07e146cb32af",
+        backPlatformContract: "0x5595c663230c7aD67B639Ed44E88dFF944eFC7B3",
+        backPoolFactoryContract: "0xe7a31D304523f5B321D9D67f310D7D01428fB32a",
         mdexFactoryContract: "0x1b6192204a91ab721F469F429213f986a6f7928c",
     },
     128: {

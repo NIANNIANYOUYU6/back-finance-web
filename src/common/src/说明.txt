@@ -1,0 +1,26 @@
+获取清算信息
+getLiquidationList
+{
+    token0: token0地址
+    token1: token1地址
+    symbol0: token0 symbol
+    symbol1: token1 symbol
+    pair: pair地址
+    swapperName: 交易所地址
+    lpAmount: lp总数量
+    owner: 记录拥有用户
+    lpPrice: lp价格
+    borrowToken: 借贷地址
+    borrowSymbol: 借贷symbol
+    discount: 清算折扣
+    health: 健康值
+}
+
+调用清算
+liquidate
+参数
+pair_address:pair地址
+owner_address:用户地址
+token_address:借贷token地址
+radio:清算比例
+callback

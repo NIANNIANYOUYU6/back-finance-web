@@ -21,7 +21,7 @@ export const ContractAddress = {
         mdexSwapperContract: '0x08FF1683d2182a87C099e6113Cb4aEa74923a379',
 
         usdtmdex: '0x30686895109247C0376bcaE60Fcb6Cbc03165f33',
-        backQueryContract: "0xAE42e786054997dAC1ACf988c94102719d118ca3",
+        backQueryContract: "0x3584987fEa29f01838d0E6fAb068d4cBe25e7D7C",
 
         backConfigContract: '0xE57d8bb24fE7C82fA9f241Efd4c1eA9dA2880654',
         backPairFactoryContract: "0x0f3a9b9f7fd2D507061978cCef2a82C15c969E66",

@@ -5688,35 +5688,6 @@ export const BACK_ABI = {
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "_pair",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_rewardToken",
-                    "type": "address"
-                }
-            ],
-            "name": "getReinvestReserve",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "reserve0",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "reserve1",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
                     "internalType": "address[]",
                     "name": "pairs",
                     "type": "address[]"
@@ -5937,16 +5908,6 @@ export const BACK_ABI = {
                         },
                         {
                             "internalType": "uint256",
-                            "name": "backPerDeposit",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "backPerBorrow",
-                            "type": "uint256"
-                        },
-                        {
-                            "internalType": "uint256",
                             "name": "interestPerBorrow",
                             "type": "uint256"
                         },
@@ -5973,6 +5934,11 @@ export const BACK_ABI = {
                         {
                             "internalType": "uint256",
                             "name": "balance",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "remain",
                             "type": "uint256"
                         }
                     ],

@@ -123,8 +123,6 @@ export async function fetchData() {
 
     for(let item of poolList) {
         let pool = {};
-        pool.backPerBorrow = parseFloat(convertBigNumberToNormal(item["backPerBorrow"]));
-        pool.backPerDeposit = parseFloat(convertBigNumberToNormal(item["backPerDeposit"]))
         pool.interestPerBorrow = parseFloat(convertBigNumberToNormal(item["interestPerBorrow"]));
         pool.interestRate = parseFloat(convertBigNumberToNormal(item["interestRate"]));
         pool.address = item["pool"];
@@ -137,6 +135,7 @@ export async function fetchData() {
         pool.backWeight = parseInt(item["backWeight"]);
         pool.depositPercent = parseInt(item["depositPercent"]);
         pool.symbol = getTokenSymbol(pool.supplyToken);
+        pool.remain = parseFloat(convertBigNumberToNormal(item["remain"]));
         tokens.push(pool.supplyToken);
         BACK_MAIN.poolList.push(pool);
     }
@@ -545,7 +544,7 @@ export async function getAssetsList() {
             platformAPY: totalAmount === 0 ? 0: poolPerBack * BACK_MAIN.backInfo.price / totalAmount,
             depositAPY:  pool.totalShare === 0 ? 0: pool.interestRate * 0.9 * pool.totalBorrow / pool.totalShare * 10512000,
             totalDeposit: pool.totalShare,
-            remainBorrow: pool.totalShare - pool.totalBorrow,
+            remainBorrow: pool.remain,
             price: pool.price,
             useRatio: pool.totalShare === 0 ? 0: pool.totalBorrow / pool.totalShare,
             address: pool.address,

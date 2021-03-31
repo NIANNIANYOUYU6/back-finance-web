@@ -237,6 +237,7 @@ export async function fetchData() {
                 pendingReward: info.amountReward1,
                 debtAmount: info.amountBorrow1,
                 debtInterest: info.amountInterest1,
+                swapperName: swapper[pair.pid]
             };
             item.healthy = item.totalDebt / item.totalAssets / pair.liquidationRate;
             BACK_MAIN.dataList.push(item);

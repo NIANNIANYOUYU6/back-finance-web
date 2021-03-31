@@ -1,4 +1,4 @@
-<style lang='scss' >
+<style lang='scss' scoped>
 .deposit {
   padding: 10px 20px;
   color: #eee;
@@ -6,13 +6,7 @@
     font-size: 12px;
     color: #999;
   }
-  .b-icon {
-    height: 20px;
-  }
-  .b-icon-name {
-    margin-left: 10px;
-    vertical-align: middle;
-  }
+
   .deposit-account {
     .deposit-account_title {
       font-weight: 500;
@@ -20,6 +14,7 @@
       line-height: 40px;
     }
     .deposit-account_title-sub {
+      padding-left: 30px;
       color: #eb8834;
     }
   }
@@ -28,7 +23,10 @@
 <template>
   <div class="deposit">
     <div class="deposit-account">
-      <div class="deposit-account_title">{{ $t('Deposit.account.title') }}</div>
+      <div class="deposit-account_title">
+        <img style="height: 26px; margin-right: 10px" src="../../assets/icon.png" alt="" />
+        <span>{{ $t('Deposit.account.title') }}</span>
+      </div>
       <div class="deposit-account_title-sub">
         <ExclamationCircleFilled />
         {{ $t('Deposit.account.remind') }}
@@ -73,7 +71,10 @@
       </a-table>
     </div>
     <div class="deposit-account">
-      <div class="deposit-account_title">{{ $t('Deposit.all.title') }}</div>
+      <div class="deposit-account_title">
+        <img style="height: 26px; margin-right: 10px" src="../../assets/icon.png" alt="" />
+        {{ $t('Deposit.all.title') }}</div
+      >
       <a-table
         rowKey="symbol"
         :dataSource="assetList"
@@ -144,7 +145,7 @@ export default {
             return {
               children: (
                 <div>
-                  <img class="b-icon" src={'./img/icon/' + text + '.png'} />
+                  <img class="b-icon" src={`./assets/${text}.png`} />
                   <span class="b-icon-name">{text}</span>
                 </div>
               ),
@@ -204,7 +205,7 @@ export default {
             return {
               children: (
                 <div>
-                  <img class="b-icon" src={'./img/icon/' + text + '.png'} />
+                  <img class="b-icon" src={'./assets/' + text + '.png'} />
                   <span class="b-icon-name">{text}</span>
                 </div>
               ),

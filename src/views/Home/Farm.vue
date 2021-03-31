@@ -35,7 +35,7 @@
       <div class="deposit-card-content">
         <div class="line-h-40"> {{ $t('Farm.farm.farm1') }}: </div>
         <div style="display: flex">
-          <img class="icon" :src="'./img/icon/' + pairsItem.symbol0 + '.png'" />
+          <img class="icon" :src="'./assets/' + pairsItem.symbol0 + '.png'" />
           <div style="flex: 1; margin-left: 10px">
             <a-input
               :suffix="pairsItem.symbol0"
@@ -77,7 +77,7 @@
           </div>
         </div>
         <div style="display: flex">
-          <img class="icon" :src="'./img/icon/' + pairsItem.symbol1 + '.png'" />
+          <img class="icon" :src="'./assets/' + pairsItem.symbol1 + '.png'" />
           <div style="flex: 1; margin-left: 10px">
             <a-input
               :suffix="pairsItem.symbol1"
@@ -221,7 +221,7 @@
             </a-tooltip>
             :
           </div>
-          <div> {{ $tranNumber(pairsItem.liquidityAPY * 100, 2) }}% </div>
+          <div> {{ $tranNumber(pairsItem.liquidityAPY * form.debtRatio * 100, 2) }}% </div>
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
           <div>
@@ -235,11 +235,20 @@
             <span></span>
             :
           </div>
-          <div> {{ $tranNumber(form.investInfo['platformAPY' + form.debtToken] * 100, 2) }}% </div>
+          <div>
+            {{
+              $tranNumber(
+                (form.debtRatio - 1) * form.investInfo['platformAPY' + form.debtToken] * 100,
+                2
+              )
+            }}%
+          </div>
         </div>
         <div class="line-h-40 disp-f_jusc-sb">
           <div> {{ $t('Farm.farm.remainAmount') }} : </div>
-          <div> {{ $tranNumber(form.investInfo.interestAPY * 100, 2) }} % </div>
+          <div>
+            {{ $tranNumber((form.debtRatio - 1) * form.investInfo.interestAPY * 100, 2) }} %
+          </div>
         </div>
       </div>
       <div class="deposit-card-footer">
@@ -248,8 +257,8 @@
           <!-- 具体授权币种提示 -->
           <a-button
             :disabled="
-              form.tokenA.allowance &&
-              form.tokenB.allowance &&
+              !!form.tokenA.allowance &&
+              !!form.tokenB.allowance &&
               form.tokenA.errorText !== $t('Prompt.error1') &&
               form.tokenB.errorText !== $t('Prompt.error1')
             "
@@ -293,7 +302,6 @@ import {
   getAllowance,
   approveToken,
   getBalance,
-  getTokenPrices,
   getInvestInfo,
   fetchData,
 } from '../../common/src/back_main';
@@ -325,7 +333,6 @@ export default {
           remainAmount1: 0,
         },
         tokenA: {
-          prices: '',
           balance: '',
           scale: '',
           errorText: '',
@@ -333,7 +340,6 @@ export default {
           allowance: '', // 授权额度
         },
         tokenB: {
-          prices: '',
           balance: '',
           scale: '',
           errorText: '',
@@ -362,11 +368,10 @@ export default {
         const p2 = await this.getBalanceNum('tokenB', addressB);
         const p3 = await this.getAllowanceFunc('tokenA', addressA);
         const p4 = await this.getAllowanceFunc('tokenB', addressB);
-        const p5 = await this.getPrices('tokenA');
-        const p6 = await this.getPrices('tokenB');
+        const p5 = await this.getInvestInfo();
 
         // 同步加载数据
-        await Promise.all([p1, p2, p3, p4, p5, p6]);
+        await Promise.all([p1, p2, p3, p4, p5]);
       } catch (error) {
         console.log('getBalance or getAllowance error');
       } finally {
@@ -380,10 +385,6 @@ export default {
     async getAllowanceFunc(token, address) {
       // 获取授权额度
       this.form[token].allowance = await getAllowance(address);
-    },
-    // 获取价格
-    async getPrices(token) {
-      this.form[token].prices = await getTokenPrices(this.pairsItem[token].symbol);
     },
     switchScale(type, scale) {
       this.form[type].amount = this.form[type].balance * scale;
@@ -404,11 +405,7 @@ export default {
     },
     // 投资信息
     async getInvestInfo() {
-      if (
-        (this.form.tokenA.amount || this.form.tokenB.amount) &&
-        !this.form.tokenA.errorText &&
-        !this.form.tokenB.errorText
-      ) {
+      if (!this.form.tokenA.errorText && !this.form.tokenB.errorText) {
         const borrowToken = this.pairsItem['token' + this.form.debtToken];
         console.log(
           'getInvestInfo参数--》',

@@ -1,4 +1,4 @@
-<style lang='scss' >
+<style lang='scss' scoped >
 .deposit {
   padding: 10px 20px;
   color: #eee;
@@ -45,7 +45,10 @@
 <template>
   <div class="deposit home">
     <div class="deposit-account">
-      <div class="deposit-account_title">{{ $t('Farm.user.title') }}</div>
+      <div class="deposit-account_title">
+        <img style="height: 26px; margin-right: 10px" src="../../assets/icon.png" alt="" />
+        {{ $t('Farm.user.title') }}</div
+      >
       <a-table
         rowKey="address"
         :dataSource="userInfoList"
@@ -145,7 +148,10 @@
       </a-table>
     </div>
     <div class="deposit-account">
-      <div class="deposit-account_title"> {{ $t('Farm.all.title') }}</div>
+      <div class="deposit-account_title">
+        <img style="height: 26px; margin-right: 10px" src="../../assets/icon.png" alt="" />
+        {{ $t('Farm.all.title') }}
+      </div>
       <a-table
         rowKey="address"
         :dataSource="pairsList"
@@ -302,9 +308,9 @@ export default {
             return {
               children: (
                 <div style="display:flex ">
-                  <div style="height: 20px;line-height: 44px;margin-right:10px">
-                    <img class="b-icon" src={'./img/icon/' + record.symbol0 + '.png'} />
-                    <img class="b-icon" src={'./img/icon/' + record.symbol1 + '.png'} />
+                  <div style="height: 20px;line-height: 44px;margin-right:5px">
+                    <img class="b-icon" src={'./assets/' + record.symbol0 + '.png'} />
+                    <img class="b-icon" src={'./assets/' + record.symbol1 + '.png'} />
                   </div>
                   <div>
                     <div>{text}</div>
@@ -326,7 +332,7 @@ export default {
             return {
               children: (
                 <div>
-                  <img class="b-icon" src={'./img/icon/' + text + '.png'} />
+                  <img class="b-icon" src={'./assets/' + text + '.png'} />
                   <span class="b-icon-name">{text}</span>
                 </div>
               ),
@@ -385,8 +391,8 @@ export default {
               children: (
                 <div style="display:flex ">
                   <div style="height: 20px;line-height: 44px;margin-right:10px">
-                    <img class="b-icon" src={'./img/icon/' + record.symbol0 + '.png'} />
-                    <img class="b-icon" src={'./img/icon/' + record.symbol1 + '.png'} />
+                    <img class="b-icon" src={'./assets/' + record.symbol0 + '.png'} />
+                    <img class="b-icon" src={'./assets/' + record.symbol1 + '.png'} />
                   </div>
                   <div>
                     <div>{text}</div>
@@ -414,11 +420,11 @@ export default {
               children: (
                 <div>
                   <div>
-                    <img class="b-icon" src={'./img/icon/' + record.symbol0 + '.png'} />
+                    <img class="b-icon" src={'./assets/' + record.symbol0 + '.png'} />
                     <span style="margin-left:10px">{this.$tranNumber(record.amount0, 4)}</span>
                   </div>
                   <div>
-                    <img class="b-icon" src={'./img/icon/' + record.symbol1 + '.png'} />
+                    <img class="b-icon" src={'./assets/' + record.symbol1 + '.png'} />
                     <span style="margin-left:10px">{this.$tranNumber(record.amount1, 4)}</span>
                   </div>
                 </div>

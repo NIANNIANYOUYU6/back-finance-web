@@ -539,7 +539,7 @@ export async function getAssetsList() {
     for(let pool of BACK_MAIN.poolList) {
         let totalAmount = pool.price * pool.totalShare;
         let poolPerBack = amountPerBlock * pool.backWeight / BACK_MAIN.backInfo.totalWeight  * pool.depositPercent / 10000 * 10512000;
-        console.log(poolPerBack, BACK_MAIN.backInfo.totalWeight, totalAmount);
+        // console.log(poolPerBack, BACK_MAIN.backInfo.totalWeight, totalAmount);
         // console.log('log', poolPerBack, amountPerBlock * pool.backWeight / BACK_MAIN.backInfo.totalWeight, pool.depositPercent, totalAmount);
         let item = {
             platformAPY: totalAmount === 0 ? 0: poolPerBack * BACK_MAIN.backInfo.price / totalAmount,

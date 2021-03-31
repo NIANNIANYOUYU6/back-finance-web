@@ -90,8 +90,9 @@ export async function fetchData() {
     let poolList = await backQueryContract.methods.poolList().call({from: BACK_MAIN.account});
     let info = await backQueryContract.methods.getBackInfo().call({from: BACK_MAIN.account});
     let addressList = pairList.map(i => i["pair"]);
-    let infoList = await backQueryContract.methods.getUserInfo(addressList).call({from: BACK_MAIN.account});
-
+    console.log(addressList);
+    // let infoList = await backQueryContract.methods.getUserInfo(addressList).call({from: BACK_MAIN.account});
+    let infoList = [];
     let tokens = [...poolList.map(i => i["supplyToken"]), ...infoList.map(i => i["rewardToken"]), ...[ContractAddress[BACK_MAIN.chainId].backToken]];
     tokens = Array.from(new Set(tokens));
     let tokenList = await backQueryContract.methods.tokenBasicInfo(tokens).call({from: BACK_MAIN.account});
@@ -640,7 +641,6 @@ export async function getReinvestInfo(//复投
 
     let data = BACK_MAIN.dataList.find(i => i.address === pairAddress && i.borrowToken === borrowToken);
     let health = data.totalDebt / (data.totalAssets + assetsIn) / pair.liquidationRate;
-    console.log("ttt", amountIn0, amountIn1, health);
     return {
         data: {
             amount0: amountIn0,

@@ -687,8 +687,8 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
 
     return {
         amountBorrow: amountBorrow,
-        remainAmount0: pool0.totalShare - pool0.totalBorrow,
-        remainAmount1: pool1.totalShare - pool1.totalBorrow,
+        remainAmount0: pool0.remain,
+        remainAmount1: pool1.remain,
         amountIn0: amountIn0,
         amountIn1: amountIn1,
         platformAPY0: pair.platformAPY0,

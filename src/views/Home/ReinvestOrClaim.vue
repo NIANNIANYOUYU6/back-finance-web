@@ -63,7 +63,9 @@
           <a-button type="primary" :disabled="pairsItem.pendingReward === 0" @click="claimFunc()">{{
             $t('Operation.claim')
           }}</a-button>
-          <a-button type="primary" @click="handleOk">{{ $t('Operation.reinvest') }}</a-button>
+          <a-button type="primary" :disabled="pairsItem.pendingReward === 0" @click="handleOk">{{
+            $t('Operation.reinvest')
+          }}</a-button>
         </div>
         <div class="deposit-card-footer_text"
           >{{ $t('Sidebar.balance') }} :

@@ -54,9 +54,12 @@
             @click="approveTokenFunc"
             >{{ $t('Operation.warrant') }}</a-button
           >
-          <a-button :disabled="!allowance || !!errorText" type="primary" @click="handleOk">{{
-            $t('Operation.ok')
-          }}</a-button>
+          <a-button
+            :disabled="!allowance || !!errorText || !+amount"
+            type="primary"
+            @click="handleOk"
+            >{{ $t('Operation.ok') }}</a-button
+          >
         </div>
         <div class="deposit-card-footer_text"
           >{{ $t('Sidebar.balance') }} :
@@ -126,9 +129,7 @@ export default {
     updateAmount() {
       this.scale = this.amount / this.balance;
       let err = '';
-      if (this.amount === '' || +this.amount === 0) {
-        err = this.$t('Prompt.error4');
-      } else if (!+this.amount) {
+      if (!+this.amount && +this.amount !== 0) {
         err = this.$t('Prompt.error3');
       } else if (this.amount > +this.balance) {
         err = this.$t('Prompt.error2');

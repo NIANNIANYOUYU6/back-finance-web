@@ -129,10 +129,9 @@ export default {
       this.updateAmount();
     },
     updateAmount() {
-      console.log(this.amount, +this.form.remainBorrow);
       this.scale = this.amount / this.form.amountDeposit;
       let err = '';
-      if (!+this.amount) {
+      if (!+this.amount && +this.amount !== 0) {
         err = this.$t('Prompt.error3');
       } else if (this.amount > +this.form.remainBorrow) {
         err = this.$t('Prompt.error8');

@@ -144,7 +144,6 @@ export default {
     // 授权
     approveTokenFunc() {
       this.loading = true;
-      console.log('');
       approveToken(this._address, async (code, msg) => {
         console.log('approve result ', code, msg);
         if (code === 1) {

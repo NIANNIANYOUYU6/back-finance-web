@@ -18,8 +18,18 @@
   .back-user-table {
     min-height: 100px;
     .back-table_item-thead {
-      padding: 0 10px;
-      line-height: 40px;
+      display: flex;
+      align-items: center;
+      background-color: #141031;
+      justify-content: space-between;
+      line-height: 36px;
+      margin-top: 10px;
+      .back-table_item-thead-text {
+        .text-c {
+          color: #6483b9;
+          margin-right: 10px;
+        }
+      }
     }
     .back-table_item-body {
       display: flex;
@@ -67,34 +77,41 @@
             <a-empty v-if="!userInfoList.length" :image="simpleImage" style="color: #fff" />
             <div class="back-table_item" v-for="(userInfo, index) in userInfoList" :key="index">
               <div class="back-table_item-thead">
-                <img class="b-icon" :src="'./assets/' + userInfo.symbol0 + '.png'" />
-                <img class="b-icon" :src="'./assets/' + userInfo.symbol1 + '.png'" />
-                <span class="fw-fff ml-10"> {{ userInfo.swapperName }}</span>
-                <a-divider type="vertical" style="background: #4d4bbf" />
-                <span class="fw-fff"> {{ userInfo.symbol0 }}/{{ userInfo.symbol1 }} </span>
+                <div>
+                  <img class="b-icon" :src="'./assets/' + userInfo.symbol0 + '.png'" />
+                  <img class="b-icon" :src="'./assets/' + userInfo.symbol1 + '.png'" />
+                  <span class="fw-fff ml-10"> {{ userInfo.swapperName }}</span>
+                  <a-divider type="vertical" style="background: #4d4bbf" />
+                  <span class="fw-fff"> {{ userInfo.symbol0 }}/{{ userInfo.symbol1 }} </span>
+                </div>
+                <div class="back-table_item-thead-text">
+                  <span class="text-c">{{ $t('Farm.user.pendingReward') }} </span>
+                  <span class="fw-fff">
+                    ${{ $tranNumber(userInfo.pendingReward, 2) }} {{ userInfo.rewardSymbol }}
+                  </span>
+                </div>
               </div>
-              <div
-                class="back-table_item-body"
-                v-for="(child, index) in userInfo.child"
-                :key="index"
-              >
-                <div style="width: 100px">
-                  <img class="b-icon" :src="'./assets/' + child.borrowSymbol + '.png'" />
-                  <span class="fw-fff ml-10"> {{ child.borrowSymbol }} </span>
+              <div class="back-table_item-body">
+                <div class="back-table_item-body-text">
+                  <span class="text-c">{{ $t('Farm.borrowSymbol') }} </span>
+                  <span>
+                    <img class="b-icon" :src="'./assets/' + userInfo.borrowSymbol + '.png'" />
+                    <span class="fw-fff ml-10"> {{ userInfo.borrowSymbol }} </span>
+                  </span>
                 </div>
                 <div class="back-table_item-body-text">
                   <span class="text-c">{{ $t('Farm.totalAssets') }} </span>
                   <span class="fw-fff">
-                    ${{ $tranNumber(child.totalAssets, 2) }}
+                    ${{ $tranNumber(userInfo.totalAssets, 2) }}
                     <a-tooltip placement="right" color="#5C5CE6">
                       <template #title>
                         {{ $t('Farm.lp') }}:
                         <span>{{
-                          $tranNumber(child.amount0, 4) +
-                          child.symbol0 +
+                          $tranNumber(userInfo.amount0, 4) +
+                          userInfo.symbol0 +
                           '+' +
-                          $tranNumber(child.amount1, 4) +
-                          child.symbol1
+                          $tranNumber(userInfo.amount1, 4) +
+                          userInfo.symbol1
                         }}</span>
                       </template>
                       <InfoCircleOutlined />
@@ -104,16 +121,16 @@
                 <div class="back-table_item-body-text">
                   <span class="text-c">{{ $t('Farm.user.totalDebt') }} </span>
                   <span class="fw-fff">
-                    ${{ $tranNumber(child.totalDebt, 2) }}
+                    ${{ $tranNumber(userInfo.totalDebt, 2) }}
                     <a-tooltip placement="right" color="#5C5CE6">
                       <template #title>
                         {{ $t('Farm.debt') }}:
                         <span>{{
-                          $tranNumber(child.debtAmount, 4) +
-                          child.borrowSymbol +
+                          $tranNumber(userInfo.debtAmount, 4) +
+                          userInfo.borrowSymbol +
                           '+' +
-                          $tranNumber(child.debtInterest, 4) +
-                          child.borrowSymbol
+                          $tranNumber(userInfo.debtInterest, 4) +
+                          userInfo.borrowSymbol
                         }}</span>
                       </template>
                       <InfoCircleOutlined />
@@ -130,31 +147,25 @@
                       <QuestionCircleOutlined />
                     </a-tooltip>
                   </span>
-                  <span class="fw-fff">{{ $tranNumber(child.healthy * 100, 2) }} </span>
-                </div>
-                <div class="back-table_item-body-text">
-                  <span class="text-c">{{ $t('Farm.user.pendingReward') }} </span>
-                  <span class="fw-fff">
-                    ${{ $tranNumber(child.pendingReward, 2) }} {{ child.rewardSymbol }}
-                  </span>
+                  <span class="fw-fff">{{ $tranNumber(userInfo.healthy * 100, 2) }} </span>
                 </div>
                 <div class="back-table_item-body-btn">
                   <div class="back-table_item-body-btn-line">
-                    <a-button type="primary" size="small" @click="openCard(child, 'add')">
+                    <a-button type="primary" size="small" @click="openCard(userInfo, 'add')">
                       {{ $t('Operation.add') }}</a-button
                     >
-                    <a-button type="primary" size="small" @click="openCard(child, 'repay')">{{
+                    <a-button type="primary" size="small" @click="openCard(userInfo, 'repay')">{{
                       $t('Operation.repay')
                     }}</a-button>
-                    <a-button type="primary" size="small" @click="openCard(child, 'divest')">{{
+                    <a-button type="primary" size="small" @click="openCard(userInfo, 'divest')">{{
                       $t('Operation.divest')
                     }}</a-button>
                   </div>
                   <div class="back-table_item-body-btn-line" style="margin-top: 8px">
-                    <a-button type="primary" size="small" @click="openCard(child, 'reinvest')"
+                    <a-button type="primary" size="small" @click="openCard(userInfo, 'reinvest')"
                       >{{ $t('Operation.reinvest') }}
                     </a-button>
-                    <a-button type="primary" size="small" @click="openCard(child, 'claim')">{{
+                    <a-button type="primary" size="small" @click="openCard(userInfo, 'claim')">{{
                       $t('Operation.claim')
                     }}</a-button>
                   </div>
@@ -321,7 +332,6 @@ export default {
       openCardMode: '',
       pairsList: [],
       userInfoList: [],
-      userInfoListAAAAA: [],
       loading: false,
       myColumns: [
         {
@@ -503,22 +513,7 @@ export default {
     async getUserInfoList() {
       const res = await getUserInfoList();
       console.log('getUserInfoList--->', res);
-      let userInfo = {};
-      res.forEach((item) => {
-        let { address, swapperName, symbol0, symbol1 } = item;
-        if (!userInfo[address]) {
-          userInfo[address] = {
-            swapperName,
-            symbol0,
-            symbol1,
-            child: [],
-          };
-        }
-        userInfo[address].child.push(item);
-      });
-      this.userInfoList = Object.values(userInfo);
-      console.log(this.userInfoList);
-      this.userInfoListAAAAA = res;
+      this.userInfoList = res;
     },
     openCard(item, type) {
       this.pairsItem = item;

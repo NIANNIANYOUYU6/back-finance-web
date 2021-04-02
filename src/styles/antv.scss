@@ -19,9 +19,12 @@
 }
 
 
-.ant-btn-primary{
+.ant-btn-primary,.ant-btn-primary:hover{
   background-color: #4A5EFF;
   border-color: #4A5EFF;
+}
+.ant-btn-primary[disabled],.ant-btn-primary[disabled]:hover{
+  color: #333;
 }
 .back-table{
   padding: 10px;
@@ -130,6 +133,10 @@
         color: #fff;
         border: 0;
         background-image: linear-gradient(to right, #B15FF1 , #556CF5);
+      }
+      .ant-btn-primary[disabled]{
+        color: #5353bd;
+        background-image: linear-gradient(to right, #29285f , #29285f);
       }
     }
   }

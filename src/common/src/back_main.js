@@ -60,12 +60,17 @@ async function fetchLiquidityList() {
             liquidity.symbol0 = pair.symbol0;
             liquidity.symbol1 = pair.symbol1;
             liquidity.swapperName = swapper[pair.pid];
-            liquidity.lpAmount = parseFloat(convertBigNumberToNormal(item["pledgeAmount"]));
+            liquidity.lpAmount = Number(convertBigNumberToNormal(item["pledgeAmount"]));
+            if(!liquidity.lpAmount) {
+                continue;
+            }
+            liquidity.amount0 = liquidity.lpAmount / pair.lpSupply * pair.reserve0;
+            liquidity.amount1 = liquidity.lpAmount / pair.lpSupply * pair.reserve1;
             liquidity.owner = BACK_MAIN.web3.utils.toChecksumAddress(item["owner"]);
             liquidity.lpPrice = getLPPrice(pair);
             liquidity.borrowToken = BACK_MAIN.web3.utils.toChecksumAddress(item["borrowToken"]);
-            liquidity.borrowInterest = parseFloat(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
-            liquidity.borrowAmount = parseFloat(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
+            liquidity.borrowInterest = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
+            liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
             liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
             let totalDebt = (liquidity.borrowInterest + liquidity.borrowAmount) * _getTokenPrice(liquidity.borrowToken);
             let totalAsset = liquidity.lpAmount * liquidity.lpPrice;
@@ -76,6 +81,7 @@ async function fetchLiquidityList() {
 
         BACK_MAIN.liquidationList.sort((a, b) => b.health - a.health);
         BACK_MAIN.loading = false;
+        console.log("liquidate", BACK_MAIN.liquidationList)
     });
 }
 
@@ -171,15 +177,15 @@ export async function fetchData() {
 
     for(let item of poolList) {
         let pool = {};
-        pool.interestPerBorrow = parseFloat(convertBigNumberToNormal(item["interestPerBorrow"]));
-        pool.interestRate = parseFloat(convertBigNumberToNormal(item["interestRate"]));
+        pool.interestPerBorrow = Number(convertBigNumberToNormal(item["interestPerBorrow"]));
+        pool.interestRate = Number(convertBigNumberToNormal(item["interestRate"]));
         pool.address = item["pool"];
-        pool.price = parseFloat(convertBigNumberToNormal(item["price"]));
+        pool.price = Number(convertBigNumberToNormal(item["price"]));
         pool.supplyToken = item["supplyToken"];
-        pool.balance = parseFloat(convertBigNumberToNormal(item["balance"]));
-        pool.totalBorrow = parseFloat(convertBigNumberToNormal(item["totalBorrow"]));
-        pool.totalShare = parseFloat(convertBigNumberToNormal(item["totalShare"]));
-        pool.totalSupply = parseFloat(convertBigNumberToNormal(item["totalSupply"]));
+        pool.balance = Number(convertBigNumberToNormal(item["balance"]));
+        pool.totalBorrow = Number(convertBigNumberToNormal(item["totalBorrow"]));
+        pool.totalShare = Number(convertBigNumberToNormal(item["totalShare"]));
+        pool.totalSupply = Number(convertBigNumberToNormal(item["totalSupply"]));
         pool.backWeight = parseInt(item["backWeight"]);
         pool.depositPercent = parseInt(item["depositPercent"]) / 10000;
         pool.reservePercent = parseInt(item["reservePercent"]) / 10000;
@@ -189,7 +195,7 @@ export async function fetchData() {
             let addInterest = pool.interestRate * pool.totalBorrow * (BACK_MAIN.currentBlock - pool.lastUpdateBlock) * (1 - pool.reservePercent);
             pool.interestPerBorrow += addInterest / pool.totalBorrow;
         }
-        pool.remain = parseFloat(convertBigNumberToNormal(item["remain"]));
+        pool.remain = convertBigNumberToNormal(item["remain"]);
         tokens.push(pool.supplyToken);
         BACK_MAIN.poolList.push(pool);
     }

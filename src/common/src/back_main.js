@@ -64,10 +64,10 @@ async function fetchLiquidityList() {
             if(!liquidity.lpAmount) {
                 continue;
             }
+            liquidity.lpPrice = getLPPrice(pair);
             liquidity.amount0 = liquidity.lpAmount / pair.lpSupply * pair.reserve0;
             liquidity.amount1 = liquidity.lpAmount / pair.lpSupply * pair.reserve1;
             liquidity.owner = BACK_MAIN.web3.utils.toChecksumAddress(item["owner"]);
-            liquidity.lpPrice = getLPPrice(pair);
             liquidity.borrowToken = BACK_MAIN.web3.utils.toChecksumAddress(item["borrowToken"]);
             liquidity.borrowInterest = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
             liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
@@ -76,6 +76,7 @@ async function fetchLiquidityList() {
             let totalAsset = liquidity.lpAmount * liquidity.lpPrice;
             liquidity.discount = 0.95;
             liquidity.health = totalDebt / totalAsset / pair.liquidationRate;
+            liquidity.totalDebtAmount = liquidity.lpAmount * liquidity.lpPrice / _getTokenPrice(liquidity.borrowToken)
             BACK_MAIN.liquidationList.push(liquidity);
         }
 
@@ -194,6 +195,7 @@ export async function fetchData() {
         if(pool.totalBorrow > 0) {
             let addInterest = pool.interestRate * pool.totalBorrow * (BACK_MAIN.currentBlock - pool.lastUpdateBlock) * (1 - pool.reservePercent);
             pool.interestPerBorrow += addInterest / pool.totalBorrow;
+            pool.totalShare += addInterest;
         }
         pool.remain = convertBigNumberToNormal(item["remain"]);
         tokens.push(pool.supplyToken);

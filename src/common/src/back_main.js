@@ -134,6 +134,27 @@ export function setupTokenList(list) { //存储到数据中心
     }
 }
 
+function getHealthyValue(pair, borrowToken, debt, liquidity, amountIn0 = 0, amountIn1 = 0) {
+    let reserveAfter0 = pair.reserve0 + amountIn0;
+    let reserveAfter1 = pair.reserve1 + amountIn1;
+    let amount0 = liquidity / (pair.lpSupply + liquidity) * (reserveAfter0);
+    let amount1 = liquidity / (pair.lpSupply + liquidity) * (reserveAfter1);
+    let totalAsset;
+    if(borrowToken === pair.token0) {
+        totalAsset = amount0 + _getAmountOut(amount1, reserveAfter1 - amount1, reserveAfter0 - amount0)
+    } else {
+        totalAsset = amount1 + _getAmountOut(amount0, reserveAfter0 - amount0, reserveAfter1 - amount1)
+    }
+    // console.log(liquidity, debt, amount0, amount1, amountIn0, amountIn1, pair.reserve0, pair.reserve1, totalAsset, pair.liquidationRate);
+    // console.log(`liquidity:${liquidity} debt:${debt}
+    // amount0:${amount0} amount1:${amount1}
+    // amountIn0:${amountIn0} amountIn1:${amountIn1}
+    // reserve0:${pair.reserve0} reserve1:${pair.reserve1}
+    // totalAsset:${totalAsset}`)
+    return debt / totalAsset / pair.liquidationRate
+}
+
+
 export async function fetchData() {
     if(BACK_MAIN.loading) {
         return
@@ -192,12 +213,15 @@ export async function fetchData() {
         pool.reservePercent = parseInt(item["reservePercent"]) / 10000;
         pool.symbol = getTokenSymbol(pool.supplyToken);
         pool.lastUpdateBlock = parseInt(item["lastUpdateBlock"]);
+        pool.remain = Number(convertBigNumberToNormal(item["remain"]));
         if(pool.totalBorrow > 0) {
-            let addInterest = pool.interestRate * pool.totalBorrow * (BACK_MAIN.currentBlock - pool.lastUpdateBlock) * (1 - pool.reservePercent);
-            pool.interestPerBorrow += addInterest / pool.totalBorrow;
+            let addInterest = pool.interestRate * pool.totalBorrow * (BACK_MAIN.currentBlock - pool.lastUpdateBlock);
+            let poolReserve = addInterest * pool.reservePercent;
+            pool.interestPerBorrow += (addInterest - poolReserve) / pool.totalBorrow;
+            pool.remain -= poolReserve
             pool.totalShare += addInterest;
         }
-        pool.remain = convertBigNumberToNormal(item["remain"]);
+
         tokens.push(pool.supplyToken);
         BACK_MAIN.poolList.push(pool);
     }
@@ -282,9 +306,10 @@ export async function fetchData() {
                 debtInterest: info.amountInterest0,
                 totalDebt: (info.amountBorrow0 + info.amountInterest0) * price0,
                 pendingReward: info.amountReward0,
+                liquidity: info.amountPledge0,
                 swapperName: swapper[pair.pid]
             };
-            item.healthy = item.totalDebt / item.totalAssets / pair.liquidationRate;
+            item.healthy = getHealthyValue(pair, pair.token0, info.amountBorrow0 + info.amountInterest0, info.amountPledge0);
             BACK_MAIN.dataList.push(item);
         }
 
@@ -306,9 +331,10 @@ export async function fetchData() {
                 pendingReward: info.amountReward1,
                 debtAmount: info.amountBorrow1,
                 debtInterest: info.amountInterest1,
+                liquidity: info.amountPledge1,
                 swapperName: swapper[pair.pid]
             };
-            item.healthy = item.totalDebt / item.totalAssets / pair.liquidationRate;
+            item.healthy = getHealthyValue(pair, pair.token1, info.amountBorrow1 + info.amountInterest1, info.amountPledge1);
             BACK_MAIN.dataList.push(item);
         }
 
@@ -452,31 +478,35 @@ export async function getLiquidationList() {
 
 export async function getAddInfo(pairAddress, amount0, amount1, borrowToken) {
     let pair = BACK_MAIN.pairList.find(i => i.address === pairAddress);
-    let pool0 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token0);
-    let pool1 = BACK_MAIN.poolList.find(i => i.supplyToken === pair.token1);
-    let list = await getUserInfoList();
-    // console.log(list);
-    let info = list.find(i => i.address === pair.address && borrowToken === i.borrowToken);
+
+    let info = BACK_MAIN.dataList.find(i => i.address === pair.address && borrowToken === i.borrowToken);
     let amountIn0 = amount0;
     let amountIn1 = amount1;
+    let reserve0 = pair.reserve0;
+    let reserve1 = pair.reserve1;
 
     if(amountIn0 * pair.reserve1 >= amountIn1 * pair.reserve0) {
         let swapAmount = _getAmountSwap(amountIn0, amountIn1, pair.reserve0, pair.reserve1);
         amountIn0 -= swapAmount;
         amountIn1 += _getAmountOut(swapAmount, pair.reserve0, pair.reserve1);
+        reserve0 += amountIn0;
+        reserve1 -= amountIn1;
     } else {
         let swapAmount = _getAmountSwap(amountIn1, amountIn0, pair.reserve1, pair.reserve0);
         amountIn1 -= swapAmount;
         amountIn0 += _getAmountOut(swapAmount, pair.reserve1, pair.reserve0);
+        reserve0 -= amountIn0;
+        reserve1 += amountIn1;
     }
-    let addAssets = amountIn0 * pool0.price + amountIn1 * pool1.price;
+    let addLiquidity = Math.min(amountIn0 * pair.lpSupply / reserve0, amountIn1 * pair.lpSupply / reserve1);
 
     return {
         amountIn0: amountIn0,
         amountIn1: amountIn1,
         amountAfter0: amountIn0 + info.amount0,
         amountAfter1: amountIn1 + info.amount1,
-        healthy: info.totalDebt / (info.totalAssets + addAssets) / pair.liquidationRate
+        healthy: getHealthyValue(pair, borrowToken, info.debtAmount + info.debtInterest,
+            addLiquidity + info.liquidity, amountIn0, amountIn1)
     }
 }
 
@@ -493,16 +523,17 @@ export async function getReinvestInfo(//复投
 
     let amountIn0 = _getAmountOut(amountReward, reserve1, reserve0);
     let amountIn1 = 0;
-    console.log(reserve1, reserve0, amountIn0, amountReward);
 
     let swapAmount = _getAmountSwap(amountIn0, amountIn1, pair.reserve0, pair.reserve1);
     amountIn0 -= swapAmount;
     amountIn1 += _getAmountOut(swapAmount, pair.reserve0, pair.reserve1);
 
-    let assetsIn = _getTokenPrice(pair.token0) * amountIn0 + _getTokenPrice(pair.token1) * amountIn1;
+    reserve0 = pair.reserve0;
+    reserve1 = pair.reserve1;
+    let addLiquidity = Math.min(amountIn0 * pair.lpSupply / reserve0, amountIn1 * pair.lpSupply / reserve1);
 
     let data = BACK_MAIN.dataList.find(i => i.address === pairAddress && i.borrowToken === borrowToken);
-    let health = data.totalDebt / (data.totalAssets + assetsIn) / pair.liquidationRate;
+    let health = getHealthyValue(pair, borrowToken, data.debtAmount + data.debtInterest, addLiquidity + data.liquidity, amountIn0, amountIn1);
     return {
         data: {
             amount0: amountIn0,
@@ -526,6 +557,9 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
     let amountIn1;
     let interestRate;
 
+    let reserve0 = pair.reserve0;
+    let reserve1 = pair.reserve1;
+
     if(borrowToken === pair.token0) {
         interestRate = pool0.interestRate * YEAR;
         amountBorrow = assetBorrow / price0;
@@ -539,15 +573,25 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
     }
 
     if(amountIn0 * pair.reserve1 >= amountIn1 * pair.reserve0) {
-        let swapAmount = _getAmountSwap(amountIn0, amountIn1, pair.reserve0, pair.reserve1);
-        amountIn0 -= swapAmount;
-        amountIn1 += _getAmountOut(swapAmount, pair.reserve0, pair.reserve1);
+        let swapAmountIn = _getAmountSwap(amountIn0, amountIn1, pair.reserve0, pair.reserve1);
+        let swapAmountOut = _getAmountOut(swapAmountIn, pair.reserve0, pair.reserve1);
+        amountIn0 -= swapAmountIn;
+        amountIn1 += swapAmountOut;
+        reserve0 += swapAmountIn;
+        reserve1 -= swapAmountOut;
+        console.log("1m", pair.reserve0, pair.reserve1, swapAmountIn, swapAmountOut)
     } else {
-        let swapAmount = _getAmountSwap(amountIn1, amountIn0, pair.reserve1, pair.reserve0);
-        amountIn1 -= swapAmount;
-        amountIn0 += _getAmountOut(swapAmount, pair.reserve1, pair.reserve0);
+        let swapAmountIn = _getAmountSwap(amountIn1, amountIn0, pair.reserve1, pair.reserve0);
+        let swapAmountOut = _getAmountOut(swapAmountIn, pair.reserve1, pair.reserve0);
+        amountIn1 -= swapAmountIn;
+        amountIn0 += swapAmountOut;
+        reserve0 -= swapAmountOut;
+        reserve1 += swapAmountIn;
     }
 
+
+    let addLiquidity = Math.min(amountIn0 * pair.lpSupply / reserve0, amountIn1 * pair.lpSupply / reserve1);
+    console.log("sss", reserve0, reserve1, addLiquidity);
     return {
         amountBorrow: amountBorrow,
         remainAmount0: pool0.remain,
@@ -556,7 +600,7 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
         amountIn1: amountIn1,
         platformAPY0: pair.platformAPY0,
         platformAPY1: pair.platformAPY1,
-        healthy: assetBorrow / (assetBorrow + assetIn) / pair.liquidationRate,
+        healthy: getHealthyValue(pair, borrowToken, amountBorrow, addLiquidity, amountIn0, amountIn1),
         interestAPY: interestRate
     }
 }
@@ -567,15 +611,12 @@ export async function getRepayInfo(pairAddress, borrowToken, amountRepay) {
     let data = BACK_MAIN.dataList.find(i => i.address === pairAddress && i.borrowToken === borrowToken);
     let borrowAmount = data.debtAmount;
     let interestAmount = data.debtInterest;
-    let totalAssets = data.totalAssets;
-    let borrowPrice = _getTokenPrice(borrowToken);
 
     let borrowRepay = amountRepay * borrowAmount / (borrowAmount + interestAmount);
     let interestRepay = amountRepay * interestAmount / (interestAmount + borrowAmount);
     let borrowRemain = borrowAmount - borrowRepay;
     let interestRemain = interestAmount - interestRepay;
 
-    let health = (borrowRemain + interestRemain) * borrowPrice / totalAssets / pair.liquidationRate;
     return {
         borrowAmount: borrowAmount,
         interestAmount: interestAmount,
@@ -583,7 +624,7 @@ export async function getRepayInfo(pairAddress, borrowToken, amountRepay) {
         interestRepay: interestRepay,
         borrowRemain: borrowRemain,
         interestRemain: interestRemain,
-        health: health
+        health: getHealthyValue(pair, borrowToken, borrowRemain + interestRemain, data.liquidity)
     }
 }
 

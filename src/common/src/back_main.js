@@ -72,11 +72,14 @@ async function fetchLiquidityList() {
             liquidity.borrowInterest = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
             liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
             liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
-            let totalDebt = (liquidity.borrowInterest + liquidity.borrowAmount) * _getTokenPrice(liquidity.borrowToken);
-            let totalAsset = liquidity.lpAmount * liquidity.lpPrice;
             liquidity.discount = 0.95;
-            liquidity.health = totalDebt / totalAsset / pair.liquidationRate;
-            liquidity.totalDebtAmount = liquidity.lpAmount * liquidity.lpPrice / _getTokenPrice(liquidity.borrowToken)
+            liquidity.health = getHealthyValue(pair, liquidity.borrowToken, liquidity.borrowAmount + liquidity.borrowInterest, liquidity.lpAmount);
+            if(liquidity.borrowToken === pair.token0) {
+                liquidity.debtAmount = liquidity.amount0 + _getAmountOut(liquidity.amount1, pair.reserve1, pair.reserve0)
+            } else {
+                liquidity.debtAmount = liquidity.amount1 + _getAmountOut(liquidity.amount0, pair.reserve0, pair.reserve1)
+            }
+
             BACK_MAIN.liquidationList.push(liquidity);
         }
 

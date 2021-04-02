@@ -14,6 +14,9 @@ getLiquidationList
     borrowSymbol: 借贷symbol
     discount: 清算折扣
     health: 健康值
+    amount0: token0 amount
+    amount1: token1 amount
+    debtAmount: LP总共价值多少个借贷的token
 }
 
 调用清算

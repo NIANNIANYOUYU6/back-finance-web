@@ -280,7 +280,7 @@ export async function fetchData() {
             BACK_MAIN.dataList.push(item);
         }
 
-        if(info.amountPledge1 > 0 || info.amountReward0 > 0) {
+        if(info.amountPledge1 > 0 || info.amountReward1 > 0) {
             let item = {
                 address: pair.address,
                 token0 : pair.token0,

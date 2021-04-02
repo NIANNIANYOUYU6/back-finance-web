@@ -1,75 +1,58 @@
-<style lang='scss'  >
-.deposit-card-footer {
-  .deposit-card-footer_button {
-    display: flex;
-    justify-content: space-between;
-    button {
-      padding: 0 30px;
-    }
-  }
-  .deposit-card-footer_text {
-    line-height: 40px;
-    font-size: 15px;
-    button {
-      color: rgba(0, 0, 0, 0.85);
-    }
-  }
-}
-</style>
+
 <template>
-  <a-modal class="deposit-card" visible @cancel="$emit('close')" width="480px">
+  <a-modal class="back-modal" visible @cancel="$emit('close')" width="480px">
     <template #title>
-      <div class="title">
-        <div class="title_icon">
-          <img class="icon" :src="'./assets/' + form.symbol + '.png'" />
-          <span class="name"> {{ form.symbol }}</span>
-        </div>
-        <div class="title_name">{{ $t('Operation.depositBtn') }}</div>
+      <div class="title_name">{{ $t('Operation.depositBtn') }}</div>
+      <div class="title_icon">
+        <img class="icon" :src="'./assets/' + form.symbol + '.png'" />
+        <span class="name"> {{ form.symbol }}</span>
       </div>
     </template>
-    <a-spin :spinning="loading">
-      <div class="deposit-card-content">
-        <a-input :suffix="form.symbol" v-model:value="amount" @change="updateAmount" />
-        <div class="error-text">{{ errorText }}</div>
-        <div class="select-percentage">
-          <a-button size="small" @click="switchScale(0.25)" :class="{ active: scale === 0.25 }">
-            25%
-          </a-button>
-          <a-button size="small" @click="switchScale(0.5)" :class="{ active: scale === 0.5 }">
-            50%
-          </a-button>
-          <a-button size="small" @click="switchScale(0.75)" :class="{ active: scale === 0.75 }">
-            75%
-          </a-button>
-          <a-button size="small" @click="switchScale(1)" :class="{ active: scale === 1 }">
-            100%
-          </a-button>
-        </div>
+
+    <div class="modal-body-content">
+      <a-input
+        class="modal-input"
+        :suffix="form.symbol"
+        v-model:value="amount"
+        @change="updateAmount"
+        :placeholder="balance"
+      />
+      <div class="error-text">{{ errorText }}</div>
+      <a-radio-group
+        class="back-radio-group"
+        v-model:value="scale"
+        button-style="solid"
+        @change="switchScale"
+      >
+        <a-radio-button :value="0.25">25%</a-radio-button>
+        <a-radio-button :value="0.5">50%</a-radio-button>
+        <a-radio-button :value="0.75">75%</a-radio-button>
+        <a-radio-button :value="1">100%</a-radio-button>
+      </a-radio-group>
+      <div class="text-space">
+        <span class="text-c">{{ $t('Sidebar.balance') }}</span>
+        <span class="fw-fff">{{ $tranNumber(balance, 8) }} {{ form.symbol }}</span>
       </div>
-      <div class="deposit-card-footer">
-        <div class="deposit-card-footer_button">
-          <a-button
-            :disabled="allowance > 0 && errorText !== $t('Prompt.error1')"
-            type="primary"
-            @click="approveTokenFunc"
-            >{{ $t('Operation.warrant') }}</a-button
-          >
-          <a-button
-            :disabled="!allowance || !!errorText || !+amount"
-            type="primary"
-            @click="handleOk"
-            >{{ $t('Operation.ok') }}</a-button
-          >
-        </div>
-        <div class="deposit-card-footer_text"
-          >{{ $t('Sidebar.balance') }} :
-          <a-button type="link">
-            {{ $tranNumber(balance, 8) }}
-          </a-button>
-          {{ form.symbol }}</div
-        >
-      </div>
-    </a-spin>
+    </div>
+    <div class="back-card-footer">
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        v-if="allowance === 0 || errorText === $t('Prompt.error1')"
+        type="primary"
+        @click="approveTokenFunc"
+        >{{ $t('Operation.warrant') }} {{ form.symbol }}</a-button
+      >
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        v-else
+        :disabled="!+amount"
+        type="primary"
+        @click="handleOk"
+        >{{ $t('Operation.ok') }}</a-button
+      >
+    </div>
   </a-modal>
 </template>
 <script>
@@ -92,7 +75,7 @@ export default {
     return {
       balance: '',
       loading: false,
-      amount: '0.00',
+      amount: '',
       errorText: '',
       scale: '',
       allowance: 0,
@@ -121,13 +104,13 @@ export default {
     // 获取授权额度
     async getAllowanceFunc() {
       this.allowance = await getAllowance(this._address);
+      console.log(this.allowance);
     },
-    switchScale(scale) {
-      this.amount = this.balance * scale;
+    switchScale() {
+      this.amount = this.balance * this.scale;
       this.updateAmount();
     },
     updateAmount() {
-      this.scale = this.amount / this.balance;
       let err = '';
       if (!+this.amount && +this.amount !== 0) {
         err = this.$t('Prompt.error3');
@@ -161,6 +144,7 @@ export default {
     // 授权
     approveTokenFunc() {
       this.loading = true;
+      console.log('');
       approveToken(this._address, async (code, msg) => {
         console.log('approve result ', code, msg);
         if (code === 1) {

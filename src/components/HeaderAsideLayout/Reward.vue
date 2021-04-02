@@ -17,30 +17,33 @@
 }
 </style>
 <template>
-  <a-modal class="deposit-card" visible @cancel="$emit('close')" width="420px">
+  <a-modal class="back-modal" visible @cancel="$emit('close')" width="420px">
     <template #title>
-      <div class="title">
-        <div class="title_icon">
-          <img class="icon" src="../../assets/icon.png" />
-          <span class="name">BACK</span>
-        </div>
+      <div class="title_name">{{ $t('Sidebar.button') }}</div>
+      <div class="title_icon">
+        <img class="icon" src="../../assets/logo.png" />
       </div>
     </template>
-    <a-spin :spinning="loading">
-      <div class="deposit-card-content">
-        <div style="line-height: 40px"
-          >{{ $t('Sidebar.profit') }} : {{ $tranNumber(title.queryBack, 2) }} BK</div
-        >
-        <div style="line-height: 40px"
-          >{{ $t('Sidebar.balance') }} : {{ $tranNumber(title.backBalance, 2) }} BK</div
-        >
+    <div class="modal-body-content">
+      <div class="text-space">
+        <span class="text-c">{{ $t('Sidebar.profit') }}</span>
+        <span class="fw-fff">{{ $tranNumber(title.queryBack, 2) }} BK</span>
       </div>
-      <div class="deposit-card-footer">
-        <a-button :disabled="+title.queryBack === 0" type="primary" @click="handleOk">{{
-          $t('Operation.receive')
-        }}</a-button>
+      <div class="text-space">
+        <span class="text-c">{{ $t('Sidebar.balance') }}</span>
+        <span class="fw-fff">{{ $tranNumber(title.backBalance, 2) }} BK</span>
       </div>
-    </a-spin>
+    </div>
+    <div class="back-card-footer">
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        :disabled="+title.queryBack === 0"
+        type="primary"
+        @click="handleOk"
+        >{{ $t('Operation.receive') }}</a-button
+      >
+    </div>
   </a-modal>
 </template>
 <script>

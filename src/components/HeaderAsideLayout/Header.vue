@@ -1,11 +1,10 @@
 <style lang='scss' scoped>
 .header {
-  height: 100%;
   padding: 0 20px 0 10px;
   .header-title {
     color: #35e9ef;
     text-align: end;
-    margin-bottom: 20px;
+    margin: 10px 20px;
     .header-title_link {
       cursor: pointer;
       display: flex;
@@ -80,39 +79,13 @@
     </div>
     <BorderCard>
       <div class="header-list">
-        <div class="header-item">
-          <i class="icon iconfont icon-Dollar-circle-fill"></i>
+        <div class="header-item" v-for="(item, index) in headerList" :key="index">
+          <i class="icon iconfont" :class="item.icon"></i>
           <div class="header-item_title">
-            <div class="header-item_name">{{ $t('Header.lockUp') }}</div>
-            <div class="header-item_num"> $ {{ $tranNumber(title.totalLock, 2) }} </div>
-          </div>
-        </div>
-        <div class="header-item">
-          <i class="icon iconfont icon-qianbao"></i>
-          <div class="header-item_title">
-            <div class="header-item_name">{{ $t('Header.deposit') }}</div>
-            <div class="header-item_num"> $ {{ $tranNumber(title.totalDeposit, 2) }} </div>
-          </div>
-        </div>
-        <div class="header-item">
-          <i class="icon iconfont icon-xiaofangzhanzongliangbeijing"></i>
-          <div class="header-item_title">
-            <div class="header-item_name">{{ $t('Header.allocation') }}</div>
-            <div class="header-item_num"> $ {{ $tranNumber(title.totalBorrow, 2) }} </div>
-          </div>
-        </div>
-        <div class="header-item">
-          <i class="icon iconfont icon-qian"></i>
-          <div class="header-item_title">
-            <div class="header-item_name">{{ $t('Header.price') }}</div>
-            <div class="header-item_num">$ {{ $tranNumber(title.backPrice, 2) }} </div>
-          </div>
-        </div>
-        <div class="header-item">
-          <i class="icon iconfont icon--wakuangjiankong"></i>
-          <div class="header-item_title">
-            <div class="header-item_name">{{ $t('Header.output') }}</div>
-            <div class="header-item_num"> {{ $tranNumber(title.backSupply, 2) }} </div>
+            <div class="header-item_name">{{ $t(`Header.${item.name}`) }}</div>
+            <div class="header-item_num fw-fff">
+              $ {{ $tranNumber(title[item.value] || 0, 2) }}
+            </div>
           </div>
         </div>
       </div>
@@ -128,6 +101,37 @@ export default {
   props: {
     title: Object,
     onHandleLoad: Function,
+  },
+  data() {
+    return {
+      headerList: [
+        {
+          icon: 'icon-Dollar-circle-fill',
+          name: 'lockUp',
+          value: 'totalLock',
+        },
+        {
+          icon: 'icon-qianbao',
+          name: 'deposit',
+          value: 'totalDeposit',
+        },
+        {
+          icon: 'icon-xiaofangzhanzongliangbeijing',
+          name: 'allocation',
+          value: 'totalBorrow',
+        },
+        {
+          icon: 'icon-qian',
+          name: 'price',
+          value: 'backPrice',
+        },
+        {
+          icon: 'icon--wakuangjiankong',
+          name: 'output',
+          value: 'backSupply',
+        },
+      ],
+    };
   },
   computed: {
     account() {

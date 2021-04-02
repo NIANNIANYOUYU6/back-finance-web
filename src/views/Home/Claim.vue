@@ -1,92 +1,51 @@
-<style lang='scss' >
-.home-card {
-  .ant-modal-content {
-    padding: 0 60px;
-  }
-  .ant-modal-body {
-    padding-top: 0px;
-    .deposit-card-content {
-      .icon {
-        height: 26px;
-      }
-      .error-text {
-        min-height: 10px;
-      }
-      .select-percentage {
-        margin: 0 0 10px;
-      }
-    }
-  }
-}
-</style>
+
 <template>
-  <a-modal class="deposit-card home-card" visible @cancel="$emit('close')" width="460px">
+  <a-modal class="back-modal" visible @cancel="$emit('close')">
     <template #title>
       <CardTitle
         :title="{
           swapperName: pairsItem.swapperName,
           tokenA: pairsItem.symbol0,
           tokenB: pairsItem.symbol1,
-          name: $t('Operation.reinvest') + '/' + $t('Operation.claim'),
+          name: $t('Operation.claim'),
         }"
       />
     </template>
-    <a-spin :spinning="loading">
-      <div class="deposit-card-content">
-        <div class="line-h-40">
-          {{ $t('Farm.display.claim1') }} :
-          {{ $tranNumber(pairsItem.pendingReward, 4) }}
-          {{ pairsItem.rewardSymbol }}
-        </div>
-        <div class="line-h-40">
-          {{ $t('Farm.display.reinvest1') }}
-          <a-tooltip placement="top">
-            <template #title>
-              <span> {{ $t('Farm.display.transform') }} </span>
-            </template>
-            <QuestionCircleOutlined />
-          </a-tooltip>
-          :{{ $tranNumber(form.amount0, 4) }} {{ pairsItem.symbol0 }} +
-          {{ $tranNumber(form.amount1, 4) }} {{ pairsItem.symbol1 }}
-        </div>
-        <div class="line-h-40">
-          {{ $t('Farm.display.reinvest2') }} : {{ $tranNumber(form.health * 100, 2) }}
-        </div>
-        <div class="line-h-40 prompt-text">
-          <ExclamationCircleFilled />
-          {{ $t('Farm.healthyRemind') }}
-        </div>
+    <div class="modal-body-content" style="margin: 30px 0">
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.display.claim1') }}</span>
+        <span class="fw-fff">
+          {{ $tranNumber(pairsItem.pendingReward, 4) }} {{ pairsItem.rewardSymbol }}
+        </span>
       </div>
-
-      <div class="deposit-card-footer">
-        <div class="deposit-card-footer_button">
-          <a-button type="primary" :disabled="pairsItem.pendingReward === 0" @click="claimFunc()">{{
-            $t('Operation.claim')
-          }}</a-button>
-          <a-button type="primary" :disabled="pairsItem.pendingReward === 0" @click="handleOk">{{
-            $t('Operation.reinvest')
-          }}</a-button>
-        </div>
-        <div class="deposit-card-footer_text"
-          >{{ $t('Sidebar.balance') }} :
-          <a-button type="link">
-            {{ $tranNumber(form.balance, 8) }}
-          </a-button>
-          {{ pairsItem.rewardSymbol }}</div
-        >
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Sidebar.balance') }}</span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.balance, 8) }} {{ pairsItem.rewardSymbol }}
+        </span>
       </div>
-    </a-spin>
+    </div>
+    <div class="back-card-footer">
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        type="primary"
+        :disabled="pairsItem.pendingReward === 0"
+        @click="claimFunc()"
+        style="margin-right: 15px"
+        >{{ $t('Operation.claim') }}
+      </a-button>
+    </div>
   </a-modal>
 </template>
 <script>
 import CardTitle from './CardTitle';
 import { message } from 'ant-design-vue';
-import { QuestionCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons-vue';
 
 import { reinvest, getBalance, claim, getReinvestInfo } from '../../common/src/back_main';
 
 export default {
-  components: { CardTitle, QuestionCircleOutlined, ExclamationCircleFilled },
+  components: { CardTitle },
   props: {
     pairsItem: Object,
     onClose: Function,

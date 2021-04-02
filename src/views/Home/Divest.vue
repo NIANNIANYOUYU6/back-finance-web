@@ -1,26 +1,6 @@
-<style lang='scss' >
-.home-card {
-  .ant-modal-content {
-    padding: 0 60px;
-  }
-  .ant-modal-body {
-    padding-top: 0px;
-    .deposit-card-content {
-      .icon {
-        height: 26px;
-      }
-      .error-text {
-        min-height: 10px;
-      }
-      .select-percentage {
-        margin: 0 0 10px;
-      }
-    }
-  }
-}
-</style>
+
 <template>
-  <a-modal class="deposit-card home-card" visible @cancel="$emit('close')" width="460px">
+  <a-modal class="back-modal" visible @cancel="$emit('close')">
     <template #title>
       <CardTitle
         :title="{
@@ -31,63 +11,44 @@
         }"
       />
     </template>
-    <a-spin :spinning="loading">
-      <div class="deposit-card-content">
-        <div class="line-h-40">
-          {{ $t('Farm.totalAssets') }} : {{ $tranNumber(pairsItem.amount0, 4) }}
-          {{ pairsItem.symbol0 }} +
-          {{ $tranNumber(pairsItem.amount1, 4) }}
-          {{ pairsItem.symbol1 }}
-        </div>
-        <div style="display: flex">
-          <div> {{ $t('Farm.display.divest1') }} : </div>
-          <div style="flex: 1; margin-left: 10px">
-            <a-input
-              suffix="%"
-              v-model:value="form.radio"
-              :placeholder="100"
-              @change="updateAmount()"
-            />
-            <div class="error-text">{{ form.errorText }}</div>
-            <div class="select-percentage">
-              <a-button
-                size="small"
-                @click="(form.radio = 25), getDivestInfo()"
-                :class="{ active: form.radio === 25 }"
-              >
-                25%
-              </a-button>
-              <a-button
-                size="small"
-                @click="(form.radio = 50), getDivestInfo()"
-                :class="{ active: form.radio === 50 }"
-              >
-                50%
-              </a-button>
-              <a-button
-                size="small"
-                @click="(form.radio = 75), getDivestInfo()"
-                :class="{ active: form.radio === 75 }"
-              >
-                75%
-              </a-button>
-              <a-button
-                size="small"
-                @click="(form.radio = 100), getDivestInfo()"
-                :class="{ active: form.radio === 100 }"
-              >
-                100%
-              </a-button>
-            </div>
-          </div>
-        </div>
-        <div class="line-h-40">
-          {{ $t('Farm.display.divest2') }} :
-          {{ $tranNumber(form.amount0, 4) }}
-          {{ pairsItem.symbol0 }} +
-          {{ $tranNumber(form.amount1, 4) }}
-          {{ pairsItem.symbol1 }}
-          <a-tooltip placement="top">
+    <div class="modal-body-content">
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.totalAssets') }}</span>
+        <span class="fw-fff">
+          {{ $tranNumber(pairsItem.amount0, 4) }} {{ pairsItem.symbol0 }}
+          +
+          {{ $tranNumber(pairsItem.amount1, 4) }} {{ pairsItem.symbol1 }}</span
+        >
+      </div>
+      <div class="text-space">
+        <span class="text-c">{{ $t('Farm.display.divest1') }}</span>
+      </div>
+      <a-input
+        class="modal-input"
+        suffix="%"
+        v-model:value="form.radio"
+        :placeholder="100"
+        @change="updateAmount()"
+      />
+      <div class="error-text">{{ form.errorText }}</div>
+      <a-radio-group
+        class="back-radio-group"
+        v-model:value="form.radio"
+        button-style="solid"
+        @change="getDivestInfo"
+      >
+        <a-radio-button :value="25">25%</a-radio-button>
+        <a-radio-button :value="50">50%</a-radio-button>
+        <a-radio-button :value="75">75%</a-radio-button>
+        <a-radio-button :value="100">100%</a-radio-button>
+      </a-radio-group>
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.display.divest2') }}</span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.amount0, 4) }} {{ pairsItem.symbol0 }}
+          +
+          {{ $tranNumber(form.amount1, 4) }} {{ pairsItem.symbol1 }}
+          <a-tooltip placement="top" color="#2b4a77">
             <template #title>
               <span>
                 {{ $t('Farm.debt') }} :{{
@@ -95,60 +56,55 @@
                 }}+ {{ $tranNumber(form.interestToPay, 4) + pairsItem.borrowSymbol }}</span
               >
             </template>
-            <QuestionCircleOutlined />
-          </a-tooltip>
-        </div>
-        <div class="line-h-40">
+            <QuestionCircleOutlined /> </a-tooltip
+        ></span>
+      </div>
+      <div class="text-space">
+        <span class="text-c" style="line-height: 54px">
           {{ $t('Farm.display.divest3') }}
-          <a-tooltip placement="top">
+          <a-tooltip color="#2b4a77" placement="top">
             <template #title>
               <span> {{ $t('Farm.display.divest3Remind') }}</span>
             </template>
-            <QuestionCircleOutlined />
-          </a-tooltip>
-          :
-          <div class="select-percentage" style="display: contents">
-            <a-button
-              size="small"
-              @click="(form.type = 'default'), getDivestInfo()"
-              :class="{ active: form.type === 'default' }"
-              >{{ $t('Farm.display.default') }}
-            </a-button>
-            <a-button
-              size="small"
-              @click="(form.type = '0'), getDivestInfo()"
-              :class="{ active: form.type === '0' }"
-            >
-              {{ pairsItem.symbol0 }}
-            </a-button>
-            <a-button
-              size="small"
-              @click="(form.type = '1'), getDivestInfo()"
-              :class="{ active: form.type === '1' }"
-            >
-              {{ pairsItem.symbol1 }}
-            </a-button>
-          </div>
-        </div>
-        <div class="line-h-40">
-          {{ $t('Farm.display.divest4') }}
-          <a-tooltip placement="top">
+            <QuestionCircleOutlined /> </a-tooltip
+        ></span>
+        <a-radio-group
+          class="back-radio-group"
+          v-model:value="form.type"
+          button-style="solid"
+          @change="getDivestInfo"
+        >
+          <a-radio-button value="default">{{ $t('Farm.display.default') }}</a-radio-button>
+          <a-radio-button value="0">{{ pairsItem.symbol0 }}</a-radio-button>
+          <a-radio-button value="1">{{ pairsItem.symbol1 }}</a-radio-button>
+        </a-radio-group>
+      </div>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.display.divest4')
+          }}<a-tooltip color="#2b4a77" placement="top">
             <template #title>
               <span> {{ $t('Farm.display.divest4Remind') }}。</span>
             </template>
-            <QuestionCircleOutlined />
-          </a-tooltip>
-          : {{ $tranNumber(form.amountOut0, 4) }}{{ pairsItem.symbol0 }} +
-          {{ $tranNumber(form.amountOut1, 4) }}
-          {{ pairsItem.symbol1 }}
-        </div>
+            <QuestionCircleOutlined /> </a-tooltip
+        ></span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.amountOut0, 4) }} {{ pairsItem.symbol0 }}
+          +
+          {{ $tranNumber(form.amountOut1, 4) }} {{ pairsItem.symbol1 }}
+        </span>
       </div>
-      <div class="deposit-card-footer">
-        <a-button :disabled="!!form.errorText" type="primary" @click="handleOk">{{
-          $t('Operation.ok')
-        }}</a-button>
-      </div>
-    </a-spin>
+    </div>
+    <div class="back-card-footer">
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        :disabled="!!form.errorText"
+        type="primary"
+        @click="handleOk"
+        >{{ $t('Operation.ok') }}</a-button
+      >
+    </div>
   </a-modal>
 </template>
 <script>

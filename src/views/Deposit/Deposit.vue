@@ -1,117 +1,103 @@
-<style lang='scss' scoped>
-.deposit {
-  padding: 10px 20px;
-  color: #eee;
-  .font-small {
-    font-size: 12px;
-    color: #999;
-  }
-
-  .deposit-account {
-    .deposit-account_title {
-      font-weight: 500;
-      font-size: 16px;
-      line-height: 40px;
-    }
-    .deposit-account_title-sub {
-      padding-left: 30px;
-      color: #eb8834;
-    }
-  }
-}
+<style lang='scss' >
 </style>
 <template>
-  <div class="deposit">
-    <div class="deposit-account">
-      <div class="deposit-account_title">
+  <div class="combination">
+    <div class="combination-account">
+      <div class="combination-account_title">
         <img style="height: 26px; margin-right: 10px" src="../../assets/icon.png" alt="" />
         <span>{{ $t('Deposit.account.title') }}</span>
       </div>
-      <div class="deposit-account_title-sub">
+      <div class="combination-account_title-sub">
         <ExclamationCircleFilled />
         {{ $t('Deposit.account.remind') }}
       </div>
-      <a-table
-        rowKey="symbol"
-        :dataSource="assetList.filter((item) => item.amountDeposit)"
-        :columns="depositColumns"
-        :pagination="false"
-        :loading="loading"
-      >
-        <template #symbol>
-          <span>{{ $t('Deposit.symbol') }} </span>
-        </template>
-        <template #rewardTooltip>
-          <span>{{ $t('Deposit.income') }} </span>
-          <a-tooltip placement="right">
-            <template #title>
-              <span>{{ $t('Deposit.incomeRemind') }}</span>
-            </template>
-            <QuestionCircleOutlined />
-          </a-tooltip>
-        </template>
-        <template #amountSupply>
-          <span>{{ $t('Deposit.account.amountSupply') }} </span>
-        </template>
-        <template #operating>
-          <span>{{ $t('Operation.operating') }} </span>
-        </template>
-        <template #action="{ record }">
-          <a-button
-            style="margin-right: 10px"
-            type="primary"
-            size="small"
-            @click="openCard(record, 'withdrawal')"
-            >{{ $t('Operation.takeBtn') }}</a-button
-          >
-          <a-button type="primary" size="small" @click="openCard(record, 'deposit')">{{
-            $t('Operation.depositBtn')
-          }}</a-button>
-        </template>
-      </a-table>
+      <BorderCard>
+        <a-table
+          class="back-table"
+          rowKey="symbol"
+          :dataSource="assetList.filter((item) => item.amountDeposit)"
+          :columns="depositColumns"
+          :pagination="false"
+          :loading="loading"
+        >
+          <template #symbol>
+            <span>{{ $t('Deposit.symbol') }} </span>
+          </template>
+          <template #rewardTooltip>
+            <span>{{ $t('Deposit.income') }} </span>
+            <a-tooltip placement="right" color="#2b4a77">
+              <template #title>
+                <span>{{ $t('Deposit.incomeRemind') }}</span>
+              </template>
+              <QuestionCircleOutlined />
+            </a-tooltip>
+          </template>
+          <template #amountSupply>
+            <span>{{ $t('Deposit.account.amountSupply') }} </span>
+          </template>
+          <template #operating>
+            <span>{{ $t('Operation.operating') }} </span>
+          </template>
+          <template #action="{ record }">
+            <a-button
+              style="margin-right: 10px"
+              type="primary"
+              size="small"
+              @click="openCard(record, 'withdrawal')"
+              >{{ $t('Operation.takeBtn') }}</a-button
+            >
+            <a-button type="primary" size="small" @click="openCard(record, 'deposit')">{{
+              $t('Operation.depositBtn')
+            }}</a-button>
+          </template>
+        </a-table>
+      </BorderCard>
     </div>
-    <div class="deposit-account">
-      <div class="deposit-account_title">
+    <div class="combination-account" style="margin-top">
+      <div class="combination-account_title">
         <img style="height: 26px; margin-right: 10px" src="../../assets/icon.png" alt="" />
         {{ $t('Deposit.all.title') }}</div
       >
-      <a-table
-        rowKey="symbol"
-        :dataSource="assetList"
-        :columns="poolColumns"
-        :pagination="false"
-        :loading="loading"
-      >
-        <template #symbol>
-          <span>{{ $t('Deposit.symbol') }} </span>
-        </template>
-        <template #profitTooltip>
-          <span>{{ $t('Deposit.income') }} </span>
-          <a-tooltip placement="right">
-            <template #title>
-              <span>{{ $t('Deposit.incomeRemind') }}</span>
-            </template>
-            <QuestionCircleOutlined />
-          </a-tooltip>
-        </template>
-        <template #totalShare>
-          <span>{{ $t('Deposit.all.totalShare') }} </span>
-        </template>
-        <template #remain>
-          <span>{{ $t('Deposit.all.remain') }} </span>
-        </template>
-        <template #useRatio>
-          <span>{{ $t('Deposit.all.useRatio') }} </span>
-        </template>
-        <template #operating>
-          <span>{{ $t('Operation.operating') }} </span>
-        </template>
-        <template #action="{ record }">
-          <a-button type="primary" size="small" @click="openCard(record, 'deposit')">{{
-            $t('Operation.depositBtn')
-          }}</a-button>
-        </template>
-      </a-table>
+      <BorderCard>
+        <a-table
+          class="back-table"
+          rowKey="symbol"
+          :dataSource="assetList"
+          :columns="poolColumns"
+          :pagination="false"
+          :loading="loading"
+        >
+          <template #symbol>
+            <span>{{ $t('Deposit.symbol') }} </span>
+          </template>
+          <template #profitTooltip>
+            <span>{{ $t('Deposit.income') }} </span>
+            <a-tooltip placement="right" color="#2b4a77">
+              <template #title>
+                <span>{{ $t('Deposit.incomeRemind') }}</span>
+              </template>
+              <QuestionCircleOutlined />
+            </a-tooltip>
+          </template>
+          <template #totalShare>
+            <span>{{ $t('Deposit.all.totalShare') }} </span>
+          </template>
+          <template #remain>
+            <span>{{ $t('Deposit.all.remain') }} </span>
+          </template>
+          <template #useRatio>
+            <span>{{ $t('Deposit.all.useRatio') }} </span>
+          </template>
+          <template #operating>
+            <span>{{ $t('Operation.operating') }} </span>
+          </template>
+          <template #action="{ record }">
+            <a-button type="primary" size="small" @click="openCard(record, 'deposit')">{{
+              $t('Operation.depositBtn')
+            }}</a-button>
+          </template>
+        </a-table>
+      </BorderCard>
     </div>
     <Withdrawal
       :depositItem="depositItem"
@@ -122,6 +108,7 @@
   </div>
 </template>
 <script>
+import BorderCard from '../../components/BorderCard';
 import Withdrawal from './Withdrawal';
 import DepositCard from './DepositCard';
 import { ExclamationCircleFilled, QuestionCircleOutlined } from '@ant-design/icons-vue';
@@ -130,7 +117,13 @@ import { ExclamationCircleFilled, QuestionCircleOutlined } from '@ant-design/ico
 import { getAssetsList, fetchData } from '../../common/src/back_main';
 
 export default {
-  components: { Withdrawal, DepositCard, ExclamationCircleFilled, QuestionCircleOutlined },
+  components: {
+    BorderCard,
+    Withdrawal,
+    DepositCard,
+    ExclamationCircleFilled,
+    QuestionCircleOutlined,
+  },
   data() {
     return {
       openCardMode: '',
@@ -146,7 +139,7 @@ export default {
               children: (
                 <div>
                   <img class="b-icon" src={`./assets/${text}.png`} />
-                  <span class="b-icon-name">{text}</span>
+                  <span class="b-icon-name fw-fff">{text}</span>
                 </div>
               ),
             };
@@ -162,7 +155,9 @@ export default {
             return {
               children: (
                 <div>
-                  <div> {this.$tranNumber((record.depositAPY + record.platformAPY) * 100, 2)}%</div>
+                  <div class="fw-fff">
+                    {this.$tranNumber((record.depositAPY + record.platformAPY) * 100, 2)}%
+                  </div>
                   <div>
                     = {this.$tranNumber(record.depositAPY * 100, 2)}% +
                     {this.$tranNumber(record.platformAPY * 100, 2)}%
@@ -180,7 +175,7 @@ export default {
             return {
               children: (
                 <div>
-                  <div> $ {this.$tranNumber(text * record.price, 2)}</div>
+                  <div class="fw-fff"> $ {this.$tranNumber(text * record.price, 2)}</div>
                   <div class="font-small">
                     {this.$tranNumber(text, 4)} {record.symbol}
                   </div>
@@ -206,7 +201,7 @@ export default {
               children: (
                 <div>
                   <img class="b-icon" src={'./assets/' + text + '.png'} />
-                  <span class="b-icon-name">{text}</span>
+                  <span class="b-icon-name  fw-fff">{text}</span>
                 </div>
               ),
             };
@@ -222,7 +217,10 @@ export default {
             return {
               children: (
                 <div>
-                  <div> {this.$tranNumber((record.depositAPY + record.platformAPY) * 100, 2)}%</div>
+                  <div class="fw-fff">
+                    {' '}
+                    {this.$tranNumber((record.depositAPY + record.platformAPY) * 100, 2)}%
+                  </div>
                   <div>
                     = {this.$tranNumber(record.depositAPY * 100, 2)}% +
                     {this.$tranNumber(record.platformAPY * 100, 2)}%
@@ -240,7 +238,7 @@ export default {
             return {
               children: (
                 <div>
-                  <div> $ {this.$tranNumber(text * record.price, 2)} </div>
+                  <div class="fw-fff"> $ {this.$tranNumber(text * record.price, 2)} </div>
                   <div>
                     {this.$tranNumber(text, 4)} {record.symbol}
                   </div>
@@ -257,7 +255,7 @@ export default {
             return {
               children: (
                 <div>
-                  <div> $ {this.$tranNumber(text * record.price, 2)} </div>
+                  <div class="fw-fff"> $ {this.$tranNumber(text * record.price, 2)} </div>
                   <div>
                     {this.$tranNumber(text, 4)} {record.symbol}
                   </div>
@@ -272,11 +270,7 @@ export default {
           slots: { title: 'useRatio' },
           customRender: ({ text }) => {
             return {
-              children: (
-                <div>
-                  <div> {this.$tranNumber(text * 100, 2)}%</div>
-                </div>
-              ),
+              children: <div class="fw-fff"> {this.$tranNumber(text * 100, 2)}%</div>,
             };
           },
         },

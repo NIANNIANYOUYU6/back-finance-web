@@ -6,8 +6,8 @@
       <Aside :title="title" />
     </a-layout-sider>
     <a-layout>
-      <a-layout-header> <Header @handleLoad="handleLoad" :title="title" /></a-layout-header>
       <a-layout-content>
+        <Header @handleLoad="handleLoad" :title="title" />
         <router-view :key="timer" />
       </a-layout-content>
     </a-layout>

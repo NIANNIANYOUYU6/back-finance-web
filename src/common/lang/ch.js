@@ -15,6 +15,7 @@ module.exports = {
     claim:'收获',
     farm:'挖矿',
     liquidate:'清算',
+    loading :"加载中"
   },
   Prompt: {
     error1:'授权额度不足',

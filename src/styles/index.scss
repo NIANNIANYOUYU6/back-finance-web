@@ -3,6 +3,7 @@ body {
   height: 100%;
   width: 100%;
   min-width: 1026px;
+  font-family: 'poppins' !important;
 }
 
 body {
@@ -117,6 +118,12 @@ li {
  .line-h-40 {
   line-height: 40px;
 }
+.fw-fff{
+  display: inline-block;
+  font-weight: 900;
+  color: #fff;
+  cursor: pointer;
+}
 .disp-f{
   display: flex;
 }
@@ -126,6 +133,9 @@ li {
 }
 .pr-10{
   padding-right: 10px;
+}
+.ml-10{
+  margin-left: 10px;
 }
 .gradient-bg{
   border: 0;
@@ -137,4 +147,33 @@ li {
 .b-icon-name {
   margin-left: 10px;
   vertical-align: middle;
+}
+
+.content-info{
+  color: #fff; 
+  background-color: #5c5ce6; 
+  padding: 0 8px;
+  border-radius: 5px;
+}
+.combination {
+  padding: 0px 20px 20px;
+  color: #eee;
+  .font-small {
+    font-size: 12px;
+    color: #999;
+  }
+  .combination-account {
+    margin-top: 10px;
+    .combination-account_title {
+      color: #35e9ef;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 40px;
+      font-family: 'pmzd' !important;
+    }
+    .combination-account_title-sub {
+      padding-left: 30px;
+      color: #eb8834;
+    }
+  }
 }

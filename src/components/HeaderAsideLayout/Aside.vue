@@ -19,7 +19,6 @@
     flex: 1;
     background-color: #141031;
     .aside-menu_item {
-      font-size: 16px;
       .icon {
         font-size: 24px;
         line-height: 40px;
@@ -29,11 +28,6 @@
       .aside-menu_name {
         vertical-align: middle;
       }
-    }
-    .ant-menu-item-selected,
-    .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
-      background-color: #1f2b4d;
-      color: #35e9ef;
     }
   }
   .aside-footer {

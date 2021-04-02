@@ -20,7 +20,7 @@
 }
 </style>
 <template>
-  <a-modal class="deposit-card home-card" visible @cancel="$emit('close')" width="520px">
+  <a-modal class="back-modal" visible @cancel="$emit('close')" width="540px">
     <template #title>
       <CardTitle
         :title="{
@@ -31,265 +31,231 @@
         }"
       />
     </template>
-    <a-spin :spinning="loading">
-      <div class="deposit-card-content">
-        <div class="line-h-40"> {{ $t('Farm.farm.farm1') }}: </div>
-        <div style="display: flex">
-          <img class="icon" :src="'./assets/' + pairsItem.symbol0 + '.png'" />
-          <div style="flex: 1; margin-left: 10px">
-            <a-input
-              :suffix="pairsItem.symbol0"
-              v-model:value="form.tokenA.amount"
-              :placeholder="$tranNumber(form.tokenA.balance, 8)"
-              @change="updateAmount('tokenA')"
-            />
-            <div class="error-text">{{ form.tokenA.errorText }}</div>
-            <div class="select-percentage">
-              <a-button
-                size="small"
-                @click="switchScale('tokenA', 0.25)"
-                :class="{ active: form.tokenA.scale === 0.25 }"
-              >
-                25%
-              </a-button>
-              <a-button
-                size="small"
-                @click="switchScale('tokenA', 0.5)"
-                :class="{ active: form.tokenA.scale === 0.5 }"
-              >
-                50%
-              </a-button>
-              <a-button
-                size="small"
-                @click="switchScale('tokenA', 0.75)"
-                :class="{ active: form.tokenA.scale === 0.75 }"
-              >
-                75%
-              </a-button>
-              <a-button
-                size="small"
-                @click="switchScale('tokenA', 1)"
-                :class="{ active: form.tokenA.scale === 1 }"
-              >
-                100%
-              </a-button>
-            </div>
-          </div>
-        </div>
-        <div style="display: flex">
-          <img class="icon" :src="'./assets/' + pairsItem.symbol1 + '.png'" />
-          <div style="flex: 1; margin-left: 10px">
-            <a-input
-              :suffix="pairsItem.symbol1"
-              v-model:value="form.tokenB.amount"
-              :placeholder="$tranNumber(form.tokenB.balance, 8)"
-              @change="updateAmount('tokenB')"
-            />
-            <div class="error-text">{{ form.tokenB.errorText }}</div>
-            <div class="select-percentage">
-              <a-button
-                size="small"
-                @click="switchScale('tokenB', 0.25)"
-                :class="{ active: form.tokenB.scale === 0.25 }"
-              >
-                25%
-              </a-button>
-              <a-button
-                size="small"
-                @click="switchScale('tokenB', 0.5)"
-                :class="{ active: form.tokenB.scale === 0.5 }"
-              >
-                50%
-              </a-button>
-              <a-button
-                size="small"
-                @click="switchScale('tokenB', 0.75)"
-                :class="{ active: form.tokenB.scale === 0.75 }"
-              >
-                75%
-              </a-button>
-              <a-button
-                size="small"
-                @click="switchScale('tokenB', 1)"
-                :class="{ active: form.tokenB.scale === 1 }"
-              >
-                100%
-              </a-button>
-            </div>
-          </div>
-        </div>
-        <div class="line-h-40 disp-f">
-          <div>
-            {{ $t('Farm.all.lever') }}
-            <a-tooltip placement="top">
-              <template #title>
-                <span> {{ $t('Farm.all.leverRemind') }}</span>
-              </template>
-              <QuestionCircleOutlined />
-            </a-tooltip>
-            :
-          </div>
-          <div style="flex: 1">
-            <a-slider
-              v-model:value="form.debtRatio"
-              :min="1"
-              :max="+pairsItem.leverageRate"
-              :marks="pairsItem.marks"
-              :step="null"
-              @change="getInvestInfo()"
-            />
-          </div>
-        </div>
-        <div class="line-h-40 disp-f_jusc-sb">
-          <div> {{ $t('Farm.borrowSymbol') }} </div>
-          <div>
-            <a-radio-group v-model:value="form.debtToken" @change="getInvestInfo()">
-              <a-radio value="0">{{ pairsItem.symbol0 }}</a-radio>
-              <a-radio value="1">{{ pairsItem.symbol1 }}</a-radio>
-            </a-radio-group>
-          </div>
-        </div>
-        <div class="line-h-40 disp-f_jusc-sb">
-          <div> {{ $t('Farm.farm.farm2') }} : </div>
-          <div
-            >{{ $tranNumber(form.investInfo.amountBorrow, 4) }}
-            {{ pairsItem['symbol' + form.debtToken] }}</div
-          >
-        </div>
-        <div
-          v-if="form.investInfo.amountBorrow > form.investInfo['remainAmount' + form.debtToken]"
-          class="error-text"
-          style="text-align: end"
-          >{{ $t('Farm.farm.farm3') }} ({{ $t('Farm.farm.farm4') }}
-          {{ $tranNumber(form.investInfo['remainAmount' + form.debtToken], 4) }})</div
-        >
-        <div class="line-h-40 disp-f_jusc-sb">
-          <div style="min-width: 125px">
-            {{ $t('Farm.farm.farm5') }}
-            <a-tooltip placement="top">
-              <template #title>
-                <span>{{ $t('Farm.display.transform') }}</span>
-              </template>
-              <QuestionCircleOutlined />
-            </a-tooltip>
-            :
-          </div>
-          <div>
-            {{ $tranNumber(form.investInfo.amountIn0, 4) }} {{ pairsItem.symbol0 }} +
-            {{ $tranNumber(form.investInfo.amountIn1, 4) }}{{ pairsItem.symbol1 }}
-          </div>
-        </div>
-        <div class="line-h-40 disp-f_jusc-sb">
-          <div> {{ $t('Farm.healthy') }}: </div>
-          <div> {{ $tranNumber(form.investInfo.healthy * 100, 2) }} </div>
-        </div>
-        <div
-          v-if="pairsItem.swapperName.toLowerCase() === 'Mdex'.toLowerCase()"
-          class="prompt-text"
-          style="line-height: 16px; margin-bottom: 10px"
-        >
-          <ExclamationCircleFilled />
-          {{ $t('Farm.healthyRemind1') }}
-        </div>
-        <div v-else class="prompt-text" style="line-height: 16px; margin-bottom: 10px">
-          <ExclamationCircleFilled />
-          {{ $t('Farm.healthyRemind2') }}
-        </div>
-        <div class="line-h-40 disp-f_jusc-sb" style="border-top: 1px solid #ccc">
-          <div> {{ $t('Farm.all.income') }} : </div>
-          <div>
-            <!-- 流动性挖矿APY * 杠杆率+平台挖矿APY-借款APY -->
-            {{
-              $tranNumber(
-                (pairsItem.liquidityAPY * form.debtRatio +
-                  form.investInfo['platformAPY' + form.debtToken] -
-                  form.investInfo.interestAPY) *
-                  100,
-                2
-              )
-            }}%
-          </div>
-        </div>
-        <div class="line-h-40 disp-f_jusc-sb">
-          <div>
-            {{ $t('Farm.farm.liquidityAPY') }}
-            <a-tooltip placement="top">
-              <template #title>
-                <span> {{ $t('Farm.farm.liquidityAPYRemind') }}</span>
-              </template>
-              <QuestionCircleOutlined />
-            </a-tooltip>
-            :
-          </div>
-          <div> {{ $tranNumber(pairsItem.liquidityAPY * form.debtRatio * 100, 2) }}% </div>
-        </div>
-        <div class="line-h-40 disp-f_jusc-sb">
-          <div>
-            {{ $t('Farm.farm.platformAPY') }}
-            <a-tooltip placement="top">
-              <template #title>
-                <span> {{ $t('Farm.farm.platformAPYRemind') }}</span>
-              </template>
-              <QuestionCircleOutlined />
-            </a-tooltip>
-            <span></span>
-            :
-          </div>
-          <div>
-            {{
-              $tranNumber(
-                (form.debtRatio - 1) * form.investInfo['platformAPY' + form.debtToken] * 100,
-                2
-              )
-            }}%
-          </div>
-        </div>
-        <div class="line-h-40 disp-f_jusc-sb">
-          <div> {{ $t('Farm.farm.remainAmount') }} : </div>
-          <div>
-            {{ $tranNumber((form.debtRatio - 1) * form.investInfo.interestAPY * 100, 2) }} %
-          </div>
+    <div class="modal-body-content">
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.farm.farm1') }}</span>
+      </div>
+      <a-input
+        class="modal-input"
+        :suffix="pairsItem.symbol0"
+        v-model:value="form.tokenA.amount"
+        :placeholder="$tranNumber(form.tokenA.balance, 8)"
+        @change="updateAmount('tokenA')"
+      >
+        <template #prefix>
+          <img style="height: 20px" :src="'./assets/' + pairsItem.symbol0 + '.png'" />
+        </template>
+      </a-input>
+      <div class="error-text">{{ form.tokenA.errorText }}</div>
+      <a-radio-group
+        class="back-radio-group"
+        v-model:value="form.tokenA.scale"
+        button-style="solid"
+        @change="switchScale('tokenA', form.tokenA.scale)"
+      >
+        <a-radio-button :value="0.25">25%</a-radio-button>
+        <a-radio-button :value="0.5">50%</a-radio-button>
+        <a-radio-button :value="0.75">75%</a-radio-button>
+        <a-radio-button :value="1">100%</a-radio-button>
+      </a-radio-group>
+      <a-input
+        class="modal-input"
+        :suffix="pairsItem.symbol1"
+        v-model:value="form.tokenB.amount"
+        :placeholder="$tranNumber(form.tokenB.balance, 8)"
+        @change="updateAmount('tokenB')"
+      >
+        <template #prefix>
+          <img style="height: 20px" :src="'./assets/' + pairsItem.symbol1 + '.png'" />
+        </template>
+      </a-input>
+      <div class="error-text">{{ form.tokenB.errorText }}</div>
+      <a-radio-group
+        class="back-radio-group"
+        v-model:value="form.tokenB.scale"
+        button-style="solid"
+        @change="switchScale('tokenB', form.tokenB.scale)"
+      >
+        <a-radio-button :value="0.25">25%</a-radio-button>
+        <a-radio-button :value="0.5">50%</a-radio-button>
+        <a-radio-button :value="0.75">75%</a-radio-button>
+        <a-radio-button :value="1">100%</a-radio-button>
+      </a-radio-group>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.all.lever') }}
+          <a-tooltip placement="top" color="#2b4a77">
+            <template #title>
+              <span> {{ $t('Farm.all.leverRemind') }}</span>
+            </template>
+            <QuestionCircleOutlined /> </a-tooltip
+        ></span>
+        <div style="flex: 1; margin-left: 10px">
+          <a-slider
+            v-model:value="form.debtRatio"
+            :min="1"
+            :max="+pairsItem.leverageRate"
+            :marks="pairsItem.marks"
+            :step="null"
+            @change="getInvestInfo()"
+          />
         </div>
       </div>
-      <div class="deposit-card-footer">
-        <div class="deposit-card-footer_button">
-          <!-- 有未授权时可点击 -->
-          <!-- 具体授权币种提示 -->
-          <a-button
-            :disabled="
-              !!form.tokenA.allowance &&
-              !!form.tokenB.allowance &&
-              form.tokenA.errorText !== $t('Prompt.error1') &&
-              form.tokenB.errorText !== $t('Prompt.error1')
-            "
-            type="primary"
-            @click="
-              approveTokenFunc(
-                !form.tokenA.allowance || form.tokenA.errorText === $t('Prompt.error1')
-                  ? '0'
-                  : !form.tokenB.allowance || form.tokenB.errorText === $t('Prompt.error1')
-                  ? '1'
-                  : ''
-              )
-            "
-            >{{ $t('Operation.warrant') }}</a-button
-          >
-          <a-button
-            :disabled="
-              !form.tokenA.allowance ||
-              !form.tokenB.allowance ||
-              !!form.tokenA.errorText ||
-              !!form.tokenB.errorText ||
-              (!+form.tokenA.amount && !+form.tokenB.amount) ||
-              form.investInfo.amountBorrow > form.investInfo['remainAmount' + form.debtToken]
-            "
-            type="primary"
-            @click="handleOk"
-            >{{ $t('Farm.farm.farm6') }} {{ form.debtRatio }}x</a-button
-          >
-        </div>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.borrowSymbol') }}
+        </span>
+        <a-radio-group v-model:value="form.debtToken" @change="getInvestInfo()">
+          <a-radio class="fw-fff" value="0">{{ pairsItem.symbol0 }}</a-radio>
+          <a-radio class="fw-fff" value="1">{{ pairsItem.symbol1 }}</a-radio>
+        </a-radio-group>
       </div>
-    </a-spin>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.farm.farm2') }}
+        </span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.investInfo.amountBorrow, 4) }}
+          {{ pairsItem['symbol' + form.debtToken] }}
+        </span>
+      </div>
+      <div
+        class="text-space"
+        v-if="form.investInfo.amountBorrow > form.investInfo['remainAmount' + form.debtToken]"
+      >
+        <span></span>
+        <span class="error-text">
+          {{ $t('Farm.farm.farm3') }} ({{ $t('Farm.farm.farm4') }}
+          {{ $tranNumber(form.investInfo['remainAmount' + form.debtToken], 4) }})
+        </span>
+      </div>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.farm.farm5') }}
+          <a-tooltip placement="top" color="#2b4a77">
+            <template #title>
+              <span>{{ $t('Farm.display.transform') }}</span>
+            </template>
+            <QuestionCircleOutlined />
+          </a-tooltip>
+        </span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.investInfo.amountIn0, 4) }} {{ pairsItem.symbol0 }}
+          +
+          {{ $tranNumber(form.investInfo.amountIn1, 4) }} {{ pairsItem.symbol1 }}
+        </span>
+      </div>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.healthy') }}
+        </span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.investInfo.healthy * 100, 2) }}
+        </span>
+      </div>
+      <div
+        v-if="pairsItem?.swapperName?.toLowerCase() === 'Mdex'.toLowerCase()"
+        class="prompt-text"
+        style="line-height: 16px; margin-bottom: 10px"
+      >
+        <ExclamationCircleFilled />
+        {{ $t('Farm.healthyRemind1') }}
+      </div>
+      <div v-else class="prompt-text" style="line-height: 16px; margin-bottom: 10px">
+        <ExclamationCircleFilled />
+        {{ $t('Farm.healthyRemind2') }}
+      </div>
+      <div class="text-space" style="border-top: 1px solid#354375">
+        <span class="text-c">
+          {{ $t('Farm.all.income') }}
+        </span>
+        <span class="fw-fff">
+          {{
+            $tranNumber(
+              (pairsItem.liquidityAPY * form.debtRatio +
+                form.investInfo['platformAPY' + form.debtToken] -
+                form.investInfo.interestAPY) *
+                100,
+              2
+            )
+          }}%
+        </span>
+      </div>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.farm.liquidityAPY') }}
+          <a-tooltip placement="top" color="#2b4a77">
+            <template #title>
+              <span> {{ $t('Farm.farm.liquidityAPYRemind') }}</span>
+            </template>
+            <QuestionCircleOutlined />
+          </a-tooltip>
+        </span>
+        <span class="fw-fff">
+          {{ $tranNumber(pairsItem.liquidityAPY * form.debtRatio * 100, 2) }}%
+        </span>
+      </div>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.farm.platformAPY') }}
+          <a-tooltip placement="top" color="#2b4a77">
+            <template #title>
+              <span> {{ $t('Farm.farm.platformAPYRemind') }}</span>
+            </template>
+            <QuestionCircleOutlined />
+          </a-tooltip>
+        </span>
+        <span class="fw-fff">
+          {{
+            $tranNumber(
+              (form.debtRatio - 1) * form.investInfo['platformAPY' + form.debtToken] * 100,
+              2
+            )
+          }}%
+        </span>
+      </div>
+      <div class="text-space">
+        <span class="text-c">
+          {{ $t('Farm.farm.remainAmount') }}
+        </span>
+        <span class="fw-fff">
+          {{ $tranNumber((form.debtRatio - 1) * form.investInfo.interestAPY * 100, 2) }} %
+        </span>
+      </div>
+    </div>
+    <div class="back-card-footer">
+      <a-button :loading="initLoading" class="btn-one" v-if="initLoading" type="primary"
+        >{{ $t('Operation.loading') }}
+      </a-button>
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        v-else-if="+form.tokenA.allowance === 0 || form.tokenA.errorText === $t('Prompt.error1')"
+        type="primary"
+        @click="approveTokenFunc('0')"
+        >{{ $t('Operation.warrant') }} {{ pairsItem.symbol0 }}</a-button
+      >
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        v-else-if="+form.tokenB.allowance === 0 || form.tokenB.errorText === $t('Prompt.error1')"
+        type="primary"
+        @click="approveTokenFunc('1')"
+        >{{ $t('Operation.warrant') }} {{ pairsItem.symbol1 }}</a-button
+      >
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        v-else
+        :disabled="
+          (!+form.tokenA.amount && !+form.tokenB.amount) ||
+          form.investInfo.amountBorrow > form.investInfo['remainAmount' + form.debtToken]
+        "
+        type="primary"
+        @click="handleOk"
+        >{{ $t('Farm.farm.farm6') }} {{ form.debtRatio }}x</a-button
+      >
+    </div>
   </a-modal>
 </template>
 <script>
@@ -315,6 +281,7 @@ export default {
   data() {
     return {
       balance: '',
+      initLoading: false,
       loading: false,
       scale: '',
       marks: {},
@@ -358,10 +325,9 @@ export default {
   methods: {
     // 数据初始化加载
     async dataInit() {
-      this.loading = true;
+      this.initLoading = true;
       try {
         await fetchData();
-
         const addressA = this.pairsItem.token0;
         const addressB = this.pairsItem.token1;
         const p1 = await this.getBalanceNum('tokenA', addressA);
@@ -375,7 +341,7 @@ export default {
       } catch (error) {
         console.log('getBalance or getAllowance error');
       } finally {
-        this.loading = false;
+        this.initLoading = false;
       }
     },
     // 查询币的余额
@@ -385,6 +351,7 @@ export default {
     async getAllowanceFunc(token, address) {
       // 获取授权额度
       this.form[token].allowance = await getAllowance(address);
+      console.log(this.form[token].allowance);
     },
     switchScale(type, scale) {
       this.form[type].amount = this.form[type].balance * scale;

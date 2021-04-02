@@ -1,26 +1,6 @@
-<style lang='scss' >
-.home-card {
-  .ant-modal-content {
-    padding: 0 60px;
-  }
-  .ant-modal-body {
-    padding-top: 0px;
-    .deposit-card-content {
-      .icon {
-        height: 26px;
-      }
-      .error-text {
-        min-height: 10px;
-      }
-      .select-percentage {
-        margin: 0 0 10px;
-      }
-    }
-  }
-}
-</style>
+
 <template>
-  <a-modal class="deposit-card home-card" visible @cancel="$emit('close')" width="460px">
+  <a-modal class="back-modal" visible @cancel="$emit('close')" width="460px">
     <template #title>
       <CardTitle
         :title="{
@@ -31,93 +11,88 @@
         }"
       />
     </template>
-    <a-spin :spinning="loading">
-      <div class="deposit-card-content">
-        <div class="line-h-40">
-          {{ $t('Farm.user.totalDebt') }} :
-          {{
-            $tranNumber(pairsItem.debtAmount, 4) +
-            pairsItem.borrowSymbol +
-            '+' +
-            $tranNumber(pairsItem.debtInterest, 4) +
-            pairsItem.borrowSymbol
-          }}
-        </div>
-        <div style="display: flex">
-          <span>{{ $t('Operation.repay') }}</span>
-          <div style="flex: 1; margin-left: 10px">
-            <a-input
-              :suffix="pairsItem.borrowSymbol"
-              v-model:value="form.amount"
-              :placeholder="currentTotalDebt"
-              @change="updateAmount()"
-            />
-            <div class="error-text">{{ form.errorText }}</div>
-            <div class="select-percentage">
-              <a-button size="small" @click="switchScale(0.25)" :class="{ active: scale === 0.25 }">
-                25%
-              </a-button>
-              <a-button size="small" @click="switchScale(0.5)" :class="{ active: scale === 0.5 }">
-                50%
-              </a-button>
-              <a-button size="small" @click="switchScale(0.75)" :class="{ active: scale === 0.75 }">
-                75%
-              </a-button>
-              <a-button size="small" @click="switchScale(1)" :class="{ active: scale === 1 }">
-                100%
-              </a-button>
-            </div>
-          </div>
-        </div>
-        <div class="line-h-40">
-          {{ $t('Farm.display.repay1') }} :
-          {{
-            $tranNumber(form.borrowRepay, 4) +
-            pairsItem.borrowSymbol +
-            '+' +
-            $tranNumber(form.interestRepay, 4) +
-            pairsItem.borrowSymbol
-          }}
-        </div>
-        <div class="line-h-40">
-          {{ $t('Farm.display.repay2') }} :
-          {{
-            $tranNumber(form.borrowRemain, 4) +
-            pairsItem.borrowSymbol +
-            '+' +
-            $tranNumber(form.interestRemain, 4) +
-            pairsItem.borrowSymbol
-          }}
-        </div>
-        <div class="line-h-40">
-          {{ $t('Farm.display.repay3') }} : {{ $tranNumber(form.health * 100, 2) }}
-          <div class="prompt-text" style="line-height: 16px">
-            <ExclamationCircleFilled />
-            {{ $t('Farm.healthyRemind') }}
-          </div>
-        </div>
-      </div>
-      <div class="deposit-card-footer">
-        <div class="deposit-card-footer_button">
-          <a-button
-            :disabled="form.allowance && form.errorText !== $t('Prompt.error1')"
-            type="primary"
-            @click="approveTokenFunc()"
-            >{{ $t('Operation.warrant') }}</a-button
-          >
-          <a-button :disabled="!!form.errorText" type="primary" @click="handleOk">{{
-            $t('Operation.ok')
-          }}</a-button>
-        </div>
-        <div class="deposit-card-footer_text">
-          {{ $t('Sidebar.balance') }} :
-          <a-button type="link">
-            {{ $tranNumber(form.balance, 8) }}
-          </a-button>
-          {{ pairsItem.borrowSymbol }}</div
+    <div class="modal-body-content">
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.user.totalDebt') }}</span>
+        <span class="fw-fff">
+          {{ $tranNumber(pairsItem.debtAmount, 4) }} {{ pairsItem.borrowSymbol }}
+          +
+          {{ $tranNumber(pairsItem.debtInterest, 4) }} {{ pairsItem.borrowSymbol }}</span
         >
       </div>
-    </a-spin>
+      <div class="text-space">
+        <span class="text-c">{{ $t('Operation.repay') }}</span>
+      </div>
+      <a-input
+        class="modal-input"
+        :suffix="pairsItem.borrowSymbol"
+        v-model:value="form.amount"
+        :placeholder="currentTotalDebt"
+        @change="updateAmount()"
+      />
+      <div class="error-text">{{ form.errorText }}</div>
+      <a-radio-group
+        class="back-radio-group"
+        v-model:value="scale"
+        button-style="solid"
+        @change="switchScale"
+      >
+        <a-radio-button :value="0.25">25%</a-radio-button>
+        <a-radio-button :value="0.5">50%</a-radio-button>
+        <a-radio-button :value="0.75">75%</a-radio-button>
+        <a-radio-button :value="1">100%</a-radio-button>
+      </a-radio-group>
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.display.repay1') }}</span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.borrowRepay, 4) }} {{ pairsItem.borrowSymbol }}
+          +
+          {{ $tranNumber(form.interestRepay, 4) }} {{ pairsItem.borrowSymbol }}
+        </span>
+      </div>
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.display.repay2') }}</span>
+        <span class="fw-fff">
+          {{ $tranNumber(form.borrowRemain, 4) }} {{ pairsItem.borrowSymbol }}
+          +
+          {{ $tranNumber(form.interestRemain, 4) }} {{ pairsItem.borrowSymbol }}
+        </span>
+      </div>
+      <div class="text-space">
+        <span class="text-c"> {{ $t('Farm.display.repay3') }}</span>
+        <span class="fw-fff">{{ $tranNumber(form.health * 100, 2) }}</span>
+      </div>
+      <div class="prompt-text" style="line-height: 16px">
+        <ExclamationCircleFilled />
+        {{ $t('Farm.healthyRemind') }}
+      </div>
+      <div class="text-space" style="margin-top: 10px">
+        <span class="text-c"> {{ $t('Sidebar.balance') }}</span>
+        <span class="fw-fff"> {{ $tranNumber(form.balance, 8) }} {{ pairsItem.borrowSymbol }}</span>
+      </div>
+    </div>
+    <div class="back-card-footer">
+      <a-button :loading="initLoading" class="btn-one" v-if="initLoading" type="primary"
+        >{{ $t('Operation.loading') }}
+      </a-button>
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        v-else-if="form.allowance === 0 || form.errorText === $t('Prompt.error1')"
+        type="primary"
+        @click="approveTokenFunc"
+        >{{ $t('Operation.warrant') }} {{ pairsItem.borrowSymbol }}</a-button
+      >
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        v-else
+        :disabled="!!form.errorText"
+        type="primary"
+        @click="handleOk"
+        >{{ $t('Operation.ok') }}</a-button
+      >
+    </div>
   </a-modal>
 </template>
 <script>
@@ -143,6 +118,7 @@ export default {
   data() {
     return {
       balance: '',
+      initLoading: false,
       loading: false,
       scale: '',
       currentTotalDebt: 0,
@@ -166,21 +142,19 @@ export default {
   },
   methods: {
     async dataInit() {
-      this.loading = true;
+      this.initLoading = true;
       try {
         await fetchData();
-
         this.currentTotalDebt = this.pairsItem.debtAmount + this.pairsItem.debtInterest;
         const address = this.pairsItem.borrowToken;
         const p1 = await this.getBalanceNum(address);
         const p2 = await this.getAllowanceFunc(address);
-
         // 同步加载数据
         await Promise.all([p1, p2, this.getRepayInfo()]);
       } catch (error) {
         console.log('getBalance or getAllowance error');
       } finally {
-        this.loading = false;
+        this.initLoading = false;
       }
     },
     // 查询币的余额
@@ -191,12 +165,11 @@ export default {
       // 获取授权额度
       this.form.allowance = await getAllowance(address);
     },
-    switchScale(scale) {
-      this.form.amount = this.currentTotalDebt * scale;
+    switchScale() {
+      this.form.amount = this.currentTotalDebt * this.scale;
       this.updateAmount();
     },
     updateAmount() {
-      this.scale = this.form.amount / this.currentTotalDebt;
       let err = '';
       if (this.form.amount === '' || +this.form.amount === 0) {
         err = this.$t('Prompt.error4');

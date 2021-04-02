@@ -223,6 +223,33 @@
         </span>
       </div>
     </div>
+    <div
+      class="back-card-footer"
+      v-if="
+        !initLoading &&
+        (+form.tokenA.allowance === 0 ||
+          form.tokenA.errorText === $t('Prompt.error1') ||
+          +form.tokenB.allowance === 0 ||
+          form.tokenB.errorText === $t('Prompt.error1'))
+      "
+    >
+      <a-button
+        :loading="loading"
+        class="btn-one"
+        :disabled="+form.tokenA.allowance !== 0 && form.tokenA.errorText !== $t('Prompt.error1')"
+        type="primary"
+        @click="approveTokenFunc('0')"
+        >{{ $t('Operation.warrant') }} {{ pairsItem.symbol0 }}</a-button
+      >
+      <a-button
+        :loading="loading"
+        class="btn-one ml-10"
+        :disabled="+form.tokenB.allowance !== 0 && form.tokenB.errorText !== $t('Prompt.error1')"
+        type="primary"
+        @click="approveTokenFunc('1')"
+        >{{ $t('Operation.warrant') }} {{ pairsItem.symbol1 }}</a-button
+      >
+    </div>
     <div class="back-card-footer">
       <a-button :loading="initLoading" class="btn-one" v-if="initLoading" type="primary"
         >{{ $t('Operation.loading') }}
@@ -230,24 +257,12 @@
       <a-button
         :loading="loading"
         class="btn-one"
-        v-else-if="+form.tokenA.allowance === 0 || form.tokenA.errorText === $t('Prompt.error1')"
-        type="primary"
-        @click="approveTokenFunc('0')"
-        >{{ $t('Operation.warrant') }} {{ pairsItem.symbol0 }}</a-button
-      >
-      <a-button
-        :loading="loading"
-        class="btn-one"
-        v-else-if="+form.tokenB.allowance === 0 || form.tokenB.errorText === $t('Prompt.error1')"
-        type="primary"
-        @click="approveTokenFunc('1')"
-        >{{ $t('Operation.warrant') }} {{ pairsItem.symbol1 }}</a-button
-      >
-      <a-button
-        :loading="loading"
-        class="btn-one"
         v-else
         :disabled="
+          +form.tokenA.allowance === 0 ||
+          form.tokenA.errorText === $t('Prompt.error1') ||
+          +form.tokenB.allowance === 0 ||
+          form.tokenB.errorText === $t('Prompt.error1') ||
           (!+form.tokenA.amount && !+form.tokenB.amount) ||
           form.investInfo.amountBorrow > form.investInfo['remainAmount' + form.debtToken]
         "
@@ -440,8 +455,8 @@ export default {
         console.log('approve result ', code, msg);
         if (code === 1) {
           await this.dataInit();
-          this.updateAmount('tokenA');
-          this.updateAmount('tokenB');
+          await Promise.all([this.updateAmount('tokenA'), this.updateAmount('tokenB')]);
+          this.loading = false;
         } else if (code !== 0) {
           // 发生错误时
           message.error(msg);

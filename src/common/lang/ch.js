@@ -31,7 +31,7 @@ module.exports = {
   Sidebar: {
     balance: '钱包余额',
     profit: '待领收益',
-    button: '领取收益',
+    button: '领取BACK',
     docs: "产品说明",
     router: {
       title1: '杠杆挖矿',
@@ -56,7 +56,7 @@ module.exports = {
     account: {
       title: '账户存款',
       remind:
-        '  重要提示 : 存款所得到的bkToken (bkUSBT、bkBTC、bkETH、bkHT等)是重要的存款凭证,请不要随意转移给其他人 !',
+        '  重要提示 : 存款所得到的ibToken (ibUSDT、ibBTC、ibETH等)是重要的存款凭证,请不要随意转移给其他人 !',
       amountSupply: '存款金额',
     },
     all: {
@@ -80,7 +80,7 @@ module.exports = {
     user: {
       title: "账户持仓",
       totalDebt: "当前总负债",
-      pendingReward: "待领取挖矿收益",
+      pendingReward: "已赚",
     },
     all: {
       title: "全部",
@@ -117,15 +117,22 @@ module.exports = {
       farm5: "投资资产转化为",
       farm6: "开始挖矿",
       liquidityAPY: "流动性挖矿APY",
-      liquidityAPYRemind: "交易所流动性挖矿收益，可以随时在账户持仓列表中提取和复投。",
+      liquidityAPYRemind: "交易所流动性挖矿收益，可以随时在账户持仓列表中提取和复投",
       platformAPY: "平台奖励APY",
-      platformAPYRemind: "平台针对流动性挖矿奖励，可以随时提取。",
+      platformAPYRemind: "平台针对流动性挖矿奖励，可以随时提取",
       remainAmount: "借贷APY"
     }
   },
   Liquidate: {
-    title: "全部清算池",
+    title: "清算专区",
     mortgage :"抵押资产价值",
     liabilities :"负债资产价值",
+    liquidateTotal: "待清算总资产",
+    totalDebt: "负债资产",
+    liquidate1: "资产清算折扣",
+    liquidate2: "清算资产比例",
+    liquidate3: "预计清算支出",
+    liquidate3Remind: "预计根据资产清算折扣购买清算资产的支出",
+    liquidate4: "清算收入",
   }
 };

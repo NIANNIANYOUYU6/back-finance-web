@@ -14,6 +14,8 @@ module.exports = {
     reinvest : 'REINVEST',
     claim:'HARVEST',
     farm:'Farm',
+    liquidate:'Liquidate',
+    loading :"loading"
   },
   Prompt: {
     error1:'insufficient amount of authorization',
@@ -23,16 +25,18 @@ module.exports = {
     error5:'insufficient balance',
     error6: 'can not exceed the current total liabilities',
     error7: 'the maximum scale is 100',
+    error8: 'insufficient balance in the deposit pool',
   },
   // 侧边栏菜单
   Sidebar: {
     balance: 'Balance ', 
     profit: 'To be claimed',
-    button: 'Claim',
+    button: 'Claim BACK',
     docs: "Doc",
     router: {
-      title1: 'Yield Farming',
-      title2: 'Earn Market',
+      title1: 'Yield farming',
+      title2: 'Earn market',
+      title3: 'Liquidation pool',
     },
   },
   // 顶部栏
@@ -51,8 +55,9 @@ module.exports = {
     myDeposit: 'Balance',
     account: {
       title: 'Your Supply',
+      // 这是更新的中文
       remind:
-        ' Important note: BkToken (bkHT, bkUSDT, etc.) obtained by deposit is an important deposit certificate, please do not transfer it to others！',
+        '  Important note: ibToken (ibUSDT、ibBTC、ibETH etc.) obtained by deposit is an important deposit certificate, please do not transfer it to others！',
       amountSupply: 'Supply Balance',
     },
     all: {
@@ -76,7 +81,7 @@ module.exports = {
     user: {
       title: "Your Positions",
       totalDebt: "Total Debt Value",
-      pendingReward: "Unclaimed Mining Revenue",
+      pendingReward: "Earned",
     },
     all: {
       title: "All Farm Pools",
@@ -118,5 +123,17 @@ module.exports = {
       platformAPYRemind: "Back rewards user for liquidity mining.You can claim at any time.",
       remainAmount: "Borrow APY"
     }
+  },
+  Liquidate: {
+    title: "Liquidation zone",
+    mortgage :"Mortgage asset value",
+    liabilities :"Loan value",
+    liquidateTotal: "Total assets to be liquidated",
+    totalDebt: "Total assets in debt",
+    liquidate1: "Liquidation discount",
+    liquidate2: "Proportion of liquidated assets",
+    liquidate3: "Estimated liquidation expense",
+    liquidate3Remind: "Estimates costs according to assets liquidation discount purchase liquidation assets",
+    liquidate4: "Liquidation income",
   }
 };

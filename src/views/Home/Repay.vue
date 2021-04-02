@@ -225,6 +225,7 @@ export default {
         if (code === 1) {
           await this.dataInit();
           this.updateAmount();
+          this.loading = false;
         } else if (code !== 0) {
           // 发生错误时
           message.error(msg);

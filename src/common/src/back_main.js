@@ -72,6 +72,7 @@ async function fetchLiquidityList() {
             liquidity.borrowInterest = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
             liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
             liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
+            liquidity.borrowPrice = _getTokenPrice(liquidity.borrowToken);
             liquidity.discount = 0.95;
             liquidity.health = getHealthyValue(pair, liquidity.borrowToken, liquidity.borrowAmount + liquidity.borrowInterest, liquidity.lpAmount);
             if(liquidity.borrowToken === pair.token0) {

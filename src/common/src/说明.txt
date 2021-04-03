@@ -17,6 +17,9 @@ getLiquidationList
     amount0: token0 amount
     amount1: token1 amount
     debtAmount: LP总共价值多少个借贷的token
+    borrowAmount 借贷数量
+    borrowInterest 借贷利息
+    borrowPrice 借贷token价格
 }
 
 调用清算

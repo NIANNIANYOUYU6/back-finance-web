@@ -61,10 +61,10 @@
         <i class="icon iconfont icon-iconset0219" style="font-size: 18px"></i>
         <span class="aside-menu_name">{{ $t('Sidebar.router.title2') }}</span>
       </a-menu-item>
-      <!-- <a-menu-item key="/liquidate" class="aside-menu_item">
+      <a-menu-item key="/liquidate" class="aside-menu_item">
         <i class="icon iconfont icon-qingsuanxinxi" style="font-size: 18px"></i>
         <span class="aside-menu_name">{{ $t('Sidebar.router.title3') }}</span>
-      </a-menu-item> -->
+      </a-menu-item>
     </a-menu>
     <div class="aside-footer">
       <div>

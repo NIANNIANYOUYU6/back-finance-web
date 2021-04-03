@@ -157,6 +157,7 @@ export default {
       })
         .then((res) => {
           if (res.code === 200) {
+            console.log('--->连接好了');
             this.$store.commit('setState', { ...res.data, updatePage: +new Date() });
           } else if (res.code === -200) {
             message.error(res.msg);

@@ -87,7 +87,7 @@
                 <div class="back-table_item-thead-text">
                   <span class="text-c">{{ $t('Farm.user.pendingReward') }} </span>
                   <span class="fw-fff">
-                    ${{ $tranNumber(userInfo.pendingReward, 2) }} {{ userInfo.rewardSymbol }}
+                    {{ $tranNumber(userInfo.pendingReward, 2) }} {{ userInfo.rewardSymbol }}
                   </span>
                 </div>
               </div>

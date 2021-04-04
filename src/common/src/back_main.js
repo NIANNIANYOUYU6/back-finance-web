@@ -74,6 +74,9 @@ export async function getLiquidationList() {
         liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
         liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
         liquidity.borrowPrice = _getTokenPrice(liquidity.borrowToken);
+        liquidity.interestSettle = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
+        let pool = BACK_MAIN.poolList.find(i => i.supplyToken === liquidity.borrowToken);
+        liquidity.borrowInterest += (pool.interestPerBorrow - liquidity.interestSettle) * liquidity.borrowAmount;
         liquidity.discount = 0.95;
         liquidity.health = getHealthyValue(pair, liquidity.borrowToken, liquidity.borrowAmount + liquidity.borrowInterest, liquidity.lpAmount);
         if(liquidity.borrowToken === pair.token0) {
@@ -153,7 +156,7 @@ function getHealthyValue(pair, borrowToken, debt, liquidity, amountIn0 = 0, amou
         amountOut = _getAmountOut(amount0, reserveAfter0 - amount0, reserveAfter1 - amount1)
         totalAsset = amount1 + amountOut;
     }
-    console.log(liquidity, debt, amount0, amount1, amountOut, reserveAfter1 - amount1, reserveAfter0 - amount0, totalAsset, pair.liquidationRate);
+    // console.log(liquidity, debt, amount0, amount1, amountOut, reserveAfter1 - amount1, reserveAfter0 - amount0, totalAsset, pair.liquidationRate);
     // console.log(`liquidity:${liquidity} debt:${debt}
     // amount0:${amount0} amount1:${amount1}
     // amountIn0:${amountIn0} amountIn1:${amountIn1}
@@ -225,9 +228,9 @@ export async function fetchData() {
         if(pool.totalBorrow > 0) {
             let addInterest = pool.interestRate * pool.totalBorrow * (BACK_MAIN.currentBlock - pool.lastUpdateBlock);
             let poolReserve = addInterest * pool.reservePercent;
-            pool.interestPerBorrow += (addInterest - poolReserve) / pool.totalBorrow;
+            pool.interestPerBorrow += addInterest / pool.totalBorrow;
             pool.remain -= poolReserve
-            pool.totalShare += addInterest;
+            pool.totalShare += addInterest - poolReserve;
         }
         pool.remain = Math.max(pool.remain, 0);
 

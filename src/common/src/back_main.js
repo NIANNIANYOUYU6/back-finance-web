@@ -156,7 +156,7 @@ function getHealthyValue(pair, borrowToken, debt, liquidity, amountIn0 = 0, amou
         amountOut = _getAmountOut(amount0, reserveAfter0 - amount0, reserveAfter1 - amount1)
         totalAsset = amount1 + amountOut;
     }
-    // console.log(liquidity, debt, amount0, amount1, amountOut, reserveAfter1 - amount1, reserveAfter0 - amount0, totalAsset, pair.liquidationRate);
+    console.log(liquidity, debt, amount0, amount1, amountOut, reserveAfter1 - amount1, reserveAfter0 - amount0, totalAsset, pair.liquidationRate);
     // console.log(`liquidity:${liquidity} debt:${debt}
     // amount0:${amount0} amount1:${amount1}
     // amountIn0:${amountIn0} amountIn1:${amountIn1}
@@ -519,7 +519,7 @@ export async function getAddInfo(pairAddress, amount0, amount1, borrowToken) {
         amountAfter0: amountIn0 + info.amount0,
         amountAfter1: amountIn1 + info.amount1,
         healthy: getHealthyValue(pair, borrowToken, info.debtAmount + info.debtInterest,
-            addLiquidity + info.liquidity, amountIn0, amountIn1, addLiquidity)
+            addLiquidity + info.liquidity, amount0, amount1, addLiquidity)
     }
 }
 
@@ -585,6 +585,9 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
         amountIn1 = amount1 + amountBorrow;
     }
 
+    let amountOrigin0 = amountIn0;
+    let amountOrigin1 = amountIn1;
+
     if(amountIn0 * pair.reserve1 >= amountIn1 * pair.reserve0) {
         let swapAmountIn = _getAmountSwap(amountIn0, amountIn1, pair.reserve0, pair.reserve1);
         let swapAmountOut = _getAmountOut(swapAmountIn, pair.reserve0, pair.reserve1);
@@ -611,7 +614,7 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
         amountIn1: amountIn1,
         platformAPY0: pair.platformAPY0,
         platformAPY1: pair.platformAPY1,
-        healthy: getHealthyValue(pair, borrowToken, amountBorrow, addLiquidity, amountIn0, amountIn1, addLiquidity),
+        healthy: getHealthyValue(pair, borrowToken, amountBorrow, addLiquidity, amountOrigin0, amountOrigin1, addLiquidity),
         interestAPY: interestRate
     }
 }

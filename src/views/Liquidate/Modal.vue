@@ -176,6 +176,7 @@ export default {
     async getAllowanceFunc(address) {
       // 获取授权额度
       this.form.allowance = await getAllowance(address);
+      console.log(this.form.allowance);
     },
     updateAmount() {
       let err = '';

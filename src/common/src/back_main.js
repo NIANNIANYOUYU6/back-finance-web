@@ -86,7 +86,6 @@ export async function getLiquidationList() {
     }
 
     BACK_MAIN.liquidationList.sort((a, b) => b.health - a.health);
-    BACK_MAIN.loading = false;
     console.log("liquidate", BACK_MAIN.liquidationList)
 
     return BACK_MAIN.liquidationList;
@@ -350,6 +349,7 @@ export async function fetchData() {
 
     }
 
+    BACK_MAIN.loading = false;
     // await fetchLiquidityList();
     console.log("fetch data", BACK_MAIN.tokenList, BACK_MAIN.pairList, BACK_MAIN.poolList, BACK_MAIN.backInfo, BACK_MAIN.dataList);
 }

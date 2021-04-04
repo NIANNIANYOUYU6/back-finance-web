@@ -1902,6 +1902,19 @@ export const BACK_ABI = {
             "type": "event"
         },
         {
+            "inputs": [],
+            "name": "PAIR_LIQUIDATION_DISCOUNT",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -5542,6 +5555,19 @@ export const BACK_ABI = {
             ],
             "stateMutability": "nonpayable",
             "type": "constructor"
+        },
+        {
+            "inputs": [],
+            "name": "backMainReward",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
         },
         {
             "inputs": [],

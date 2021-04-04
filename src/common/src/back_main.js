@@ -32,7 +32,7 @@ var BACK_MAIN = {
     backInfo: {}
 }
 
-async function fetchLiquidityList() {
+export async function getLiquidationList() {
     const query = gql`
       {
         records {
@@ -46,48 +46,50 @@ async function fetchLiquidityList() {
         }
       }
     `
-    request(backNode, query).then(data => {
-        BACK_MAIN.liquidationList = [];
-        for(let item of data.records) {
-            let liquidity = {}
-            liquidity.pair = BACK_MAIN.web3.utils.toChecksumAddress(item["pair"]);
-            let pair = BACK_MAIN.pairList.find(i => i.address === liquidity.pair);
-            if(!pair) {
-                continue;
-            }
-            liquidity.token0 = pair.token0;
-            liquidity.token1 = pair.token1;
-            liquidity.symbol0 = pair.symbol0;
-            liquidity.symbol1 = pair.symbol1;
-            liquidity.swapperName = swapper[pair.pid];
-            liquidity.lpAmount = Number(convertBigNumberToNormal(item["pledgeAmount"]));
-            if(!liquidity.lpAmount) {
-                continue;
-            }
-            liquidity.lpPrice = getLPPrice(pair);
-            liquidity.amount0 = liquidity.lpAmount / pair.lpSupply * pair.reserve0;
-            liquidity.amount1 = liquidity.lpAmount / pair.lpSupply * pair.reserve1;
-            liquidity.owner = BACK_MAIN.web3.utils.toChecksumAddress(item["owner"]);
-            liquidity.borrowToken = BACK_MAIN.web3.utils.toChecksumAddress(item["borrowToken"]);
-            liquidity.borrowInterest = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
-            liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
-            liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
-            liquidity.borrowPrice = _getTokenPrice(liquidity.borrowToken);
-            liquidity.discount = 0.95;
-            liquidity.health = getHealthyValue(pair, liquidity.borrowToken, liquidity.borrowAmount + liquidity.borrowInterest, liquidity.lpAmount);
-            if(liquidity.borrowToken === pair.token0) {
-                liquidity.debtAmount = liquidity.amount0 + _getAmountOut(liquidity.amount1, pair.reserve1, pair.reserve0)
-            } else {
-                liquidity.debtAmount = liquidity.amount1 + _getAmountOut(liquidity.amount0, pair.reserve0, pair.reserve1)
-            }
 
-            BACK_MAIN.liquidationList.push(liquidity);
+    BACK_MAIN.liquidationList = [];
+    let data = await request(backNode, query);
+    for(let item of data.records) {
+        let liquidity = {}
+        liquidity.pair = BACK_MAIN.web3.utils.toChecksumAddress(item["pair"]);
+        let pair = BACK_MAIN.pairList.find(i => i.address === liquidity.pair);
+        if(!pair) {
+            continue;
+        }
+        liquidity.token0 = pair.token0;
+        liquidity.token1 = pair.token1;
+        liquidity.symbol0 = pair.symbol0;
+        liquidity.symbol1 = pair.symbol1;
+        liquidity.swapperName = swapper[pair.pid];
+        liquidity.lpAmount = Number(convertBigNumberToNormal(item["pledgeAmount"]));
+        if(!liquidity.lpAmount) {
+            continue;
+        }
+        liquidity.lpPrice = getLPPrice(pair);
+        liquidity.amount0 = liquidity.lpAmount / pair.lpSupply * pair.reserve0;
+        liquidity.amount1 = liquidity.lpAmount / pair.lpSupply * pair.reserve1;
+        liquidity.owner = BACK_MAIN.web3.utils.toChecksumAddress(item["owner"]);
+        liquidity.borrowToken = BACK_MAIN.web3.utils.toChecksumAddress(item["borrowToken"]);
+        liquidity.borrowInterest = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
+        liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
+        liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
+        liquidity.borrowPrice = _getTokenPrice(liquidity.borrowToken);
+        liquidity.discount = 0.95;
+        liquidity.health = getHealthyValue(pair, liquidity.borrowToken, liquidity.borrowAmount + liquidity.borrowInterest, liquidity.lpAmount);
+        if(liquidity.borrowToken === pair.token0) {
+            liquidity.debtAmount = liquidity.amount0 + _getAmountOut(liquidity.amount1, pair.reserve1, pair.reserve0)
+        } else {
+            liquidity.debtAmount = liquidity.amount1 + _getAmountOut(liquidity.amount0, pair.reserve0, pair.reserve1)
         }
 
-        BACK_MAIN.liquidationList.sort((a, b) => b.health - a.health);
-        BACK_MAIN.loading = false;
-        console.log("liquidate", BACK_MAIN.liquidationList)
-    });
+        BACK_MAIN.liquidationList.push(liquidity);
+    }
+
+    BACK_MAIN.liquidationList.sort((a, b) => b.health - a.health);
+    BACK_MAIN.loading = false;
+    console.log("liquidate", BACK_MAIN.liquidationList)
+
+    return BACK_MAIN.liquidationList;
 }
 
 export function _getTokenPrice(token) {
@@ -138,18 +140,21 @@ export function setupTokenList(list) { //存储到数据中心
     }
 }
 
-function getHealthyValue(pair, borrowToken, debt, liquidity, amountIn0 = 0, amountIn1 = 0) {
+function getHealthyValue(pair, borrowToken, debt, liquidity, amountIn0 = 0, amountIn1 = 0, addLP = 0) {
     let reserveAfter0 = pair.reserve0 + amountIn0;
     let reserveAfter1 = pair.reserve1 + amountIn1;
-    let amount0 = liquidity / (pair.lpSupply + liquidity) * (reserveAfter0);
-    let amount1 = liquidity / (pair.lpSupply + liquidity) * (reserveAfter1);
+    let amount0 = liquidity / (pair.lpSupply + addLP) * (reserveAfter0);
+    let amount1 = liquidity / (pair.lpSupply + addLP) * (reserveAfter1);
     let totalAsset;
+    let amountOut;
     if(borrowToken === pair.token0) {
-        totalAsset = amount0 + _getAmountOut(amount1, reserveAfter1 - amount1, reserveAfter0 - amount0)
+        amountOut = _getAmountOut(amount1, reserveAfter1 - amount1, reserveAfter0 - amount0);
+        totalAsset = amount0 + amountOut;
     } else {
-        totalAsset = amount1 + _getAmountOut(amount0, reserveAfter0 - amount0, reserveAfter1 - amount1)
+        amountOut = _getAmountOut(amount0, reserveAfter0 - amount0, reserveAfter1 - amount1)
+        totalAsset = amount1 + amountOut;
     }
-    // console.log(liquidity, debt, amount0, amount1, amountIn0, amountIn1, pair.reserve0, pair.reserve1, totalAsset, pair.liquidationRate);
+    console.log(liquidity, debt, amount0, amount1, amountOut, reserveAfter1 - amount1, reserveAfter0 - amount0, totalAsset, pair.liquidationRate);
     // console.log(`liquidity:${liquidity} debt:${debt}
     // amount0:${amount0} amount1:${amount1}
     // amountIn0:${amountIn0} amountIn1:${amountIn1}
@@ -225,6 +230,7 @@ export async function fetchData() {
             pool.remain -= poolReserve
             pool.totalShare += addInterest;
         }
+        pool.remain = Math.max(pool.remain, 0);
 
         tokens.push(pool.supplyToken);
         BACK_MAIN.poolList.push(pool);
@@ -344,7 +350,7 @@ export async function fetchData() {
 
     }
 
-    await fetchLiquidityList();
+    // await fetchLiquidityList();
     console.log("fetch data", BACK_MAIN.tokenList, BACK_MAIN.pairList, BACK_MAIN.poolList, BACK_MAIN.backInfo, BACK_MAIN.dataList);
 }
 
@@ -476,9 +482,9 @@ export async function getUserInfoList() {
     return BACK_MAIN.dataList;
 }
 
-export async function getLiquidationList() {
-    return BACK_MAIN.liquidationList;
-}
+// export async function getLiquidationList() {
+//     return BACK_MAIN.liquidationList;
+// }
 
 export async function getAddInfo(pairAddress, amount0, amount1, borrowToken) {
     let pair = BACK_MAIN.pairList.find(i => i.address === pairAddress);
@@ -510,7 +516,7 @@ export async function getAddInfo(pairAddress, amount0, amount1, borrowToken) {
         amountAfter0: amountIn0 + info.amount0,
         amountAfter1: amountIn1 + info.amount1,
         healthy: getHealthyValue(pair, borrowToken, info.debtAmount + info.debtInterest,
-            addLiquidity + info.liquidity, amountIn0, amountIn1)
+            addLiquidity + info.liquidity, amountIn0, amountIn1, addLiquidity)
     }
 }
 
@@ -537,7 +543,7 @@ export async function getReinvestInfo(//复投
     let addLiquidity = Math.min(amountIn0 * pair.lpSupply / reserve0, amountIn1 * pair.lpSupply / reserve1);
 
     let data = BACK_MAIN.dataList.find(i => i.address === pairAddress && i.borrowToken === borrowToken);
-    let health = getHealthyValue(pair, borrowToken, data.debtAmount + data.debtInterest, addLiquidity + data.liquidity, amountIn0, amountIn1);
+    let health = getHealthyValue(pair, borrowToken, data.debtAmount + data.debtInterest, addLiquidity + data.liquidity, amountIn0, amountIn1, addLiquidity);
     return {
         data: {
             amount0: amountIn0,
@@ -583,7 +589,6 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
         amountIn1 += swapAmountOut;
         reserve0 += swapAmountIn;
         reserve1 -= swapAmountOut;
-        console.log("1m", pair.reserve0, pair.reserve1, swapAmountIn, swapAmountOut)
     } else {
         let swapAmountIn = _getAmountSwap(amountIn1, amountIn0, pair.reserve1, pair.reserve0);
         let swapAmountOut = _getAmountOut(swapAmountIn, pair.reserve1, pair.reserve0);
@@ -595,7 +600,6 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
 
 
     let addLiquidity = Math.min(amountIn0 * pair.lpSupply / reserve0, amountIn1 * pair.lpSupply / reserve1);
-    console.log("sss", reserve0, reserve1, addLiquidity);
     return {
         amountBorrow: amountBorrow,
         remainAmount0: pool0.remain,
@@ -604,7 +608,7 @@ export async function getInvestInfo(pairAddress, amount0, amount1, borrowToken, 
         amountIn1: amountIn1,
         platformAPY0: pair.platformAPY0,
         platformAPY1: pair.platformAPY1,
-        healthy: getHealthyValue(pair, borrowToken, amountBorrow, addLiquidity, amountIn0, amountIn1),
+        healthy: getHealthyValue(pair, borrowToken, amountBorrow, addLiquidity, amountIn0, amountIn1, addLiquidity),
         interestAPY: interestRate
     }
 }
@@ -732,8 +736,8 @@ export async function reinvest(pair_address, token_address, deadline, callback) 
 
 export async function liquidate(pair_address, owner_address, token_address, radio, callback) {//复投
     let backPlatformContract = new BACK_MAIN.web3.eth.Contract(BACK_ABI.BACK_PLATFORM, ContractAddress[BACK_MAIN.chainId].backPlatformContract);
-    radio = radio * 100;
-    executeContract(backPlatformContract, "liquidate", 0, [pair_address, owner_address, token_address, radio], callback);
+    radio = radio * 10000;
+    executeContract(backPlatformContract, "liquidation", 0, [pair_address, owner_address, token_address, radio], callback);
 }
 
 export async function claim(pair_address, token_address, callback) {//收取

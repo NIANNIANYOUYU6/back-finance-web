@@ -156,7 +156,7 @@ function getHealthyValue(pair, borrowToken, debt, liquidity, amountIn0 = 0, amou
         amountOut = _getAmountOut(amount0, reserveAfter0 - amount0, reserveAfter1 - amount1)
         totalAsset = amount1 + amountOut;
     }
-    console.log(liquidity, debt, amount0, amount1, amountOut, reserveAfter1 - amount1, reserveAfter0 - amount0, totalAsset, pair.liquidationRate);
+    // console.log(liquidity, debt, amount0, amount1, amountOut, reserveAfter1 - amount1, reserveAfter0 - amount0, totalAsset, pair.liquidationRate);
     // console.log(`liquidity:${liquidity} debt:${debt}
     // amount0:${amount0} amount1:${amount1}
     // amountIn0:${amountIn0} amountIn1:${amountIn1}
@@ -295,7 +295,7 @@ export async function fetchData() {
         BACK_MAIN.infoList.push(info);
     }
 
-    console.log("sss", BACK_MAIN.infoList);
+    // console.log("sss", BACK_MAIN.infoList);
     BACK_MAIN.dataList = [];
     for(let info of BACK_MAIN.infoList) {
         let pair = BACK_MAIN.pairList.find(i => i.address === info.address);

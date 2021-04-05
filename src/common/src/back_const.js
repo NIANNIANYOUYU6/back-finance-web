@@ -18,18 +18,18 @@ export const backNode = "http://18.181.217.60:8000/subgraphs/name/example";
 export const MAXNUM = 9999 * 99999 * 100000;
 export const ContractAddress = {
     97: {
-        mdexToken: '0x9EcF1F8fFbF7a24249D7f699b697bbEFaa615811',
-        backToken: '0x5c8e4afcd7Ec17fD9c2594672026659C35b2CE0b',
-        mdexSwapperContract: '0x8C8AB9d1DdE4c6675e569cE81d35e73350C6a05F',
+        mdexToken: '0xaaE0d85526cA55D933704c7707B6a1A233Df5Fe8',
+        backToken: '0x28A0A2aE5b2f3459dDE1C541FcC90e8b3033438c',
+        mdexSwapperContract: '0xe889eA0b0Dc1f60902c4DCC4b1f9B16eF2728450',
 
         usdtmdex: '0x30686895109247C0376bcaE60Fcb6Cbc03165f33',
-        backQueryContract: "0x367ed0ED00c6a92BEEA6DAF21609Dae56b8A4114",
+        backQueryContract: "0x3d04B6AcAC25feC4684324A792441732280B0458",
 
-        backConfigContract: '0x17Ca3C758239417082E33C94Efc7d6E060d8Df28',
-        backPairFactoryContract: "0xE04517b19eBEDDd232B4fB3170e855247C6251d0",
-        backPlatformContract: "0xDCA88950627c583e529fa0062FE58d1407facACA",
-        backPoolFactoryContract: "0xa576627245a744808288eA83aB2F9803f03a9145",
-        mdexFactoryContract: "0xec6ae3Eabd0FbEFaf25af4b4D00D08109eC7DEA4",
+        backConfigContract: '0xe86cba30B44F3818934c580aDCC52E365DB6767B',
+        backPairFactoryContract: "0xD7498a8dE66D41412373B84b12d0AA65147E2aCc",
+        backPlatformContract: "0x8aE30A4fd6eF1bdb27f9E5B727F2D3816c363DcC",
+        backPoolFactoryContract: "0x6ca2cD674Ec312479ecD71e6b4142eb4a7599E08",
+        mdexFactoryContract: "0x9B1bDEA897c643649D0D826b777Fd8F123AD70af",
     },
     128: {
         mdexToken: '0x012b9af79C4DdD265D581108A5642FC46F32076f',
@@ -45,12 +45,12 @@ export const ContractAddress = {
 
 export const tokenAddres = {
     97: {
-        USDT: '0x5fae81544068EA2955c2102eFE212D9a869A01Ea',
-        BTC: '0x9A05C90a89d6452336754501F600AFF648f172c7',
-        ETH: '0xB7F95EaA2001b15290eaC5983a45577E31Ac17f1',
-        BACK: "0x5c8e4afcd7Ec17fD9c2594672026659C35b2CE0b",
-        MDEX: "0x9EcF1F8fFbF7a24249D7f699b697bbEFaa615811",
-        BXH: "0xFD2D605D9b8C0b1A1e41a4908759b3C6d9ADFf48",
+        USDT: '0xf79e65Ad5b5E4EC6e0b6C1D846a8c6B832318402',
+        BTC: '0xd2326A915E94578E3c8b7d859DfEa2b9C1aCb1e1',
+        ETH: '0xA9F648E832AB544289055335bb120E75893c06C8',
+        BACK: "0x28A0A2aE5b2f3459dDE1C541FcC90e8b3033438c",
+        MDEX: "0xaaE0d85526cA55D933704c7707B6a1A233Df5Fe8",
+        BXH: "0xA38714ef007e17Bfbb631c820588D490Dd5191E1",
     },
     128: {
         USDT: '0x721aEda9c81ADAc92dFc9248127C219D91036671',

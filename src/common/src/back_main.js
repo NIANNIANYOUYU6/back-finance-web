@@ -74,7 +74,7 @@ export async function getLiquidationList() {
         liquidity.borrowAmount = Number(convertBigNumberToNormal(item["borrowAmount"], getDecimal(liquidity.borrowToken)));
         liquidity.borrowSymbol = getTokenSymbol(liquidity.borrowToken);
         liquidity.borrowPrice = _getTokenPrice(liquidity.borrowToken);
-        liquidity.interestSettle = Number(convertBigNumberToNormal(item["interestAmount"], getDecimal(liquidity.borrowToken)));
+        liquidity.interestSettle = Number(convertBigNumberToNormal(item["interestSettle"], getDecimal(liquidity.borrowToken)));
         let pool = BACK_MAIN.poolList.find(i => i.supplyToken === liquidity.borrowToken);
         liquidity.borrowInterest += (pool.interestPerBorrow - liquidity.interestSettle) * liquidity.borrowAmount;
         liquidity.discount = 0.95;
@@ -295,6 +295,7 @@ export async function fetchData() {
         BACK_MAIN.infoList.push(info);
     }
 
+    console.log("sss", BACK_MAIN.infoList);
     BACK_MAIN.dataList = [];
     for(let info of BACK_MAIN.infoList) {
         let pair = BACK_MAIN.pairList.find(i => i.address === info.address);

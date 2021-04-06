@@ -290,9 +290,7 @@ export default {
     updateAmount(type) {
       this.form[type].scale = this.form[type].amount / this.form[type].balance;
       let err = '';
-      if (!+this.form[type].amount && +this.form[type].amount !== 0) {
-        err = this.$t('Prompt.error3');
-      } else if (this.form[type].amount > +this.form[type].balance) {
+      if (this.form[type].amount > +this.form[type].balance) {
         err = this.$t('Prompt.error2');
       } else if (this.form[type].amount > +this.form[type].allowance) {
         err = this.$t('Prompt.error1');

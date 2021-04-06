@@ -123,9 +123,7 @@ export default {
     },
     updateAmount() {
       let err = '';
-      if (!+this.amount && +this.amount !== 0) {
-        err = this.$t('Prompt.error3');
-      } else if (this.amount > +this.balance) {
+      if (this.amount > +this.balance) {
         err = this.$t('Prompt.error2');
       } else if (this.amount > +this.allowance) {
         err = this.$t('Prompt.error1');

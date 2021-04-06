@@ -113,7 +113,7 @@
         :loading="loading"
         class="btn-one"
         v-else
-        :disabled="!!form.errorText"
+        :disabled="!!form.errorText || !form.amount"
         type="primary"
         @click="handleOk"
         >{{ $t('Operation.ok') }}</a-button
@@ -197,11 +197,7 @@ export default {
     },
     updateAmount() {
       let err = '';
-      if (this.form.amount === '' || +this.form.amount === 0) {
-        err = this.$t('Prompt.error4');
-      } else if (!+this.form.amount) {
-        err = this.$t('Prompt.error3');
-      } else if (this.form.amount > +this.currentTotalDebt) {
+      if (this.form.amount > +this.currentTotalDebt) {
         err = this.$t('Prompt.error6');
       } else if (this.form.amount > +this.form.balance) {
         err = this.$t('Prompt.error2');

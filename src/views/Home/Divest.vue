@@ -173,8 +173,6 @@ export default {
         err = this.$t('Prompt.error4');
       } else if (+this.form.radio > 100) {
         err = this.$t('Prompt.error7');
-      } else if (!+this.form.radio) {
-        err = this.$t('Prompt.error3');
       }
       this.form.errorText = err;
       this.getDivestInfo();

@@ -189,8 +189,6 @@ export default {
         +this.form.allowance
       ) {
         err = this.$t('Prompt.error1');
-      } else if (!+this.form.radio) {
-        err = this.$t('Prompt.error3');
       }
       this.form.errorText = err;
     },

@@ -107,9 +107,7 @@ export default {
     },
     updateAmount() {
       let err = '';
-      if (!+this.amount && +this.amount !== 0) {
-        err = this.$t('Prompt.error3');
-      } else if (this.amount > +this.form.remainBorrow) {
+      if (this.amount > +this.form.remainBorrow) {
         err = this.$t('Prompt.error8');
       } else if (this.amount > +this.form.amountDeposit) {
         err = this.$t('Prompt.error5');

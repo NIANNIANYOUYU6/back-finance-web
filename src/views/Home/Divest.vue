@@ -23,19 +23,31 @@
       <div class="text-space">
         <span class="text-c">{{ $t('Farm.display.divest1') }}</span>
       </div>
-      <a-input
+      <a-input-group compact class="model-input-group">
+        <a-input-number
+          v-model:value="form.radio"
+          :min="0"
+          :max="100"
+          @change="updateAmount()"
+          @keydown="(e) => (e.target.value = e.target.value.match(/^\d*(\.?\d{0,7})/g)[0] || null)"
+          placeholder="100"
+          :precision="8"
+        />
+        <span class="model-input-suffix">%</span>
+      </a-input-group>
+      <!-- <a-input
         class="modal-input"
         suffix="%"
         v-model:value="form.radio"
         :placeholder="100"
         @change="updateAmount()"
-      />
+      /> -->
       <div class="error-text">{{ form.errorText }}</div>
       <a-radio-group
         class="back-radio-group"
         v-model:value="form.radio"
         button-style="solid"
-        @change="getDivestInfo"
+        @change="updateAmount"
       >
         <a-radio-button :value="25">25%</a-radio-button>
         <a-radio-button :value="50">50%</a-radio-button>

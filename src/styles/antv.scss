@@ -120,6 +120,36 @@
             color: #9498b4;
           }
         }
+        .model-input-group{
+          border: 1px solid #403EA1;
+          background-color: #1A1744;
+          display: flex;
+          .ant-input-number{
+            flex: 1;
+            border: 0;
+            color: #fff;
+            font-weight: 700;
+            background-color: #1A1744;
+            .ant-input-number-input-wrap{
+              .ant-input-number-input{
+                color: #fff;
+                font-weight: 700;
+                background-color: #1A1744;
+              }
+            }
+            // 隐藏input-number的快捷方式
+            &:hover .ant-input-number-handler-wrap{
+               opacity: 0;
+            }
+          }
+          .model-input-suffix{
+            padding: 0 10px;
+            color: #fff; 
+            font-weight: 700;
+            line-height: 32px;
+          }
+        }
+        
       }
     }
     .back-card-footer{

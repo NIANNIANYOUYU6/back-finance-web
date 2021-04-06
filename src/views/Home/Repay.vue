@@ -23,13 +23,27 @@
       <div class="text-space">
         <span class="text-c">{{ $t('Operation.repay') }}</span>
       </div>
-      <a-input
+      <a-input-group compact class="model-input-group">
+        <span class="model-input-suffix">
+          <img style="height: 20px" :src="'./assets/' + pairsItem.borrowSymbol + '.png'" />
+        </span>
+        <a-input-number
+          v-model:value="form.amount"
+          :min="0"
+          @change="updateAmount()"
+          @keydown="(e) => (e.target.value = e.target.value.match(/^\d*(\.?\d{0,7})/g)[0] || null)"
+          :placeholder="$tranNumber(currentTotalDebt, 8)"
+          :precision="8"
+        />
+        <span class="model-input-suffix">{{ pairsItem.borrowSymbol }} </span>
+      </a-input-group>
+      <!-- <a-input
         class="modal-input"
         :suffix="pairsItem.borrowSymbol"
         v-model:value="form.amount"
         :placeholder="currentTotalDebt"
         @change="updateAmount()"
-      />
+      /> -->
       <div class="error-text">{{ form.errorText }}</div>
       <a-radio-group
         class="back-radio-group"

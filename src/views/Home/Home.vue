@@ -24,10 +24,17 @@
       justify-content: space-between;
       line-height: 36px;
       margin-top: 10px;
+      padding-right: 20px;
       .back-table_item-thead-text {
+        display: flex;
         .text-c {
           color: #6483b9;
           margin-right: 10px;
+        }
+        .back-table_item-thead-btn-line {
+          > button {
+            margin-left: 10px;
+          }
         }
       }
     }
@@ -89,6 +96,14 @@
                   <span class="fw-fff">
                     {{ $tranNumber(userInfo.pendingReward, 2) }} {{ userInfo.rewardSymbol }}
                   </span>
+                  <div class="back-table_item-thead-btn-line">
+                    <a-button type="primary" size="small" @click="openCard(userInfo, 'reinvest')"
+                      >{{ $t('Operation.reinvest') }}
+                    </a-button>
+                    <a-button type="primary" size="small" @click="openCard(userInfo, 'claim')">{{
+                      $t('Operation.claim')
+                    }}</a-button>
+                  </div>
                 </div>
               </div>
               <div class="back-table_item-body">
@@ -159,14 +174,6 @@
                     }}</a-button>
                     <a-button type="primary" size="small" @click="openCard(userInfo, 'divest')">{{
                       $t('Operation.divest')
-                    }}</a-button>
-                  </div>
-                  <div class="back-table_item-body-btn-line" style="margin-top: 8px">
-                    <a-button type="primary" size="small" @click="openCard(userInfo, 'reinvest')"
-                      >{{ $t('Operation.reinvest') }}
-                    </a-button>
-                    <a-button type="primary" size="small" @click="openCard(userInfo, 'claim')">{{
-                      $t('Operation.claim')
                     }}</a-button>
                   </div>
                 </div>

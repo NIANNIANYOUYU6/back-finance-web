@@ -10,13 +10,24 @@
     </template>
 
     <div class="modal-body-content">
-      <a-input
+      <a-input-group compact class="model-input-group">
+        <a-input-number
+          v-model:value="amount"
+          :min="0"
+          @change="updateAmount"
+          @keydown="(e) => (e.target.value = e.target.value.match(/^\d*(\.?\d{0,7})/g)[0] || null)"
+          :placeholder="$tranNumber(form.amountDeposit, 8)"
+          :precision="8"
+        />
+        <span class="model-input-suffix">{{ form.symbol }} </span>
+      </a-input-group>
+      <!-- <a-input
         class="modal-input"
         :suffix="form.symbol"
         v-model:value="amount"
         @change="updateAmount"
         :placeholder="form.amountDeposit"
-      />
+      /> -->
       <div class="error-text">{{ errorText }}</div>
       <a-radio-group
         class="back-radio-group"

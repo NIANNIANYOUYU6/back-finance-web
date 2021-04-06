@@ -25,7 +25,21 @@
       <div class="text-space">
         <span class="text-c"> {{ $t('Operation.add') }}</span>
       </div>
-      <a-input
+      <a-input-group compact class="model-input-group">
+        <span class="model-input-suffix">
+          <img style="height: 20px" :src="'./assets/' + pairsItem.symbol0 + '.png'" />
+        </span>
+        <a-input-number
+          v-model:value="form.tokenA.amount"
+          :min="0"
+          @change="updateAmount('tokenA')"
+          @keydown="(e) => (e.target.value = e.target.value.match(/^\d*(\.?\d{0,7})/g)[0] || null)"
+          :placeholder="$tranNumber(form.tokenA.balance, 8)"
+          :precision="8"
+        />
+        <span class="model-input-suffix">{{ pairsItem.symbol0 }} </span>
+      </a-input-group>
+      <!-- <a-input
         class="modal-input"
         :suffix="pairsItem.symbol0"
         v-model:value="form.tokenA.amount"
@@ -35,7 +49,7 @@
         <template #prefix>
           <img style="height: 20px" :src="'./assets/' + pairsItem.symbol0 + '.png'" />
         </template>
-      </a-input>
+      </a-input> -->
       <div class="error-text">{{ form.tokenA.errorText }}</div>
       <a-radio-group
         class="back-radio-group"
@@ -48,7 +62,21 @@
         <a-radio-button :value="0.75">75%</a-radio-button>
         <a-radio-button :value="1">100%</a-radio-button>
       </a-radio-group>
-      <a-input
+      <a-input-group compact class="model-input-group">
+        <span class="model-input-suffix">
+          <img style="height: 20px" :src="'./assets/' + pairsItem.symbol1 + '.png'" />
+        </span>
+        <a-input-number
+          v-model:value="form.tokenB.amount"
+          :min="0"
+          @change="updateAmount('tokenB')"
+          @keydown="(e) => (e.target.value = e.target.value.match(/^\d*(\.?\d{0,7})/g)[0] || null)"
+          :placeholder="$tranNumber(form.tokenB.balance, 8)"
+          :precision="8"
+        />
+        <span class="model-input-suffix">{{ pairsItem.symbol1 }} </span>
+      </a-input-group>
+      <!-- <a-input
         class="modal-input"
         :suffix="pairsItem.symbol1"
         v-model:value="form.tokenB.amount"
@@ -58,7 +86,7 @@
         <template #prefix>
           <img style="height: 20px" :src="'./assets/' + pairsItem.symbol1 + '.png'" />
         </template>
-      </a-input>
+      </a-input> -->
       <div class="error-text">{{ form.tokenB.errorText }}</div>
       <a-radio-group
         class="back-radio-group"

@@ -34,7 +34,18 @@
       </div>
       <div class="text-space">
         <span class="text-c"> {{ $t('Farm.display.reinvest2') }}</span>
-        <span class="fw-fff">
+        <span
+          style="font-weight: 700"
+          :class="
+            !form.health
+              ? 'fw-fff'
+              : form.health < 0.2
+              ? 'healthy-text'
+              : form.health > 0.8
+              ? 'error-text'
+              : 'prompt-text'
+          "
+        >
           {{ $tranNumber(form.health * 100, 2) }}
         </span>
       </div>

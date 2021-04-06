@@ -56,6 +56,15 @@
   }
 }
 
+.lever-item {
+  .ant-slider-mark-text {
+    color: #aaa;
+  }
+  .ant-slider-mark-text-active{
+    color: #fff;
+    font-weight: 700;
+  }
+}
 .back-modal{
   .ant-modal-close{
     .anticon {

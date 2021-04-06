@@ -128,7 +128,19 @@
         <span class="text-c">
           {{ $t('Farm.display.add3') }}
         </span>
-        <span class="fw-fff">{{ $tranNumber(form.addInfo.healthy * 100, 2) }}</span>
+        <span
+          style="font-weight: 700"
+          :class="
+            !form.addInfo.healthy
+              ? 'fw-fff'
+              : form.addInfo.healthy < 0.2
+              ? 'healthy-text'
+              : form.addInfo.healthy > 0.8
+              ? 'error-text'
+              : 'prompt-text'
+          "
+          >{{ $tranNumber(form.addInfo.healthy * 100, 2) }}</span
+        >
       </div>
       <div class="prompt-text" style="line-height: 16px">
         <ExclamationCircleFilled />

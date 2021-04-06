@@ -74,7 +74,19 @@
       </div>
       <div class="text-space">
         <span class="text-c"> {{ $t('Farm.display.repay3') }}</span>
-        <span class="fw-fff">{{ $tranNumber(form.health * 100, 2) }}</span>
+        <span
+          style="font-weight: 700"
+          :class="
+            !form.health
+              ? 'fw-fff'
+              : form.health < 0.2
+              ? 'healthy-text'
+              : form.health > 0.8
+              ? 'error-text'
+              : 'prompt-text'
+          "
+          >{{ $tranNumber(form.health * 100, 2) }}</span
+        >
       </div>
       <div class="prompt-text" style="line-height: 16px">
         <ExclamationCircleFilled />

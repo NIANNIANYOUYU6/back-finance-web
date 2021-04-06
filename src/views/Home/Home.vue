@@ -1,72 +1,89 @@
-<style lang='scss' scoped >
+<style lang='scss'  >
 .home {
-  .debtToken {
-    cursor: pointer;
-    font-size: 14px;
-    height: 14px;
-  }
-  .debtToken-active {
-    font-weight: 700;
-    font-size: 20px;
-  }
-  .lever-item {
-    .ant-slider-mark-text-active,
-    .ant-slider-mark-text {
-      color: #fff !important;
+  .debtToken-select {
+    width: 100%;
+    .ant-select-selector {
+      border-color: #403ea1 !important;
+      background-color: #1a1744 !important;
+      color: #fff;
+      font-weight: 700;
+    }
+    .ant-select-arrow {
+      color: #fff;
     }
   }
   .back-user-table {
+    background-color: #0c031e;
     min-height: 100px;
-    .back-table_item-thead {
-      display: flex;
-      align-items: center;
-      background-color: #141031;
-      justify-content: space-between;
-      line-height: 36px;
-      margin-top: 10px;
-      padding-right: 20px;
-      .back-table_item-thead-text {
+    padding: 0px;
+    .back-table_item {
+      padding: 10px;
+      background-color: #15112d;
+      border-radius: 15px;
+      margin-bottom: 10px;
+      &:last-child {
+        margin-bottom: 0px;
+      }
+      .back-table_item-thead {
         display: flex;
-        .text-c {
-          color: #6483b9;
-          margin-right: 10px;
+        align-items: center;
+        background-color: #141031;
+        justify-content: space-between;
+        line-height: 36px;
+        padding-right: 20px;
+        .back-table_item-thead-text {
+          display: flex;
+          .text-c {
+            color: #6483b9;
+            margin-right: 10px;
+          }
+          .back-table_item-thead-btn-line {
+            > button {
+              margin-left: 10px;
+            }
+          }
         }
-        .back-table_item-thead-btn-line {
-          > button {
-            margin-left: 10px;
+      }
+      .back-table_item-body {
+        display: flex;
+        min-height: 80px;
+        align-items: center;
+        background-color: #0a0221;
+        justify-content: space-between;
+        &:hover {
+          background-color: #0f0120;
+        }
+        > * {
+          padding: 0 10px;
+        }
+        .back-table_item-body-text {
+          flex: 1;
+          .text-c {
+            color: #6483b9;
+            margin-right: 10px;
+          }
+        }
+        .back-table_item-body-btn {
+          .back-table_item-body-btn-line {
+            display: flex;
+            justify-content: space-between;
+            > button {
+              margin-right: 10px;
+              width: 100%;
+            }
           }
         }
       }
     }
-    .back-table_item-body {
-      display: flex;
-      min-height: 80px;
-      align-items: center;
-      background-color: #0a0221;
-      justify-content: space-between;
-      &:hover {
-        background-color: #0f0120;
-      }
-      > * {
-        padding: 0 10px;
-      }
-      .back-table_item-body-text {
-        flex: 1;
-        .text-c {
-          color: #6483b9;
-          margin-right: 10px;
-        }
-      }
-      .back-table_item-body-btn {
-        .back-table_item-body-btn-line {
-          display: flex;
-          justify-content: space-between;
-          > button {
-            margin-right: 10px;
-            width: 100%;
-          }
-        }
-      }
+  }
+  .home-lever {
+    display: flex;
+    cursor: pointer;
+    > span {
+      flex: 1;
+    }
+    .home-lever-num {
+      background-color: #1e1b50;
     }
   }
 }
@@ -106,7 +123,7 @@
                   </div>
                 </div>
               </div>
-              <div class="back-table_item-body">
+              <div class="back-table_item-body" v-if="!!userInfo.totalDebt">
                 <div class="back-table_item-body-text">
                   <span class="text-c">{{ $t('Farm.borrowSymbol') }} </span>
                   <span>
@@ -162,7 +179,19 @@
                       <QuestionCircleOutlined />
                     </a-tooltip>
                   </span>
-                  <span class="fw-fff">{{ $tranNumber(userInfo.healthy * 100, 2) }} </span>
+                  <span
+                    style="font-weight: 700"
+                    :class="
+                      !userInfo.healthy
+                        ? 'fw-fff'
+                        : userInfo.healthy < 0.2
+                        ? 'healthy-text'
+                        : userInfo.healthy > 0.8
+                        ? 'error-text'
+                        : 'prompt-text'
+                    "
+                    >{{ $tranNumber(userInfo.healthy * 100, 2) }}
+                  </span>
                 </div>
                 <div class="back-table_item-body-btn">
                   <div class="back-table_item-body-btn-line">
@@ -256,32 +285,27 @@
           </template>
 
           <template #debtToken="{ record }">
-            <span
-              class="debtToken"
-              :class="{ 'debtToken-active': record.debtToken === '0' }"
-              @click="record.debtToken = '0'"
-            >
-              {{ record.symbol0 }}
-            </span>
-            /
-            <span
-              class="debtToken"
-              :class="{ 'debtToken-active': record.debtToken === '1' }"
-              @click="record.debtToken = '1'"
-            >
-              {{ record.symbol1 }}
-            </span>
+            <a-select class="debtToken-select" v-model:value="record.debtToken">
+              <a-select-option value="0">
+                <div>
+                  <img class="b-icon" :src="'./assets/' + record.symbol0 + '.png'" />
+                  {{ record.symbol0 }}
+                </div>
+              </a-select-option>
+              <a-select-option value="1">
+                <div>
+                  <img class="b-icon" :src="'./assets/' + record.symbol1 + '.png'" />
+                  {{ record.symbol1 }}
+                </div>
+              </a-select-option>
+            </a-select>
           </template>
-
           <template #lever="{ record }">
-            <a-slider
-              class="lever-item"
-              v-model:value="record.debtRatio"
-              :min="1"
-              :max="+record.leverageRate"
-              :marks="record.marks"
-              :step="null"
-            />
+            <div class="home-lever">
+              <span @click="uptatelever(record, -1)"> - </span>
+              <span class="fw-fff home-lever-num"> {{ record.debtRatio }} </span>
+              <span @click="uptatelever(record, 1)"> + </span>
+            </div>
           </template>
           <template #operating>
             <span>{{ $t('Operation.operating') }} </span>
@@ -340,88 +364,6 @@ export default {
       pairsList: [],
       userInfoList: [],
       loading: false,
-      myColumns: [
-        {
-          dataIndex: 'swapperName',
-          width: 160,
-          slots: { title: 'pair' },
-          customRender: ({ text, record }) => {
-            return {
-              children: (
-                <div style="display:flex ">
-                  <div style="height: 20px;line-height: 44px;margin-right:5px">
-                    <img class="b-icon" src={'./assets/' + record.symbol0 + '.png'} />
-                    <img class="b-icon" src={'./assets/' + record.symbol1 + '.png'} />
-                  </div>
-                  <div>
-                    <div>{text}</div>
-                    <div>
-                      {record.symbol0}/{record.symbol1}
-                    </div>
-                  </div>
-                </div>
-              ),
-            };
-          },
-        },
-        {
-          dataIndex: 'borrowSymbol',
-          align: 'center',
-          slots: { title: 'borrowSymbol' },
-          customRender: ({ text }) => {
-            text;
-            return {
-              children: (
-                <div>
-                  <img class="b-icon" src={'./assets/' + text + '.png'} />
-                  <span class="b-icon-name">{text}</span>
-                </div>
-              ),
-            };
-          },
-        },
-        {
-          dataIndex: 'totalAssets',
-          align: 'center',
-          slots: { customRender: 'currentTotalAsset', title: 'totalAssets' },
-        },
-        {
-          dataIndex: 'totalDebt',
-          align: 'center',
-          slots: { customRender: 'totalDebtValue', title: 'totalDebt' },
-        },
-        {
-          dataIndex: 'pendingReward',
-          align: 'center',
-          slots: { title: 'pendingReward' },
-          customRender: ({ text, record }) => {
-            text;
-            return {
-              children: (
-                <div>
-                  {this.$tranNumber(text, 2)} {record.rewardSymbol}
-                </div>
-              ),
-            };
-          },
-        },
-        {
-          // 风险值
-          dataIndex: 'healthy',
-          align: 'center',
-          slots: { title: 'debtTooltip' },
-          customRender: ({ text }) => {
-            return {
-              children: <div>{this.$tranNumber(text * 100, 2)}</div>,
-            };
-          },
-        },
-        {
-          align: 'center',
-          width: 300,
-          slots: { customRender: 'action', title: 'operating' },
-        },
-      ],
       pairsColumns: [
         {
           dataIndex: 'swapperName',
@@ -511,7 +453,7 @@ export default {
       const res = await getPairList();
       console.log('getPairList--->', res);
       this.pairsList = res.map((item) => {
-        item.marks = lever[item.leverageRate];
+        item.marks = lever[item.leverageRate].marks;
         item.debtRatio = +item.leverageRate;
         item.debtToken = '0';
         return item;
@@ -521,6 +463,11 @@ export default {
       const res = await getUserInfoList();
       console.log('getUserInfoList--->', res);
       this.userInfoList = res;
+    },
+    uptatelever(item, num) {
+      const arr = lever[item.leverageRate].arr;
+      const index = arr.findIndex((lever) => lever == item.debtRatio) + num;
+      item.debtRatio = +arr[index] || item.debtRatio;
     },
     openCard(item, type) {
       this.pairsItem = item;

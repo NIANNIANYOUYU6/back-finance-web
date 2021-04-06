@@ -121,6 +121,7 @@
         ></span>
         <div style="flex: 1; margin-left: 10px">
           <a-slider
+            class="lever-item"
             v-model:value="form.debtRatio"
             :min="1"
             :max="+pairsItem.leverageRate"
@@ -182,16 +183,9 @@
           {{ $tranNumber(form.investInfo.healthy * 100, 2) }}
         </span>
       </div>
-      <div
-        v-if="pairsItem?.swapperName?.toLowerCase() === 'Mdex'.toLowerCase()"
-        class="prompt-text"
-        style="line-height: 16px; margin-bottom: 10px"
-      >
+      <div class="prompt-text" style="line-height: 16px; margin-bottom: 10px">
         <ExclamationCircleFilled />
-        {{ $t('Farm.healthyRemind1') }}
-      </div>
-      <div v-else class="prompt-text" style="line-height: 16px; margin-bottom: 10px">
-        <ExclamationCircleFilled />
+        {{ $t('Farm.healthyRemind1') }} <br />
         {{ $t('Farm.healthyRemind2') }}
       </div>
       <div class="text-space" style="border-top: 1px solid#354375">
@@ -363,7 +357,7 @@ export default {
   mounted() {
     this.form.debtRatio = this.pairsItem.debtRatio;
     this.form.debtToken = this.pairsItem.debtToken;
-    this.marks = lever[this.pairsItem.leverageRate];
+    this.marks = lever[this.pairsItem.leverageRate].marks;
     this.dataInit();
   },
   methods: {

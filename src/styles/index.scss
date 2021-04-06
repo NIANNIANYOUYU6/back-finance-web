@@ -110,12 +110,18 @@ li {
   }
 }
 .error-text {
+  cursor: pointer;
   color: #ee5b56;
 }
 .prompt-text{
+  cursor: pointer;
   color: #eb8834;
 }
- .line-h-40 {
+.healthy-text{
+  cursor: pointer;
+  color: #3CC871;
+}
+.line-h-40 {
   line-height: 40px;
 }
 .fw-fff{

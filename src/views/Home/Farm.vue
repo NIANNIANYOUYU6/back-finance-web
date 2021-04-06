@@ -179,7 +179,18 @@
         <span class="text-c">
           {{ $t('Farm.healthy') }}
         </span>
-        <span class="fw-fff">
+        <span
+          style="font-weight: 700"
+          :class="
+            !form.investInfo.healthy
+              ? 'fw-fff'
+              : form.investInfo.healthy < 0.2
+              ? 'healthy-text'
+              : form.investInfo.healthy > 0.8
+              ? 'error-text'
+              : 'prompt-text'
+          "
+        >
           {{ $tranNumber(form.investInfo.healthy * 100, 2) }}
         </span>
       </div>

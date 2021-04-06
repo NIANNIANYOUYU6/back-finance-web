@@ -111,17 +111,6 @@ export default {
       loading: false,
       columns: [
         {
-          title: 'ID',
-          dataIndex: 'id',
-          align: 'center',
-          customRender: ({ text }) => {
-            text;
-            return {
-              children: <div>{text}</div>,
-            };
-          },
-        },
-        {
           dataIndex: 'swapperName',
           width: 160,
           slots: { title: 'pair' },
